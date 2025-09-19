@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Sea_Animal
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalCategorySO
+  categoryName: Sea Animal
+  animals:
+  - id: 23
+    name_en: Whale
+    name_vi: "C\xE1 voi"
+    image: whale.png
+  - id: 24
+    name_en: Dolphin
+    name_vi: "C\xE1 heo"
+    image: dolphin.png
+  - id: 25
+    name_en: Octopus
+    name_vi: "B\u1EA1ch tu\u1ED9c"
+    image: octopus.png
+  - id: 26
+    name_en: Shark
+    name_vi: "C\xE1 m\u1EADp"
+    image: shark.png
+  - id: 27
+    name_en: Turtle
+    name_vi: "R\xF9a bi\u1EC3n"
+    image: turtle.png
+  - id: 28
+    name_en: Crab
+    name_vi: Cua
+    image: crab.png
+  - id: 29
+    name_en: Seal
+    name_vi: "H\u1EA3i c\u1EA9u"
+    image: seal.png
+  - id: 30
+    name_en: Starfish
+    name_vi: "Sao bi\u1EC3n"
+    image: starfish.png

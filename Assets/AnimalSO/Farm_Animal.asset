@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Farm_Animal
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalCategorySO
+  categoryName: Farm Animal
+  animals:
+  - id: 7
+    name_en: Cow
+    name_vi: "B\xF2"
+    image: cow.png
+  - id: 8
+    name_en: Pig
+    name_vi: Heo
+    image: pig.png
+  - id: 9
+    name_en: Sheep
+    name_vi: "C\u1EEBu"
+    image: sheep.png
+  - id: 10
+    name_en: Goat
+    name_vi: "D\xEA"
+    image: goat.png
+  - id: 11
+    name_en: Horse
+    name_vi: "Ng\u1EF1a"
+    image: horse.png
+  - id: 12
+    name_en: Chicken
+    name_vi: "G\xE0"
+    image: chicken.png
+  - id: 13
+    name_en: Duck
+    name_vi: "V\u1ECBt"
+    image: duck.png

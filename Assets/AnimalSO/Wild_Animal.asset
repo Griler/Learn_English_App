@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Wild_Animal
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalCategorySO
+  categoryName: Wild Animal
+  animals:
+  - id: 14
+    name_en: Lion
+    name_vi: "S\u01B0 t\u1EED"
+    image: lion.png
+  - id: 15
+    name_en: Tiger
+    name_vi: "H\u1ED5"
+    image: tiger.png
+  - id: 16
+    name_en: Elephant
+    name_vi: Voi
+    image: elephant.png
+  - id: 17
+    name_en: Giraffe
+    name_vi: "H\u01B0\u01A1u cao c\u1ED5"
+    image: giraffe.png
+  - id: 18
+    name_en: Monkey
+    name_vi: "Kh\u1EC9"
+    image: monkey.png
+  - id: 19
+    name_en: Kangaroo
+    name_vi: "Chu\u1ED9t t\xFAi"
+    image: kangaroo.png
+  - id: 20
+    name_en: Bear
+    name_vi: "G\u1EA5u"
+    image: bear.png
+  - id: 21
+    name_en: Panda
+    name_vi: "G\u1EA5u tr\xFAc"
+    image: panda.png
+  - id: 22
+    name_en: Zebra
+    name_vi: "Ng\u1EF1a v\u1EB1n"
+    image: zebra.png
