@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 public class AnimalImporterWindow : EditorWindow
 {
     private TextAsset jsonFile;
-    private string saveFolder = "Assets/AnimalSO";
+    private string saveFolder = "Assets/Resources/AnimalSO";
 
     [MenuItem("Tools/Animal Importer")]
     public static void ShowWindow()
@@ -80,19 +80,4 @@ public class AnimalWrapper
     public Dictionary<string, List<Animal>> animals;
 }
 
-[System.Serializable]
-public class Animal
-{
-    public int id;
-    public string name_en;
-    public string name_vi;
-    public string image;
-}
-
-// SO class cho từng category
-public class AnimalCategorySO : ScriptableObject
-{
-    public string categoryName;
-    public List<Animal> animals;
-}
 #endregion

@@ -26,7 +26,8 @@
       { "id": 19, "name_en": "Kangaroo", "name_vi": "Chuột túi", "image": "kangaroo.png" },
       { "id": 20, "name_en": "Bear", "name_vi": "Gấu", "image": "bear.png" },
       { "id": 21, "name_en": "Panda", "name_vi": "Gấu trúc", "image": "panda.png" },
-      { "id": 22, "name_en": "Zebra", "name_vi": "Ngựa vằn", "image": "zebra.png" }
+      { "id": 22, "name_en": "Zebra", "name_vi": "Ngựa vằn", "image": "zebra.png" },
+      { "id": 22, "name_en": "Snake", "name_vi": "Rắn", "image": "snake.png" }
     ],
     "Sea Animal": [
       { "id": 23, "name_en": "Whale", "name_vi": "Cá voi", "image": "whale.png" },

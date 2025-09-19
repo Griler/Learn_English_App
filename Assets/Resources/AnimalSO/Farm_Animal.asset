@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: da5e3e2374884ad2836627c9a4ea250b, type: 3}
   m_Name: Farm_Animal
-  m_EditorClassIdentifier: Assembly-CSharp::AnimalCategorySO
+  m_EditorClassIdentifier: 
   categoryName: Farm Animal
   animals:
   - id: 7
