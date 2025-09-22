@@ -77,27 +77,6 @@ TextureImporter:
   - first:
       213: 4130924260942353324
     second: animal_asset_24
-  - first:
-      213: 1903893359788557982
-    second: animal_asset_25
-  - first:
-      213: 3413581084939312070
-    second: animal_asset_26
-  - first:
-      213: 6290583735343607974
-    second: animal_asset_27
-  - first:
-      213: 6843705366547791266
-    second: animal_asset_28
-  - first:
-      213: 854260366031761781
-    second: animal_asset_29
-  - first:
-      213: -6215373512900025668
-    second: animal_asset_30
-  - first:
-      213: -7577732623868945082
-    second: animal_asset_31
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -209,12 +188,12 @@ TextureImporter:
       name: animal_asset_0
       rect:
         serializedVersion: 2
-        x: 30
-        y: 1044
-        width: 141
-        height: 171
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 232
+        y: 1089
+        width: 175
+        height: 190
+      alignment: 9
+      pivot: {x: 0.45, y: 0.50878584}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -231,12 +210,12 @@ TextureImporter:
       name: animal_asset_1
       rect:
         serializedVersion: 2
-        x: 199
-        y: 1044
-        width: 141
-        height: 171
+        x: 30
+        y: 1089
+        width: 175
+        height: 190
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -253,12 +232,12 @@ TextureImporter:
       name: animal_asset_2
       rect:
         serializedVersion: 2
-        x: 356
-        y: 1049
+        x: 805
+        y: 1089
         width: 175
-        height: 165
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -275,12 +254,12 @@ TextureImporter:
       name: animal_asset_3
       rect:
         serializedVersion: 2
-        x: 556
-        y: 1044
-        width: 121
-        height: 181
+        x: 426
+        y: 1089
+        width: 175
+        height: 198
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -297,12 +276,12 @@ TextureImporter:
       name: animal_asset_4
       rect:
         serializedVersion: 2
-        x: 697
-        y: 1043
-        width: 121
-        height: 162
+        x: 616
+        y: 1089
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -319,12 +298,12 @@ TextureImporter:
       name: animal_asset_5
       rect:
         serializedVersion: 2
-        x: 24
-        y: 866
-        width: 116
-        height: 160
+        x: 33
+        y: 879
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -341,12 +320,12 @@ TextureImporter:
       name: animal_asset_6
       rect:
         serializedVersion: 2
-        x: 178
-        y: 883
-        width: 159
-        height: 133
+        x: 232
+        y: 879
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -363,12 +342,12 @@ TextureImporter:
       name: animal_asset_7
       rect:
         serializedVersion: 2
-        x: 354
-        y: 856
-        width: 161
-        height: 167
+        x: 426
+        y: 880
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -385,12 +364,12 @@ TextureImporter:
       name: animal_asset_8
       rect:
         serializedVersion: 2
-        x: 533
-        y: 855
-        width: 152
-        height: 169
+        x: 626
+        y: 879
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -407,12 +386,12 @@ TextureImporter:
       name: animal_asset_9
       rect:
         serializedVersion: 2
-        x: 701
-        y: 856
-        width: 139
-        height: 155
+        x: 820
+        y: 875
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -429,12 +408,12 @@ TextureImporter:
       name: animal_asset_10
       rect:
         serializedVersion: 2
-        x: 218
-        y: 865
-        width: 85
-        height: 16
+        x: 33
+        y: 682
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -451,12 +430,12 @@ TextureImporter:
       name: animal_asset_11
       rect:
         serializedVersion: 2
-        x: 21
-        y: 674
-        width: 152
-        height: 163
+        x: 232
+        y: 681
+        width: 176
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -473,12 +452,12 @@ TextureImporter:
       name: animal_asset_12
       rect:
         serializedVersion: 2
-        x: 195
-        y: 686
-        width: 155
-        height: 137
+        x: 429
+        y: 681
+        width: 175
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -495,12 +474,12 @@ TextureImporter:
       name: animal_asset_13
       rect:
         serializedVersion: 2
-        x: 363
-        y: 699
-        width: 151
-        height: 124
+        x: 617
+        y: 680
+        width: 185
+        height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -517,12 +496,12 @@ TextureImporter:
       name: animal_asset_14
       rect:
         serializedVersion: 2
-        x: 545
-        y: 659
-        width: 130
-        height: 180
+        x: 813
+        y: 680
+        width: 185
+        height: 185
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -539,12 +518,12 @@ TextureImporter:
       name: animal_asset_15
       rect:
         serializedVersion: 2
-        x: 693
-        y: 657
-        width: 134
-        height: 173
+        x: 35
+        y: 327
+        width: 177
+        height: 164
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -561,12 +540,12 @@ TextureImporter:
       name: animal_asset_16
       rect:
         serializedVersion: 2
-        x: 397
-        y: 682
-        width: 74
-        height: 14
+        x: 36
+        y: 491
+        width: 175
+        height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -583,12 +562,12 @@ TextureImporter:
       name: animal_asset_17
       rect:
         serializedVersion: 2
-        x: 39
-        y: 484
-        width: 114
-        height: 162
+        x: 401
+        y: 325
+        width: 209
+        height: 163
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -605,12 +584,12 @@ TextureImporter:
       name: animal_asset_18
       rect:
         serializedVersion: 2
-        x: 188
-        y: 486
-        width: 156
-        height: 164
+        x: 232
+        y: 493
+        width: 159
+        height: 180
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -627,12 +606,12 @@ TextureImporter:
       name: animal_asset_19
       rect:
         serializedVersion: 2
-        x: 373
-        y: 483
-        width: 128
-        height: 171
+        x: 420
+        y: 494
+        width: 183
+        height: 181
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -649,12 +628,12 @@ TextureImporter:
       name: animal_asset_20
       rect:
         serializedVersion: 2
-        x: 539
-        y: 486
-        width: 128
-        height: 159
+        x: 632
+        y: 492
+        width: 175
+        height: 182
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -671,12 +650,12 @@ TextureImporter:
       name: animal_asset_21
       rect:
         serializedVersion: 2
-        x: 697
-        y: 490
-        width: 137
-        height: 144
+        x: 822
+        y: 492
+        width: 185
+        height: 180
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -693,12 +672,12 @@ TextureImporter:
       name: animal_asset_22
       rect:
         serializedVersion: 2
-        x: 29
-        y: 310
-        width: 119
-        height: 142
+        x: 229
+        y: 324
+        width: 159
+        height: 164
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -715,12 +694,12 @@ TextureImporter:
       name: animal_asset_23
       rect:
         serializedVersion: 2
-        x: 199
-        y: 307
-        width: 126
-        height: 151
+        x: 823
+        y: 326
+        width: 176
+        height: 159
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -737,12 +716,12 @@ TextureImporter:
       name: animal_asset_24
       rect:
         serializedVersion: 2
-        x: 349
-        y: 308
-        width: 173
-        height: 151
+        x: 620
+        y: 326
+        width: 194
+        height: 144
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -755,165 +734,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: animal_asset_25
-      rect:
-        serializedVersion: 2
-        x: 545
-        y: 306
-        width: 111
-        height: 161
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e960c686cecfb6a10800000000000000
-      internalID: 1903893359788557982
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: animal_asset_26
-      rect:
-        serializedVersion: 2
-        x: 700
-        y: 297
-        width: 133
-        height: 168
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6cbdccb29e97f5f20800000000000000
-      internalID: 3413581084939312070
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: animal_asset_27
-      rect:
-        serializedVersion: 2
-        x: 23
-        y: 125
-        width: 143
-        height: 146
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6a0710f0494ac4750800000000000000
-      internalID: 6290583735343607974
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: animal_asset_28
-      rect:
-        serializedVersion: 2
-        x: 182
-        y: 126
-        width: 167
-        height: 152
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2adf38875c9b9fe50800000000000000
-      internalID: 6843705366547791266
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: animal_asset_29
-      rect:
-        serializedVersion: 2
-        x: 364
-        y: 115
-        width: 159
-        height: 161
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 571b40fd641fadb00800000000000000
-      internalID: 854260366031761781
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: animal_asset_30
-      rect:
-        serializedVersion: 2
-        x: 537
-        y: 110
-        width: 132
-        height: 165
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cb2e83178be8eb9a0800000000000000
-      internalID: -6215373512900025668
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: animal_asset_31
-      rect:
-        serializedVersion: 2
-        x: 688
-        y: 116
-        width: 136
-        height: 152
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 64d176fb35c76d690800000000000000
-      internalID: -7577732623868945082
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 0652f193ec57b794ba27fcf26fd4b169
     internalID: 0
     vertices: []
     indices: 
@@ -941,14 +766,7 @@ TextureImporter:
       animal_asset_22: 8057791845621188277
       animal_asset_23: -1905526327297425064
       animal_asset_24: 4130924260942353324
-      animal_asset_25: 1903893359788557982
-      animal_asset_26: 3413581084939312070
-      animal_asset_27: 6290583735343607974
-      animal_asset_28: 6843705366547791266
-      animal_asset_29: 854260366031761781
       animal_asset_3: -8403761816064732667
-      animal_asset_30: -6215373512900025668
-      animal_asset_31: -7577732623868945082
       animal_asset_4: 7321325990896986437
       animal_asset_5: -3814301069238291570
       animal_asset_6: -4463254641655903640
