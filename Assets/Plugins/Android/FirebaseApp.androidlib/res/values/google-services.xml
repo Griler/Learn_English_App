@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_android_client_id,@string/default_web_client_id">
+  <string name="gcm_defaultSenderId" translatable="false">437132257237</string>
+  <string name="google_storage_bucket" translatable="false">word-chef-cd1a1.firebasestorage.app</string>
+  <string name="project_id" translatable="false">word-chef-cd1a1</string>
+  <string name="google_api_key" translatable="false">AIzaSyCcVZpYdvqBWVFJHpgmp1ifxzl_NJlB3D8</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCcVZpYdvqBWVFJHpgmp1ifxzl_NJlB3D8</string>
+  <string name="google_app_id" translatable="false">1:437132257237:android:bb550fdb59db485277bf5c</string>
+  <string name="default_android_client_id" translatable="false">437132257237-fmr6932kr0p4oc9q3306saqvnu2eicm6.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">437132257237-ek6h5anbnl3odvv2mr0i6v38f47ttf5b.apps.googleusercontent.com</string>
+</resources>
