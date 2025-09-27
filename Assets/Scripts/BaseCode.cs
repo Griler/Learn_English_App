@@ -1,6 +1,4 @@
-﻿using UnityEditor.U2D;
-using UnityEngine;
-using UnityEngine.U2D;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class BaseCode : MonoBehaviour
