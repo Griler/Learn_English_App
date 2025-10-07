@@ -1,10 +1,48 @@
 {
   "project_info": {
     "project_number": "437132257237",
+    "firebase_url": "https://word-chef-cd1a1-default-rtdb.firebaseio.com",
     "project_id": "word-chef-cd1a1",
     "storage_bucket": "word-chef-cd1a1.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437132257237:android:5a42d3ed4cfd2dce77bf5c",
+        "android_client_info": {
+          "package_name": "com.wordchef"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437132257237-s2noqt2dpvhsthu7f5i34fl4i2qk4dg9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wordchef",
+            "certificate_hash": "4f4f7653c4f3216754e8309054d02da556cc9fb7"
+          }
+        },
+        {
+          "client_id": "437132257237-ek6h5anbnl3odvv2mr0i6v38f47ttf5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcVZpYdvqBWVFJHpgmp1ifxzl_NJlB3D8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "437132257237-ek6h5anbnl3odvv2mr0i6v38f47ttf5b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:437132257237:android:bb550fdb59db485277bf5c",

@@ -77,7 +77,7 @@ public class AnimalImporterWindow : EditorWindow
 [System.Serializable]
 public class AnimalWrapper
 {
-    public Dictionary<string, List<Animal>> animals;
+    public Dictionary<string, List<AnimalData>> animals;
 }
 
 #endregion

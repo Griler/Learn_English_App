@@ -6,7 +6,7 @@ public class MainSceneManager : MonoBehaviour
 {
     private AnimalCategorySO animalCategorySo;
     private string path= "AnimalSO/" + GlobalSelection.selectedNameSO;
-    private List<Animal> listAnimals;
+    private List<AnimalData> listAnimals;
     [SerializeField] private int currentAnimal = 0;
     [SerializeField] private GameObject cardItem;
     [SerializeField] private Button nextButton;

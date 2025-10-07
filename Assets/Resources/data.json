@@ -6,13 +6,11 @@
       { "id": 3, "name_en": "Rabbit", "name_vi": "Thỏ", "image": "rabbit.png" },
       { "id": 4, "name_en": "Hamster", "name_vi": "Chuột Hamster", "image": "hamster.png" },
       { "id": 5, "name_en": "Parrot", "name_vi": "Vẹt", "image": "parrot.png" },
-      { "id": 6, "name_en": "Goldfish", "name_vi": "Cá vàng", "image": "goldfish.png" }
     ],
     "Farm Animal": [
       { "id": 7, "name_en": "Cow", "name_vi": "Bò", "image": "cow.png" },
       { "id": 8, "name_en": "Pig", "name_vi": "Heo", "image": "pig.png" },
       { "id": 9, "name_en": "Sheep", "name_vi": "Cừu", "image": "sheep.png" },
-      { "id": 10, "name_en": "Goat", "name_vi": "Dê", "image": "goat.png" },
       { "id": 11, "name_en": "Horse", "name_vi": "Ngựa", "image": "horse.png" },
       { "id": 12, "name_en": "Chicken", "name_vi": "Gà", "image": "chicken.png" },
       { "id": 13, "name_en": "Duck", "name_vi": "Vịt", "image": "duck.png" }
@@ -21,7 +19,6 @@
       { "id": 14, "name_en": "Lion", "name_vi": "Sư tử", "image": "lion.png" },
       { "id": 15, "name_en": "Tiger", "name_vi": "Hổ", "image": "tiger.png" },
       { "id": 16, "name_en": "Elephant", "name_vi": "Voi", "image": "elephant.png" },
-      { "id": 17, "name_en": "Giraffe", "name_vi": "Hươu cao cổ", "image": "giraffe.png" },
       { "id": 18, "name_en": "Monkey", "name_vi": "Khỉ", "image": "monkey.png" },
       { "id": 19, "name_en": "Kangaroo", "name_vi": "Chuột túi", "image": "kangaroo.png" },
       { "id": 20, "name_en": "Bear", "name_vi": "Gấu", "image": "bear.png" },
@@ -30,13 +27,10 @@
       { "id": 22, "name_en": "Snake", "name_vi": "Rắn", "image": "snake.png" }
     ],
     "Sea Animal": [
-      { "id": 23, "name_en": "Whale", "name_vi": "Cá voi", "image": "whale.png" },
       { "id": 24, "name_en": "Dolphin", "name_vi": "Cá heo", "image": "dolphin.png" },
       { "id": 25, "name_en": "Octopus", "name_vi": "Bạch tuộc", "image": "octopus.png" },
       { "id": 26, "name_en": "Shark", "name_vi": "Cá mập", "image": "shark.png" },
       { "id": 27, "name_en": "Turtle", "name_vi": "Rùa biển", "image": "turtle.png" },
-      { "id": 28, "name_en": "Crab", "name_vi": "Cua", "image": "crab.png" },
-      { "id": 29, "name_en": "Seal", "name_vi": "Hải cẩu", "image": "seal.png" },
       { "id": 30, "name_en": "Starfish", "name_vi": "Sao biển", "image": "starfish.png" }
     ]
   }

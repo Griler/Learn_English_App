@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   categoryName: Sea Animal
   animals:
-  - id: 23
-    name_en: Whale
-    name_vi: "C\xE1 voi"
-    image: whale.png
   - id: 24
     name_en: Dolphin
     name_vi: "C\xE1 heo"
@@ -34,14 +30,6 @@ MonoBehaviour:
     name_en: Turtle
     name_vi: "R\xF9a bi\u1EC3n"
     image: turtle.png
-  - id: 28
-    name_en: Crab
-    name_vi: Cua
-    image: crab.png
-  - id: 29
-    name_en: Seal
-    name_vi: "H\u1EA3i c\u1EA9u"
-    image: seal.png
   - id: 30
     name_en: Starfish
     name_vi: "Sao bi\u1EC3n"

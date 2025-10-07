@@ -15,7 +15,7 @@ public class CardItem : BaseCode
         //setUpCard();
     }
     
-    public void setUpCard(Animal animal = null)
+    public void setUpCard(AnimalData animal = null)
     {
         string nameSprite = config.formatSpriteName(animal.name_en);
         petImage.sprite = assetManager.getSprite(nameSprite);

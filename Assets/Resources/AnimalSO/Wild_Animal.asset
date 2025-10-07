@@ -26,10 +26,6 @@ MonoBehaviour:
     name_en: Elephant
     name_vi: Voi
     image: elephant.png
-  - id: 17
-    name_en: Giraffe
-    name_vi: "H\u01B0\u01A1u cao c\u1ED5"
-    image: giraffe.png
   - id: 18
     name_en: Monkey
     name_vi: "Kh\u1EC9"
@@ -50,3 +46,7 @@ MonoBehaviour:
     name_en: Zebra
     name_vi: "Ng\u1EF1a v\u1EB1n"
     image: zebra.png
+  - id: 22
+    name_en: Snake
+    name_vi: "R\u1EAFn"
+    image: snake.png

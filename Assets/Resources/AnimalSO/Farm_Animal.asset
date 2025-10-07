@@ -26,10 +26,6 @@ MonoBehaviour:
     name_en: Sheep
     name_vi: "C\u1EEBu"
     image: sheep.png
-  - id: 10
-    name_en: Goat
-    name_vi: "D\xEA"
-    image: goat.png
   - id: 11
     name_en: Horse
     name_vi: "Ng\u1EF1a"

@@ -1,13 +1,13 @@
+using System.Collections;
 using UnityEngine;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
-using TMPro;
+using TMPro; // Nếu bạn dùng TextMeshPro cho UI
 
 namespace demo
 {
-
-    public class FirebaseAuthTest : MonoBehaviour
+    /*public class FirebaseAuthTest : MonoBehaviour
     {
         // 💡 KHAI BÁO BIẾN UI
         [SerializeField] private TextMeshProUGUI statusText;
@@ -113,6 +113,126 @@ namespace demo
             }
 
             Debug.Log(message); // Vẫn giữ Debug.Log để xem trong Console
+        }
+    }*/
+
+    public class FirebaseLogin : MonoBehaviour
+    {
+        [Header("Firebase")] private FirebaseAuth auth;
+        private FirebaseUser user;
+
+        [Header("UI References")] public TMP_InputField emailInput;
+        public TMP_InputField passwordInput;
+        public TMP_Text statusText;
+
+        void Start()
+        {
+            InitializeFirebase();
+        }
+
+        void InitializeFirebase()
+        {
+            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+            {
+                var dependencyStatus = task.Result;
+                if (dependencyStatus == DependencyStatus.Available)
+                {
+                    auth = FirebaseAuth.DefaultInstance;
+                    statusText.text = "Firebase ready ✅";
+                }
+                else
+                {
+                    statusText.text = $"Firebase error: {dependencyStatus}";
+                }
+            });
+        }
+
+        public void OnLoginButtonPressed()
+        {
+            string email = "thienloc662001@gmail.com";
+            string password = "123456";
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                statusText.text = "⚠️ Vui lòng nhập đầy đủ email và mật khẩu.";
+                return;
+            }
+
+            StartCoroutine(LoginUser(email, password));
+        }
+
+        private IEnumerator LoginUser(string email, string password)
+        {
+            var loginTask = auth.SignInWithEmailAndPasswordAsync("thienloc662001@gmail.com", "123456");
+
+            yield return new WaitUntil(() => loginTask.IsCompleted);
+
+            if (loginTask.Exception != null)
+            {
+                FirebaseException firebaseEx = (FirebaseException)loginTask.Exception.GetBaseException();
+                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+                string message = "Đăng nhập thất bại: ";
+
+                switch (errorCode)
+                {
+                    case AuthError.MissingEmail:
+                        message += "Thiếu email.";
+                        break;
+                    case AuthError.MissingPassword:
+                        message += "Thiếu mật khẩu.";
+                        break;
+                    case AuthError.WrongPassword:
+                        message += "Sai mật khẩu.";
+                        break;
+                    case AuthError.InvalidEmail:
+                        message += "Email không hợp lệ.";
+                        break;
+                    case AuthError.UserNotFound:
+                        message += "Không tìm thấy người dùng.";
+                        break;
+                    default:
+                        message += "Lỗi không xác định.";
+                        break;
+                }
+
+                statusText.text = message;
+            }
+            else
+            {
+                user = loginTask.Result.User;
+                statusText.text = $"🎉 Đăng nhập thành công! Xin chào {user.Email}";
+            }
+        }
+
+        public void OnRegisterButtonPressed()
+        {
+            string email = emailInput.text.Trim();
+            string password = passwordInput.text;
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                statusText.text = "⚠️ Vui lòng nhập email và mật khẩu để đăng ký.";
+                return;
+            }
+
+            StartCoroutine(RegisterUser(email, password));
+        }
+
+        private IEnumerator RegisterUser(string email, string password)
+        {
+            var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
+            yield return new WaitUntil(() => registerTask.IsCompleted);
+
+            if (registerTask.Exception != null)
+            {
+                statusText.text = "❌ Lỗi khi đăng ký tài khoản.";
+            }
+            else
+            {
+                user = registerTask.Result.User;
+                statusText.text = $"✅ Tạo tài khoản thành công: {user.Email}";
+            }
         }
     }
 }

@@ -34,7 +34,3 @@ MonoBehaviour:
     name_en: Parrot
     name_vi: "V\u1EB9t"
     image: parrot.png
-  - id: 6
-    name_en: Goldfish
-    name_vi: "C\xE1 v\xE0ng"
-    image: goldfish.png
