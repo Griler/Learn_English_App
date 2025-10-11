@@ -13,7 +13,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     {
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
         Debug.LogError("hello" +" "+ dbReference);
-        Debug.LogError("Firebase Database ready ✅");
+        Debug.LogError("Firebase Database ready");
     }
 
     // 📤 Lưu dữ liệu người chơi
@@ -27,9 +27,9 @@ public class FirebaseDatabaseManager : MonoBehaviour
             .ContinueWithOnMainThread(task =>
             {
                 if (task.IsCompleted)
-                    Debug.Log("✅ Dữ liệu đã lưu!");
+                    Debug.Log("Dữ liệu đã lưu!");
                 else
-                    Debug.LogError("❌ Lưu thất bại: " + task.Exception);
+                    Debug.LogError("Lưu thất bại: " + task.Exception);
             });
     }
 
@@ -40,7 +40,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
         {
             if (task.IsFaulted)
             {
-                Debug.LogError("❌ Lỗi đọc dữ liệu: " + task.Exception);
+                Debug.LogError("Lỗi đọc dữ liệu: " + task.Exception);
             }
             else if (task.IsCompleted)
             {
@@ -49,11 +49,11 @@ public class FirebaseDatabaseManager : MonoBehaviour
                 {
                     string email = snapshot.Child("email").Value.ToString();
                     int score = int.Parse(snapshot.Child("score").Value.ToString());
-                    Debug.Log($"📦 User: {email}, Score: {score}");
+                    Debug.Log($"User: {email}, Score: {score}");
                 }
                 else
                 {
-                    Debug.Log("⚠️ Không tìm thấy user.");
+                    Debug.Log("Không tìm thấy user.");
                 }
             }
         });

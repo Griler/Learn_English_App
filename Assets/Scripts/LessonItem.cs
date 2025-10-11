@@ -2,18 +2,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.Serialization;
+using UnityEngine.SceneManagement;
 
 
 public class LessonItem : BaseCode
 {
     [SerializeField] private TextMeshProUGUI lessonName;
     [SerializeField] private Image lessonImage;
-    [SerializeField] private TextMeshProUGUI lessonStart;
-
+    [SerializeField] private TextMeshProUGUI lessonStar;
+    [SerializeField] private Button playLessonButton;
+    private string lessonPlay;
     public void setData(AnimalCategorySO animalCategorySo)
     {
         setImage(animalCategorySo.categoryName);
         setName(animalCategorySo.categoryName);
+        lessonPlay = animalCategorySo.categoryName;
     }
 
     private void setName(string name)
@@ -30,7 +33,7 @@ public class LessonItem : BaseCode
                 break;
 
             case "Sea Animal":
-                name = "animal_asset_28";
+                name = "animal_asset_22";
                 break;
 
             case "Wild Animal":
@@ -45,5 +48,11 @@ public class LessonItem : BaseCode
         }
         lessonImage.sprite = assetManager.getSprite(name);
         lessonImage.SetNativeSize();
+    }
+
+    public void onClickButtonPlay()
+    {
+        GlobalSelection.selectedNameSO = lessonPlay.Replace(" ","_");
+        SceneManager.LoadSceneAsync(GlobalSelection.flashCardScene);
     }
 }

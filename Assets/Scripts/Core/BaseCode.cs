@@ -26,4 +26,16 @@ public class BaseCode : MonoBehaviour
     }
 
     private Config _config;
+    
+    protected AudioManager audioManager
+    {
+        get
+        {
+            if (_audioManager == null)
+                _audioManager = AudioManager.Instance;;
+            return _audioManager;
+        }
+    }
+
+    private AudioManager _audioManager;
 }

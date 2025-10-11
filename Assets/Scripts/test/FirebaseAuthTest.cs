@@ -3,131 +3,34 @@ using UnityEngine;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
-using TMPro; // Nếu bạn dùng TextMeshPro cho UI
+using TMPro;
+using UnityEngine.SceneManagement; // Nếu bạn dùng TextMeshPro cho UI
 
 namespace demo
 {
-    /*public class FirebaseAuthTest : MonoBehaviour
-    {
-        // 💡 KHAI BÁO BIẾN UI
-        [SerializeField] private TextMeshProUGUI statusText;
-        // ^ Thay thế bằng Text nếu bạn không dùng TextMeshPro
-
-        private FirebaseAuth auth;
-        private DependencyStatus dependencyStatus = DependencyStatus.UnavailableOther;
-
-        void Start()
-        {
-            // Kiểm tra xem đã gán Text UI chưa
-            if (statusText == null)
-            {
-                Debug.LogError("🔴 LỖI: Chưa gán Text UI (TextMeshProUGUI) vào biến statusText trong Inspector!");
-                return;
-            }
-
-            UpdateStatus("⏳ Đang kiểm tra cấu hình Firebase...");
-
-            // Bắt đầu kiểm tra phụ thuộc
-            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-            {
-                dependencyStatus = task.Result;
-
-                if (dependencyStatus == DependencyStatus.Available)
-                {
-                    InitializeFirebaseAuth();
-                }
-                else
-                {
-                    UpdateStatus($"🔴 LỖI CẤU HÌNH: Không thể giải quyết các phụ thuộc Firebase: {dependencyStatus}");
-                }
-            });
-        }
-
-        void InitializeFirebaseAuth()
-        {
-            UpdateStatus("🟢 Đã giải quyết phụ thuộc! Đang khởi tạo Firebase Auth...");
-
-            auth = FirebaseAuth.DefaultInstance;
-
-            if (auth != null)
-            {
-                UpdateStatus("🎉 THÀNH CÔNG: Firebase Authentication đã được khởi tạo.");
-                CheckAuthState();
-            }
-            else
-            {
-                UpdateStatus("🔴 LỖI KHỞI TẠO: FirebaseAuth.DefaultInstance là NULL.");
-            }
-        }
-
-        void CheckAuthState()
-        {
-            FirebaseUser user = auth.CurrentUser;
-            if (user != null)
-            {
-                string displayName = string.IsNullOrEmpty(user.DisplayName) ? "Ẩn danh" : user.DisplayName;
-                string email = string.IsNullOrEmpty(user.Email) ? "Không có Email" : user.Email;
-
-                UpdateStatus(
-                    $"✅ Đã kết nối và tìm thấy người dùng hiện tại:\nUID: {user.UserId}\nEmail: {email}\nTên: {displayName}");
-            }
-            else
-            {
-                // Sẵn sàng cho quá trình đăng nhập. Bắt đầu test kết nối server.
-                UpdateStatus("✅ KẾT NỐI SẴN SÀNG: Không có người dùng nào đang đăng nhập.");
-                TestAnonymousSignIn();
-            }
-        }
-
-        void TestAnonymousSignIn()
-        {
-            UpdateStatus(statusText.text + "\n⏳ Đang thử kết nối máy chủ Auth (Ẩn danh)...");
-
-            auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
-            {
-                if (task.IsCanceled || task.IsFaulted)
-                {
-                    // Xử lý lỗi như đã sửa ở trên
-                    UpdateStatus($"🔴 LỖI KẾT NỐI SERVER: Đăng nhập ẩn danh thất bại.");
-                    return;
-                }
-
-                // Đã sửa lỗi AuthResult/FirebaseUser ở đây
-                AuthResult result = task.Result;
-                FirebaseUser newUser = result.User;
-
-                UpdateStatus(statusText.text + $"\n✨ THÀNH CÔNG KẾT NỐI SERVER!\nUID test: {newUser.UserId}");
-
-                // Đăng xuất ngay lập tức
-                auth.SignOut();
-                UpdateStatus(statusText.text + "\nĐã đăng xuất người dùng ẩn danh.");
-            });
-        }
-
-        // 💡 HÀM HỖ TRỢ: Cập nhật Text UI
-        private void UpdateStatus(string message)
-        {
-            if (statusText != null)
-            {
-                statusText.text = message;
-            }
-
-            Debug.Log(message); // Vẫn giữ Debug.Log để xem trong Console
-        }
-    }*/
-
     public class FirebaseLogin : MonoBehaviour
     {
         [Header("Firebase")] private FirebaseAuth auth;
         private FirebaseUser user;
 
-        [Header("UI References")] public TMP_InputField emailInput;
-        public TMP_InputField passwordInput;
-        public TMP_Text statusText;
-
+        [Header("UI References Login")] 
+        public GameObject loginForm;
+        public TMP_InputField emailInputLogin;
+        public TMP_InputField passwordInputLogin;
+        public TMP_Text statusTextLoginForm;
+        
+        [Header("UI References Register")] 
+        public GameObject registerForm;
+        public TMP_InputField emailInputResigter;
+        public TMP_InputField passwordInputResigter;
+        public TMP_InputField confirmPasswordInput;
+        public TMP_Text statusTextResigterForm;
+        
         void Start()
         {
             InitializeFirebase();
+            setActiveLoginForm(true);
+            setActiveRegisterForm(false);
         }
 
         void InitializeFirebase()
@@ -138,11 +41,11 @@ namespace demo
                 if (dependencyStatus == DependencyStatus.Available)
                 {
                     auth = FirebaseAuth.DefaultInstance;
-                    statusText.text = "Firebase ready ✅";
+                    statusTextLoginForm.text = "Firebase ready ✅";
                 }
                 else
                 {
-                    statusText.text = $"Firebase error: {dependencyStatus}";
+                    statusTextLoginForm.text = $"Firebase error: {dependencyStatus}";
                 }
             });
         }
@@ -154,7 +57,7 @@ namespace demo
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                statusText.text = "⚠️ Vui lòng nhập đầy đủ email và mật khẩu.";
+                statusTextLoginForm.text = "Vui lòng nhập đầy đủ email và mật khẩu.";
                 return;
             }
 
@@ -196,23 +99,30 @@ namespace demo
                         break;
                 }
 
-                statusText.text = message;
+                statusTextLoginForm.text = message;
             }
             else
             {
                 user = loginTask.Result.User;
-                statusText.text = $"🎉 Đăng nhập thành công! Xin chào {user.Email}";
+                statusTextLoginForm.text = $" Đăng nhập thành công! Xin chào {user.Email}";
+                loadNextScene();
             }
         }
 
         public void OnRegisterButtonPressed()
         {
-            string email = emailInput.text.Trim();
-            string password = passwordInput.text;
-
+            string email = emailInputResigter.text.Trim();
+            string password = passwordInputResigter.text;
+            string confrimPassword = confirmPasswordInput.text;
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                statusText.text = "⚠️ Vui lòng nhập email và mật khẩu để đăng ký.";
+                statusTextResigterForm.text = " Vui lòng nhập email và mật khẩu để đăng ký.";
+                return;
+            }
+
+            if (password != confrimPassword)
+            {
+                statusTextResigterForm.text = " Vui lòng nhập xác nhập mật khẩu giống nhau để đăng ký.";
                 return;
             }
 
@@ -226,13 +136,52 @@ namespace demo
 
             if (registerTask.Exception != null)
             {
-                statusText.text = "❌ Lỗi khi đăng ký tài khoản.";
+                statusTextResigterForm.text = "Lỗi khi đăng ký tài khoản.";
             }
             else
             {
                 user = registerTask.Result.User;
-                statusText.text = $"✅ Tạo tài khoản thành công: {user.Email}";
+                statusTextResigterForm.text = $" Tạo tài khoản thành công: {user.Email}";
             }
+        }
+
+        public void onMovetoRegisterForm()
+        {
+            setActiveLoginForm(false);
+            setActiveRegisterForm(true);
+            resetDataInput();
+        }
+        
+        public void onMovetoLoginForm()
+        {
+            setActiveLoginForm(true);
+            setActiveRegisterForm(false);
+            resetDataInput();
+        }
+
+        public void setActiveLoginForm(bool enable = true)
+        {
+            loginForm.SetActive(enable);
+        }
+        
+        public void setActiveRegisterForm(bool enable = true)
+        {
+            registerForm.SetActive(enable);
+        }
+
+        void resetDataInput()
+        {
+            emailInputResigter.text = "";
+            emailInputLogin.text = "";
+            passwordInputLogin.text = "";
+            passwordInputResigter.text = "";
+            confirmPasswordInput.text = "";
+        }
+        
+        public void loadNextScene()
+        {
+            // Ví dụ: load scene có tên "GameScene"
+            SceneManager.LoadSceneAsync(GlobalSelection.mainScene);
         }
     }
 }
