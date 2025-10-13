@@ -26,14 +26,17 @@ namespace demo
         public TMP_InputField confirmPasswordInput;
         public TMP_Text statusTextResigterForm;
         
-        void Start()
+        [Header("UI References Popup")] 
+        public NotificationManager popupNotification;
+       
+        private void Start()
         {
             InitializeFirebase();
             setActiveLoginForm(true);
             setActiveRegisterForm(false);
         }
 
-        void InitializeFirebase()
+        private void InitializeFirebase()
         {
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
             {
@@ -41,11 +44,6 @@ namespace demo
                 if (dependencyStatus == DependencyStatus.Available)
                 {
                     auth = FirebaseAuth.DefaultInstance;
-                    statusTextLoginForm.text = "Firebase ready ✅";
-                }
-                else
-                {
-                    statusTextLoginForm.text = $"Firebase error: {dependencyStatus}";
                 }
             });
         }
@@ -58,6 +56,7 @@ namespace demo
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 statusTextLoginForm.text = "Vui lòng nhập đầy đủ email và mật khẩu.";
+                statusTextResigterForm.color = new Color32(220, 20, 60,255);
                 return;
             }
 
@@ -98,13 +97,15 @@ namespace demo
                         message += "Lỗi không xác định.";
                         break;
                 }
-
                 statusTextLoginForm.text = message;
+                statusTextResigterForm.color = new Color32(220, 20, 60,255);
+
             }
             else
             {
                 user = loginTask.Result.User;
-                statusTextLoginForm.text = $" Đăng nhập thành công! Xin chào {user.Email}";
+                popupNotification.ShowNotification(" Đăng nhập thành công!");
+                //statusTextLoginForm.text = $" Đăng nhập thành công! Xin chào {user.Email}";
                 loadNextScene();
             }
         }
@@ -117,12 +118,14 @@ namespace demo
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 statusTextResigterForm.text = " Vui lòng nhập email và mật khẩu để đăng ký.";
+                statusTextResigterForm.color = new Color32(220, 20, 60,255);
                 return;
             }
 
             if (password != confrimPassword)
             {
                 statusTextResigterForm.text = " Vui lòng nhập xác nhập mật khẩu giống nhau để đăng ký.";
+                statusTextResigterForm.color = new Color32(220, 20, 60,255);
                 return;
             }
 
@@ -137,11 +140,13 @@ namespace demo
             if (registerTask.Exception != null)
             {
                 statusTextResigterForm.text = "Lỗi khi đăng ký tài khoản.";
+                statusTextResigterForm.color = new Color(220f, 20f, 60f);
             }
             else
             {
                 user = registerTask.Result.User;
-                statusTextResigterForm.text = $" Tạo tài khoản thành công: {user.Email}";
+                popupNotification.ShowNotification($" Tạo tài khoản thành công: {user.Email}");
+                //statusTextResigterForm.text = $" Tạo tài khoản thành công: {user.Email}";
             }
         }
 
@@ -159,17 +164,17 @@ namespace demo
             resetDataInput();
         }
 
-        public void setActiveLoginForm(bool enable = true)
+        private void setActiveLoginForm(bool enable = true)
         {
             loginForm.SetActive(enable);
         }
         
-        public void setActiveRegisterForm(bool enable = true)
+        private void setActiveRegisterForm(bool enable = true)
         {
             registerForm.SetActive(enable);
         }
 
-        void resetDataInput()
+        private void resetDataInput()
         {
             emailInputResigter.text = "";
             emailInputLogin.text = "";
@@ -178,7 +183,7 @@ namespace demo
             confirmPasswordInput.text = "";
         }
         
-        public void loadNextScene()
+        private void loadNextScene()
         {
             // Ví dụ: load scene có tên "GameScene"
             SceneManager.LoadSceneAsync(GlobalSelection.mainScene);

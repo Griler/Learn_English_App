@@ -12,8 +12,6 @@ public class FirebaseDatabaseManager : MonoBehaviour
     void Start()
     {
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
-        Debug.LogError("hello" +" "+ dbReference);
-        Debug.LogError("Firebase Database ready");
     }
 
     // 📤 Lưu dữ liệu người chơi
