@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 public class AnimalImporterWindow : EditorWindow
 {
     private TextAsset jsonFile;
-    private string saveFolder = "Assets/Resources/AnimalSO";
+    private string saveFolder = "Assets/Resources/Data/AnimalData";
 
     [MenuItem("Tools/Animal Importer")]
     public static void ShowWindow()

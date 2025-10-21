@@ -1,0 +1,630 @@
+{
+    "grammarPointID": "present_simple",
+    "name": "Present Simple Tense",
+    "rule": "S + V(s/es)",
+    "description": "Use the present simple tense to describe habits, facts, or general truths.",
+    "examples": [
+        {
+            "sentence": "It walks breakfast.",
+            "translation": "Nó walk breakfast."
+        },
+        {
+            "sentence": "You go football.",
+            "translation": "Bạn go football."
+        },
+        {
+            "sentence": "They clean in the park.",
+            "translation": "Họ clean in the park."
+        },
+        {
+            "sentence": "It watches letters.",
+            "translation": "Nó watch letters."
+        },
+        {
+            "sentence": "I sing in the pool.",
+            "translation": "Tôi sing in the pool."
+        },
+        {
+            "sentence": "It sings a car.",
+            "translation": "Nó sing a car."
+        },
+        {
+            "sentence": "I read songs.",
+            "translation": "Tôi read songs."
+        },
+        {
+            "sentence": "It listens TV.",
+            "translation": "Nó listen TV."
+        },
+        {
+            "sentence": "She eats to music.",
+            "translation": "Cô ấy eat to music."
+        },
+        {
+            "sentence": "She goes every morning.",
+            "translation": "Cô ấy go every morning."
+        },
+        {
+            "sentence": "We listen in the park.",
+            "translation": "Chúng tôi listen in the park."
+        },
+        {
+            "sentence": "She plays a car.",
+            "translation": "Cô ấy play a car."
+        },
+        {
+            "sentence": "It runs football.",
+            "translation": "Nó run football."
+        },
+        {
+            "sentence": "She runs to school.",
+            "translation": "Cô ấy run to school."
+        },
+        {
+            "sentence": "They write pizza.",
+            "translation": "Họ write pizza."
+        },
+        {
+            "sentence": "You clean English.",
+            "translation": "Bạn clean English."
+        },
+        {
+            "sentence": "It listens at a hospital.",
+            "translation": "Nó listen at a hospital."
+        },
+        {
+            "sentence": "They watch football.",
+            "translation": "Họ watch football."
+        },
+        {
+            "sentence": "You go books.",
+            "translation": "Bạn go books."
+        },
+        {
+            "sentence": "I sleep in the park.",
+            "translation": "Tôi sleep in the park."
+        },
+        {
+            "sentence": "You swim in the park.",
+            "translation": "Bạn swim in the park."
+        },
+        {
+            "sentence": "We go at a hospital.",
+            "translation": "Chúng tôi go at a hospital."
+        },
+        {
+            "sentence": "You run to school.",
+            "translation": "Bạn run to school."
+        },
+        {
+            "sentence": "He drinks books.",
+            "translation": "Anh ấy drink books."
+        },
+        {
+            "sentence": "It reads breakfast.",
+            "translation": "Nó read breakfast."
+        },
+        {
+            "sentence": "She walks to music.",
+            "translation": "Cô ấy walk to music."
+        },
+        {
+            "sentence": "They sleep to music.",
+            "translation": "Họ sleep to music."
+        },
+        {
+            "sentence": "We drink dinner.",
+            "translation": "Chúng tôi drink dinner."
+        },
+        {
+            "sentence": "I cook books.",
+            "translation": "Tôi cook books."
+        },
+        {
+            "sentence": "They walk to school.",
+            "translation": "Họ walk to school."
+        }
+    ],
+    "miniExercises": [
+        {
+            "question": "He (write) ___ to music.",
+            "answer": "writes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "We (watch) ___ songs.",
+            "answer": "watch",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "He (sleep) ___ fast.",
+            "answer": "sleeps",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "We (clean) ___ in the pool.",
+            "answer": "clean",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "We (play) ___ every morning.",
+            "answer": "play",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "We (study) ___ football.",
+            "answer": "study",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "They (drink) ___ fast.",
+            "answer": "drink",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "I (study) ___ football.",
+            "answer": "study",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "They (run) ___ at a hospital.",
+            "answer": "run",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "They (read) ___ a story.",
+            "answer": "read",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (like) ___ a story.",
+            "answer": "likes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "They (work) ___ a story.",
+            "answer": "work",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "She (work) ___ books.",
+            "answer": "works",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "You (like) ___ to music.",
+            "answer": "like",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (sleep) ___ pizza.",
+            "answer": "sleep",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "We (listen) ___ songs.",
+            "answer": "listen",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "He (clean) ___ books.",
+            "answer": "cleans",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "It (drink) ___ fast.",
+            "answer": "drinks",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (play) ___ songs.",
+            "answer": "play",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "It (study) ___ English.",
+            "answer": "studies",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "It (drink) ___ a car.",
+            "answer": "drinks",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "She (like) ___ pizza.",
+            "answer": "likes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "We (watch) ___ books.",
+            "answer": "watch",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "I (eat) ___ a story.",
+            "answer": "eat",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "We (speak) ___ pizza.",
+            "answer": "speak",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "You (read) ___ football.",
+            "answer": "read",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "He (like) ___ to music.",
+            "answer": "likes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (sleep) ___ songs.",
+            "answer": "sleeps",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "You (go) ___ dinner.",
+            "answer": "go",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "He (sleep) ___ a story.",
+            "answer": "sleeps",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "He (write) ___ the house.",
+            "answer": "writes",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "It (listen) ___ songs.",
+            "answer": "listens",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "She (sleep) ___ the house.",
+            "answer": "sleeps",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "You (cook) ___ breakfast.",
+            "answer": "cook",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "He (work) ___ to music.",
+            "answer": "works",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "They (play) ___ TV.",
+            "answer": "play",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "They (eat) ___ to school.",
+            "answer": "eat",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "It (walk) ___ a story.",
+            "answer": "walks",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (walk) ___ to school.",
+            "answer": "walk",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "It (like) ___ in the pool.",
+            "answer": "likes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "I (drive) ___ in the park.",
+            "answer": "drive",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "It (study) ___ breakfast.",
+            "answer": "studies",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "He (sleep) ___ fast.",
+            "answer": "sleeps",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "She (cook) ___ dinner.",
+            "answer": "cooks",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "He (sing) ___ letters.",
+            "answer": "sings",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "It (go) ___ every morning.",
+            "answer": "goes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "It (write) ___ English.",
+            "answer": "writes",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "It (sing) ___ to music.",
+            "answer": "sings",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (swim) ___ pizza.",
+            "answer": "swims",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "They (read) ___ the house.",
+            "answer": "read",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "You (cook) ___ coffee.",
+            "answer": "cook",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (go) ___ songs.",
+            "answer": "go",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "We (drive) ___ letters.",
+            "answer": "drive",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (drink) ___ a car.",
+            "answer": "drink",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "You (eat) ___ breakfast.",
+            "answer": "eat",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (listen) ___ fast.",
+            "answer": "listens",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "He (listen) ___ a car.",
+            "answer": "listens",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "They (study) ___ songs.",
+            "answer": "study",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "It (sleep) ___ English.",
+            "answer": "sleeps",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "She (watch) ___ at a hospital.",
+            "answer": "watches",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "They (sleep) ___ in the park.",
+            "answer": "sleep",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (work) ___ every morning.",
+            "answer": "works",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (sing) ___ pizza.",
+            "answer": "sings",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "She (cook) ___ to school.",
+            "answer": "cooks",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "It (study) ___ dinner.",
+            "answer": "studies",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "She (run) ___ coffee.",
+            "answer": "runs",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "It (eat) ___ to school.",
+            "answer": "eats",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "We (speak) ___ a story.",
+            "answer": "speak",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "I (listen) ___ every morning.",
+            "answer": "listen",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "I (speak) ___ in the park.",
+            "answer": "speak",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "He (study) ___ letters.",
+            "answer": "studies",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "You (clean) ___ songs.",
+            "answer": "clean",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (study) ___ every morning.",
+            "answer": "study",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (drink) ___ songs.",
+            "answer": "drink",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "They (watch) ___ pizza.",
+            "answer": "watch",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "They (write) ___ to music.",
+            "answer": "write",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "It (sing) ___ breakfast.",
+            "answer": "sings",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "She (drink) ___ in the pool.",
+            "answer": "drinks",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "He (read) ___ coffee.",
+            "answer": "reads",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "You (swim) ___ a car.",
+            "answer": "swim",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "You (read) ___ a car.",
+            "answer": "read",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "They (cook) ___ letters.",
+            "answer": "cook",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "He (sleep) ___ TV.",
+            "answer": "sleeps",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "You (drive) ___ a story.",
+            "answer": "drive",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "It (watch) ___ books.",
+            "answer": "watches",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "They (cook) ___ books.",
+            "answer": "cook",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "It (write) ___ a story.",
+            "answer": "writes",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "She (sing) ___ fast.",
+            "answer": "sings",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "You (read) ___ breakfast.",
+            "answer": "read",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "He (drink) ___ fast.",
+            "answer": "drinks",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "It (work) ___ coffee.",
+            "answer": "works",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "You (walk) ___ a story.",
+            "answer": "walk",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "They (work) ___ English.",
+            "answer": "work",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "I (watch) ___ pizza.",
+            "answer": "watch",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "She (write) ___ to school.",
+            "answer": "writes",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "He (listen) ___ a story.",
+            "answer": "listens",
+            "difficultyLevel": "medium"
+        },
+        {
+            "question": "They (walk) ___ songs.",
+            "answer": "walk",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (like) ___ coffee.",
+            "answer": "like",
+            "difficultyLevel": "hard"
+        },
+        {
+            "question": "I (like) ___ TV.",
+            "answer": "like",
+            "difficultyLevel": "easy"
+        },
+        {
+            "question": "It (swim) ___ a story.",
+            "answer": "swims",
+            "difficultyLevel": "hard"
+        }
+    ]
+}

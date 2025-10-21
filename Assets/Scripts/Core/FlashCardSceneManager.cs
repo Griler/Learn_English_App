@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class FlashCardSceneManager : MonoBehaviour
 {
     private AnimalCategorySO animalCategorySo;
-    private string path= "AnimalSO/" + GlobalSelection.selectedNameSO;
+    private string pathLoad = $" {GlobalData.pathData}/{GlobalData.pathAnimalData}/{GlobalData.selectedNameSO}";
     private List<AnimalData> listAnimals;
     [SerializeField] private int currentAnimal = 0;
     [SerializeField] private GameObject cardItem;
@@ -24,9 +24,9 @@ public class FlashCardSceneManager : MonoBehaviour
 
     private void setUpData()
     {
-        path = "AnimalSO/" + GlobalSelection.selectedNameSO;
+        pathLoad = "AnimalSO/" + GlobalData.selectedNameSO;
         animalCategorySo = ScriptableObject
-            .Instantiate(Resources.Load<AnimalCategorySO>(path));
+            .Instantiate(Resources.Load<AnimalCategorySO>(pathLoad));
         listAnimals = animalCategorySo.animals;
         updateCard(currentAnimal);
     }

@@ -1,0 +1,711 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b077c97c27a4806a75f57fb2282084d, type: 3}
+  m_Name: present_simple
+  m_EditorClassIdentifier: 
+  grammarPointID: present_simple
+  rule: S + V(s/es)
+  name: Present Simple Tense
+  description: Use the present simple tense to describe habits, facts, or general
+    truths.
+  examples:
+  - sentence: It walks breakfast.
+    translation: "N\xF3 walk breakfast."
+    grammarPointID: present_simple
+  - sentence: You go football.
+    translation: "B\u1EA1n go football."
+    grammarPointID: present_simple
+  - sentence: They clean in the park.
+    translation: "H\u1ECD clean in the park."
+    grammarPointID: present_simple
+  - sentence: It watches letters.
+    translation: "N\xF3 watch letters."
+    grammarPointID: present_simple
+  - sentence: I sing in the pool.
+    translation: "T\xF4i sing in the pool."
+    grammarPointID: present_simple
+  - sentence: It sings a car.
+    translation: "N\xF3 sing a car."
+    grammarPointID: present_simple
+  - sentence: I read songs.
+    translation: "T\xF4i read songs."
+    grammarPointID: present_simple
+  - sentence: It listens TV.
+    translation: "N\xF3 listen TV."
+    grammarPointID: present_simple
+  - sentence: She eats to music.
+    translation: "C\xF4 \u1EA5y eat to music."
+    grammarPointID: present_simple
+  - sentence: She goes every morning.
+    translation: "C\xF4 \u1EA5y go every morning."
+    grammarPointID: present_simple
+  - sentence: We listen in the park.
+    translation: "Ch\xFAng t\xF4i listen in the park."
+    grammarPointID: present_simple
+  - sentence: She plays a car.
+    translation: "C\xF4 \u1EA5y play a car."
+    grammarPointID: present_simple
+  - sentence: It runs football.
+    translation: "N\xF3 run football."
+    grammarPointID: present_simple
+  - sentence: She runs to school.
+    translation: "C\xF4 \u1EA5y run to school."
+    grammarPointID: present_simple
+  - sentence: They write pizza.
+    translation: "H\u1ECD write pizza."
+    grammarPointID: present_simple
+  - sentence: You clean English.
+    translation: "B\u1EA1n clean English."
+    grammarPointID: present_simple
+  - sentence: It listens at a hospital.
+    translation: "N\xF3 listen at a hospital."
+    grammarPointID: present_simple
+  - sentence: They watch football.
+    translation: "H\u1ECD watch football."
+    grammarPointID: present_simple
+  - sentence: You go books.
+    translation: "B\u1EA1n go books."
+    grammarPointID: present_simple
+  - sentence: I sleep in the park.
+    translation: "T\xF4i sleep in the park."
+    grammarPointID: present_simple
+  - sentence: You swim in the park.
+    translation: "B\u1EA1n swim in the park."
+    grammarPointID: present_simple
+  - sentence: We go at a hospital.
+    translation: "Ch\xFAng t\xF4i go at a hospital."
+    grammarPointID: present_simple
+  - sentence: You run to school.
+    translation: "B\u1EA1n run to school."
+    grammarPointID: present_simple
+  - sentence: He drinks books.
+    translation: "Anh \u1EA5y drink books."
+    grammarPointID: present_simple
+  - sentence: It reads breakfast.
+    translation: "N\xF3 read breakfast."
+    grammarPointID: present_simple
+  - sentence: She walks to music.
+    translation: "C\xF4 \u1EA5y walk to music."
+    grammarPointID: present_simple
+  - sentence: They sleep to music.
+    translation: "H\u1ECD sleep to music."
+    grammarPointID: present_simple
+  - sentence: We drink dinner.
+    translation: "Ch\xFAng t\xF4i drink dinner."
+    grammarPointID: present_simple
+  - sentence: I cook books.
+    translation: "T\xF4i cook books."
+    grammarPointID: present_simple
+  - sentence: They walk to school.
+    translation: "H\u1ECD walk to school."
+    grammarPointID: present_simple
+  miniExercises:
+  - question: He (write) ___ to music.
+    answer: writes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (watch) ___ songs.
+    answer: watch
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (sleep) ___ fast.
+    answer: sleeps
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (clean) ___ in the pool.
+    answer: clean
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (play) ___ every morning.
+    answer: play
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (study) ___ football.
+    answer: study
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (drink) ___ fast.
+    answer: drink
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (study) ___ football.
+    answer: study
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (run) ___ at a hospital.
+    answer: run
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (read) ___ a story.
+    answer: read
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (like) ___ a story.
+    answer: likes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (work) ___ a story.
+    answer: work
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (work) ___ books.
+    answer: works
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (like) ___ to music.
+    answer: like
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (sleep) ___ pizza.
+    answer: sleep
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (listen) ___ songs.
+    answer: listen
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (clean) ___ books.
+    answer: cleans
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (drink) ___ fast.
+    answer: drinks
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (play) ___ songs.
+    answer: play
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (study) ___ English.
+    answer: studies
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (drink) ___ a car.
+    answer: drinks
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (like) ___ pizza.
+    answer: likes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (watch) ___ books.
+    answer: watch
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (eat) ___ a story.
+    answer: eat
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (speak) ___ pizza.
+    answer: speak
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (read) ___ football.
+    answer: read
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (like) ___ to music.
+    answer: likes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (sleep) ___ songs.
+    answer: sleeps
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (go) ___ dinner.
+    answer: go
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (sleep) ___ a story.
+    answer: sleeps
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (write) ___ the house.
+    answer: writes
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (listen) ___ songs.
+    answer: listens
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (sleep) ___ the house.
+    answer: sleeps
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (cook) ___ breakfast.
+    answer: cook
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (work) ___ to music.
+    answer: works
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (play) ___ TV.
+    answer: play
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (eat) ___ to school.
+    answer: eat
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (walk) ___ a story.
+    answer: walks
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (walk) ___ to school.
+    answer: walk
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (like) ___ in the pool.
+    answer: likes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (drive) ___ in the park.
+    answer: drive
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (study) ___ breakfast.
+    answer: studies
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (sleep) ___ fast.
+    answer: sleeps
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (cook) ___ dinner.
+    answer: cooks
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (sing) ___ letters.
+    answer: sings
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (go) ___ every morning.
+    answer: goes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (write) ___ English.
+    answer: writes
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (sing) ___ to music.
+    answer: sings
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (swim) ___ pizza.
+    answer: swims
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (read) ___ the house.
+    answer: read
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (cook) ___ coffee.
+    answer: cook
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (go) ___ songs.
+    answer: go
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (drive) ___ letters.
+    answer: drive
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (drink) ___ a car.
+    answer: drink
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (eat) ___ breakfast.
+    answer: eat
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (listen) ___ fast.
+    answer: listens
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (listen) ___ a car.
+    answer: listens
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (study) ___ songs.
+    answer: study
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (sleep) ___ English.
+    answer: sleeps
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (watch) ___ at a hospital.
+    answer: watches
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (sleep) ___ in the park.
+    answer: sleep
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (work) ___ every morning.
+    answer: works
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (sing) ___ pizza.
+    answer: sings
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (cook) ___ to school.
+    answer: cooks
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (study) ___ dinner.
+    answer: studies
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (run) ___ coffee.
+    answer: runs
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (eat) ___ to school.
+    answer: eats
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: We (speak) ___ a story.
+    answer: speak
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (listen) ___ every morning.
+    answer: listen
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (speak) ___ in the park.
+    answer: speak
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (study) ___ letters.
+    answer: studies
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (clean) ___ songs.
+    answer: clean
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (study) ___ every morning.
+    answer: study
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (drink) ___ songs.
+    answer: drink
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (watch) ___ pizza.
+    answer: watch
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (write) ___ to music.
+    answer: write
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (sing) ___ breakfast.
+    answer: sings
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (drink) ___ in the pool.
+    answer: drinks
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (read) ___ coffee.
+    answer: reads
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (swim) ___ a car.
+    answer: swim
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (read) ___ a car.
+    answer: read
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (cook) ___ letters.
+    answer: cook
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (sleep) ___ TV.
+    answer: sleeps
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (drive) ___ a story.
+    answer: drive
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (watch) ___ books.
+    answer: watches
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (cook) ___ books.
+    answer: cook
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (write) ___ a story.
+    answer: writes
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (sing) ___ fast.
+    answer: sings
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (read) ___ breakfast.
+    answer: read
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (drink) ___ fast.
+    answer: drinks
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (work) ___ coffee.
+    answer: works
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: You (walk) ___ a story.
+    answer: walk
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (work) ___ English.
+    answer: work
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (watch) ___ pizza.
+    answer: watch
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: She (write) ___ to school.
+    answer: writes
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: He (listen) ___ a story.
+    answer: listens
+    difficultyLevel: medium
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: They (walk) ___ songs.
+    answer: walk
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (like) ___ coffee.
+    answer: like
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: I (like) ___ TV.
+    answer: like
+    difficultyLevel: easy
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5
+  - question: It (swim) ___ a story.
+    answer: swims
+    difficultyLevel: hard
+    grammarPointID: present_simple
+    interval: 0
+    easeFactor: 2.5

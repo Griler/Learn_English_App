@@ -5,7 +5,7 @@ using UnityEngine;
 public class VocabularyDataManager : BaseCode
 {
     public static VocabularyDataManager Instance;
-    private string path= "AnimalSO/Animals";
+    private string path= "Data/AnimalData/Animals";
 
     [SerializeField] private AnimalDatabase database;
     [SerializeField] private ContainerSO dataContainer;

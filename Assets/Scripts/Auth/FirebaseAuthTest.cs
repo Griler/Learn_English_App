@@ -186,7 +186,7 @@ namespace demo
         private void loadNextScene()
         {
             // Ví dụ: load scene có tên "GameScene"
-            SceneManager.LoadSceneAsync(GlobalSelection.mainScene);
+            SceneManager.LoadSceneAsync(GlobalData.mainScene);
         }
     }
 }

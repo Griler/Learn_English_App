@@ -52,7 +52,7 @@ public class LessonItem : BaseCode
 
     public void onClickButtonPlay()
     {
-        GlobalSelection.selectedNameSO = lessonPlay.Replace(" ","_");
-        SceneManager.LoadSceneAsync(GlobalSelection.flashCardScene);
+        GlobalData.selectedNameSO = lessonPlay.Replace(" ","_");
+        SceneManager.LoadSceneAsync(GlobalData.flashCardScene);
     }
 }
