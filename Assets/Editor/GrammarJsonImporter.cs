@@ -46,15 +46,18 @@ public class GrammarJsonImporter : EditorWindow
         data.name = container.name;
         data.rule = container.rule;
         data.description = container.description;
+        data.description = container.description;
         data.examples = new System.Collections.Generic.List<GrammarFlashcardExmpale>(container.examples);
         for (var i = 0; i < data.examples.Count; i++)
         {
             data.examples[i].grammarPointID = container.grammarPointID;
+            data.examples[i].ruleText = container.rule;
         }
         data.miniExercises = new System.Collections.Generic.List<GrammarFlashcardExercise>(container.miniExercises);
         for (var i = 0; i < data.miniExercises.Count; i++)
         {
             data.miniExercises[i].grammarPointID = container.grammarPointID;
+            data.miniExercises[i].grammarPointID = container.rule;
         }
         // Lưu asset
         string path = EditorUtility.SaveFilePanelInProject(

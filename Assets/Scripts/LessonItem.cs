@@ -46,7 +46,7 @@ public class LessonItem : BaseCode
                 name = "animal_asset_0";
                 break;
         }
-        lessonImage.sprite = assetManager.getSprite(name);
+        lessonImage.sprite = assetManager.getSpriteAnimal(name);
         lessonImage.SetNativeSize();
     }
 

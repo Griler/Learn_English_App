@@ -48,4 +48,37 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
+    
+    public void SpeakToText(string text, string languageCode = "EN")
+    {
+        StartCoroutine(GetAudioFromGoogle(text, languageCode));
+    }
+
+    IEnumerator GetAudioFromGoogle(string text, string languageCode = "EN")
+    {
+        string textEncoded = UnityWebRequest.EscapeURL(text);
+
+
+        string url = $"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q={textEncoded}&tl={languageCode}";
+
+        Debug.Log("Đang tải audio từ: " + url);
+
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Lỗi tải audio: " + www.error);
+            }
+            else
+            {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+                audioSource.clip = clip;
+                audioSource.Play();
+                Debug.Log("Phát audio thành công!");
+            }
+        }
+    }
 }

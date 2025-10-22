@@ -3,7 +3,8 @@ using UnityEngine.U2D;
 
 public class AssetManager : MonoBehaviour
 {
-    [SerializeField] private SpriteAtlas   asset;
+    [SerializeField] private SpriteAtlas   assetAnimal;
+    [SerializeField] private SpriteAtlas   assetAvatar;
     public static AssetManager Instance { get; private set; }
 
     void Awake()
@@ -16,8 +17,13 @@ public class AssetManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject); // giữ qua scene
     }
-    public Sprite getSprite(string name)
+    public Sprite getSpriteAnimal(string name)
     {
-        return asset.GetSprite(name);
+        return assetAnimal.GetSprite(name);
+    }
+    
+    public Sprite getSpriteAvatar(string name)
+    {
+        return assetAvatar.GetSprite(name);
     }
 }

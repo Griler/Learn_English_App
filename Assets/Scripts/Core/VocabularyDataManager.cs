@@ -59,7 +59,7 @@ public class VocabularyDataManager : BaseCode
             string spriteName = config.formatSpriteName(animal.name_en);
             if (spriteName != null)
             {
-                animal.sprite = assetManager.getSprite(spriteName);
+                animal.sprite = assetManager.getSpriteAnimal(spriteName);
             }
             else
             {

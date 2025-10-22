@@ -1,21 +1,26 @@
 using System;
 
 [System.Serializable]
-public class GrammarFlashcardExmpale
+public class GrammarFlashcard{
+    public string grammarPointID;
+    public string ruleText;
+}
+[System.Serializable]
+public class GrammarFlashcardExmpale : GrammarFlashcard
 {
    
     public string sentence;
     public string translation;
-    public string grammarPointID;
+    public string conjugatedVerb;
+    
 }
 
 [System.Serializable]
-public class GrammarFlashcardExercise 
+public class GrammarFlashcardExercise : GrammarFlashcard
 {
     public string question;
     public string answer;
     public string difficultyLevel;
-    public string grammarPointID;
 
     // Thuộc tính cho thuật toán Spaced Repetition
     public int interval; // Khoảng cách (ngày) cho lần ôn tập tiếp theo
