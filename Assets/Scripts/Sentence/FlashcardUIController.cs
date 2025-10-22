@@ -1,8 +1,17 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
+[System.Serializable]
+enum TypeInputField
+{
+    Wrong = 1,
+    Correct = 0,
+    Default = 2
+}
 
 public class FlashcardUIController : BaseCode
 {
@@ -16,20 +25,22 @@ public class FlashcardUIController : BaseCode
     [SerializeField] private TextMeshProUGUI exampleQuestionText;
     [SerializeField] private TextMeshProUGUI preVerbTextUI;
     [SerializeField] private TMP_InputField verbInputField;
-    [SerializeField] private RectTransform layoutRect;
 
     [Header("UI Exercise Example")] public TextMeshProUGUI exerciseQuestionText;
     [SerializeField] private TMP_InputField answerInputField;
     [SerializeField] private Button submitButton;
     [SerializeField] private GameObject feedbackPanel; // Panel chứa các nút đánh giá
-    [SerializeField] private TextMeshProUGUI resultText; // Text để báo Đúng/Sai
 
-    //private GrammarFlashcard currentCard;
+    [Header("UI FlashCard other")]
+    [SerializeField] private InputKeyBoardCustom inputKeyBoardCustom;
+    [SerializeField] private TextMeshProUGUI resultText; // Text để báo Đúng/Sai
+    [SerializeField] private List<Sprite> backgroundInput;
     [SerializeField] private List<GrammarFlashcardExmpale> listCardExample;
     [SerializeField] private List<GrammarFlashcardExercise> listCardExercise;
     private int currentCardIndex = 0;
-    
+
     private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
+    private int cardExampleIndexCurrent = 0;
     void Start()
     {
         GrammarManager = GetComponent<GrammarManager>();
@@ -40,7 +51,7 @@ public class FlashcardUIController : BaseCode
         listCardExample = GrammarManager.GetCardsToLearn();
         if (listCardExample.Count > 0)
         {
-            ShowCardLearn(listCardExample[0]);
+            ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
         }
         else
         {
@@ -50,10 +61,13 @@ public class FlashcardUIController : BaseCode
 
     void ShowCardLearn(GrammarFlashcardExmpale card)
     {
+        StartCoroutine(setTypeInputField(TypeInputField.Default));
         currentGrammarFlashcardExmpale = card;
         ruleText.text = card.ruleText;
         exampleText.text = card.sentence;
         translationText.text = card.translation;
+        resultText.text = "";
+        resultText.color = Color.white;
         SentenceSplitter(card.sentence, card.conjugatedVerb);
     }
 
@@ -63,14 +77,12 @@ public class FlashcardUIController : BaseCode
         string correctAnswer = currentGrammarFlashcardExmpale.conjugatedVerb.ToLower();
         if (userAnswer == correctAnswer)
         {
-            Debug.Log("Ngon");
-            ruleText.text = "ngon";
+            StartCoroutine(HandleAnswer(TypeInputField.Correct));
+           
         }
         else
         {
-            Debug.Log("ga");
-            ruleText.text = "fgdf";
-
+            StartCoroutine(setTypeInputField(TypeInputField.Wrong));
         }
         // resultText.gameObject.SetActive(true);
         // feedbackPanel.SetActive(true); // Hiển thị các nút đánh giá
@@ -108,7 +120,6 @@ public class FlashcardUIController : BaseCode
 
     public void SentenceSplitter(string sentence, string conjugatedVerb)
     {
-        // 1. Dữ liệu đầu vào của bạn
         string fullSentence = sentence;
         string correctVerb = conjugatedVerb;
 
@@ -123,19 +134,46 @@ public class FlashcardUIController : BaseCode
 
         if (verbIndex != -1) // Nếu tìm thấy động từ
         {
-            preVerb = fullSentence.Substring(0, verbIndex-1);
+            preVerb = fullSentence.Substring(0, verbIndex - 1);
             int postIndex = verbIndex + correctVerb.Length;
             postVerb = fullSentence.Substring(postIndex);
-
-            // In kết quả ra Console
             Debug.Log($"Câu gốc: '{fullSentence}'");
-            Debug.Log($"Phần trước: '{preVerb}'"); // Kết quả: 'She '
-            Debug.Log($"Phần sau: '{postVerb}'"); // Kết quả: ' the park.'
+            Debug.Log($"Phần trước: '{preVerb}'");
+            Debug.Log($"Phần sau: '{postVerb}'");
         }
         else
         {
             Debug.LogError($"Không tìm thấy động từ '{correctVerb}' trong câu!");
         }
+
         exampleQuestionText.text = $"{preVerb}  __________ {postVerb}";
+        inputKeyBoardCustom.initButtonWord(conjugatedVerb);
+    }
+
+
+    IEnumerator setTypeInputField(Enum colorIndex)
+    {
+        verbInputField.GetComponent<Image>().sprite = backgroundInput[Convert.ToInt32(colorIndex)];
+        if (Convert.ToInt32(colorIndex) == 0)
+        {
+            resultText.text = "Correct";
+            resultText.color = Color.lawnGreen;
+        }
+        else if(Convert.ToInt32(colorIndex) == 1)
+        {
+            resultText.text = "Wrong";
+            resultText.color = Color.softRed;
+        }
+        yield return new WaitForSeconds(0.75f);
+        verbInputField.GetComponent<Image>().sprite = backgroundInput[Convert.ToInt32(TypeInputField.Default)];
+        resultText.text = "";
+        resultText.color = Color.white;
+    }
+    
+    IEnumerator HandleAnswer(Enum type)
+    {
+        yield return setTypeInputField(type);
+        cardExampleIndexCurrent++;
+        ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
     }
 }
