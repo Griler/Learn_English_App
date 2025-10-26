@@ -35,12 +35,14 @@ public class FlashcardUIController : BaseCode
     [SerializeField] private InputKeyBoardCustom inputKeyBoardCustom;
     [SerializeField] private TextMeshProUGUI resultText; // Text để báo Đúng/Sai
     [SerializeField] private List<Sprite> backgroundInput;
+    [SerializeField] private Slider progressBar;
     [SerializeField] private List<GrammarFlashcardExmpale> listCardExample;
     [SerializeField] private List<GrammarFlashcardExercise> listCardExercise;
     private int currentCardIndex = 0;
 
     private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
     private int cardExampleIndexCurrent = 0;
+    private float incrementValue = 0;
     void Start()
     {
         GrammarManager = GetComponent<GrammarManager>();
@@ -49,6 +51,7 @@ public class FlashcardUIController : BaseCode
 
         // Lấy danh sách thẻ cần ôn tập
         listCardExample = GrammarManager.GetCardsToLearn();
+
         if (listCardExample.Count > 0)
         {
             ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
@@ -175,5 +178,12 @@ public class FlashcardUIController : BaseCode
         yield return setTypeInputField(type);
         cardExampleIndexCurrent++;
         ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
+        updateProgressBar();
+    }
+
+    void updateProgressBar()
+    {
+        incrementValue = (progressBar.maxValue / listCardExample.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

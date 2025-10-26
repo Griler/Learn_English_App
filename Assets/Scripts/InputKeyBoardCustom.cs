@@ -21,8 +21,8 @@ public class InputKeyBoardCustom : MonoBehaviour
     [SerializeField] private Button deleteButton;
     [SerializeField] private Stack<Button> buttonClicked = new Stack<Button>();
     private string originalWord;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    void Awake()
     {
         originalWord =  inputField.text;
         InitEventButton();
