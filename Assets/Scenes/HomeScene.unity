@@ -119,11 +119,34 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &2164748 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6520215487309199222, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+  m_PrefabInstance: {fileID: 6476281143893300264}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2164749 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8633680658474227542, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
   m_PrefabInstance: {fileID: 6476281143893300264}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2164753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2164748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff33c7d7ece74949884eb843bfa4082a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  missionIcon: {fileID: 0}
+  descriptionText: {fileID: 0}
+  rewardCoin: {fileID: 0}
+  claimButton: {fileID: 0}
+  goButton: {fileID: 0}
+  statusIcon: {fileID: 0}
 --- !u!1 &92499993
 GameObject:
   m_ObjectHideFlags: 0
@@ -3348,9 +3371,73 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 160825328}
     m_Modifications:
+    - target: {fileID: 4607197979072328085, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4607197979072328085, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4607197979072328085, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4607197979072328085, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5120438502791193423, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5120438502791193423, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5120438502791193423, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5120438502791193423, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6520215487309199222, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
       propertyPath: m_Name
       value: MissionItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 8039801658550271803, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8039801658550271803, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8039801658550271803, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8039801658550271803, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606785278667115695, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606785278667115695, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606785278667115695, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606785278667115695, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8633680658474227542, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
       propertyPath: m_Pivot.x
@@ -3435,7 +3522,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6520215487309199222, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2164753}
   m_SourcePrefab: {fileID: 100100000, guid: 5954d64fc86d2b64ab13ab032a57d1c0, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
