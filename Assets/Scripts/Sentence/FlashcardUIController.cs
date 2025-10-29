@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 
 [System.Serializable]
-enum TypeInputField
+internal enum TypeInputField
 {
     Wrong = 1,
     Correct = 0,
@@ -16,147 +16,41 @@ enum TypeInputField
 public class FlashcardUIController : BaseCode
 {
     public GrammarManager GrammarManager; // Kéo object chứa script GrammarManager vào đây
+    
+    [SerializeField] protected TMP_InputField verbInputField;
+    [SerializeField] protected TextMeshProUGUI resultText;
+    [SerializeField] protected GameObject flashCardContainer;
 
-    [Header("UI Learn Example")] [SerializeField]
-    private TextMeshProUGUI ruleText;
-
-    [SerializeField] private TextMeshProUGUI exampleText;
-    [SerializeField] private TextMeshProUGUI translationText;
-    [SerializeField] private TextMeshProUGUI exampleQuestionText;
-    [SerializeField] private TextMeshProUGUI preVerbTextUI;
-    [SerializeField] private TMP_InputField verbInputField;
-
-    [Header("UI Exercise Example")] public TextMeshProUGUI exerciseQuestionText;
-    [SerializeField] private TMP_InputField answerInputField;
-    [SerializeField] private Button submitButton;
-    [SerializeField] private GameObject feedbackPanel; // Panel chứa các nút đánh giá
-
-    [Header("UI FlashCard other")]
-    [SerializeField] private InputKeyBoardCustom inputKeyBoardCustom;
-    [SerializeField] private TextMeshProUGUI resultText; // Text để báo Đúng/Sai
-    [SerializeField] private List<Sprite> backgroundInput;
+    [Header("UI FlashCard other")] 
+    [SerializeField] protected TextMeshProUGUI exampleQuestionText;
+    [SerializeField] protected InputKeyBoardCustom inputKeyBoardCustom;
+    [SerializeField] protected List<Sprite> backgroundInputField;
     [SerializeField] private Slider progressBar;
-    [SerializeField] private List<GrammarFlashcardExmpale> listCardExample;
     [SerializeField] private List<GrammarFlashcardExercise> listCardExercise;
+    [SerializeField] protected List<GrammarFlashcard> listCard;
+    [SerializeField] protected Button nextButton;
+    
     private int currentCardIndex = 0;
-
-    private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
-    private int cardExampleIndexCurrent = 0;
     private float incrementValue = 0;
-    void Start()
+    private string voiceText = "";
+    
+    protected virtual void Start()
     {
-        GrammarManager = GetComponent<GrammarManager>();
-        //feedbackPanel.SetActive(false);
-        //resultText.gameObject.SetActive(false);
-
-        // Lấy danh sách thẻ cần ôn tập
-        listCardExample = GrammarManager.GetCardsToLearn();
-
-        if (listCardExample.Count > 0)
-        {
-            ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
-        }
-        else
-        {
-            ruleText.text = "Bạn đã hoàn thành tất cả các thẻ ôn tập cho hôm nay!";
-        }
     }
 
-    void ShowCardLearn(GrammarFlashcardExmpale card)
+    public virtual void OnSubmitAnswer()
     {
-        StartCoroutine(setTypeInputField(TypeInputField.Default));
-        currentGrammarFlashcardExmpale = card;
-        ruleText.text = card.ruleText;
-        exampleText.text = card.sentence;
-        translationText.text = card.translation;
-        resultText.text = "";
-        resultText.color = Color.white;
-        SentenceSplitter(card.sentence, card.conjugatedVerb);
-    }
-
-    public void OnSubmitAnswer()
-    {
-        string userAnswer = verbInputField.text.ToLower();
-        string correctAnswer = currentGrammarFlashcardExmpale.conjugatedVerb.ToLower();
-        if (userAnswer == correctAnswer)
-        {
-            StartCoroutine(HandleAnswer(TypeInputField.Correct));
-           
-        }
-        else
-        {
-            StartCoroutine(setTypeInputField(TypeInputField.Wrong));
-        }
-        // resultText.gameObject.SetActive(true);
-        // feedbackPanel.SetActive(true); // Hiển thị các nút đánh giá
-        // submitButton.interactable = false;
+       
     }
 
     public void onVoiceButtonVoice()
     {
-        audioManager.SpeakToText(exampleText.text);
+        audioManager.SpeakToText(voiceText);
     }
-
-    // Gán hàm này cho các nút đánh giá trong Unity Editor
-    public void OnFeedbackButtonPressed(int quality)
+    
+    protected IEnumerator setTypeInputField(Enum colorIndex)
     {
-        // GrammarManager.UpdateCard(currentCard, quality);
-
-        // Chuyển sang thẻ tiếp theo
-        currentCardIndex++;
-        if (currentCardIndex != null) //reviewQueue.Count)
-        {
-            //ShowCard(reviewQueue[currentCardIndex]);
-        }
-        else
-        {
-            // Hoàn thành
-            ruleText.text = "Tuyệt vời! Bạn đã hoàn thành bài ôn tập hôm nay.";
-            exampleText.text = "";
-            exerciseQuestionText.text = "";
-            answerInputField.gameObject.SetActive(false);
-            submitButton.gameObject.SetActive(false);
-            feedbackPanel.SetActive(false);
-            resultText.gameObject.SetActive(false);
-        }
-    }
-
-    public void SentenceSplitter(string sentence, string conjugatedVerb)
-    {
-        string fullSentence = sentence;
-        string correctVerb = conjugatedVerb;
-
-        string preVerb = "";
-        string postVerb = "";
-
-
-        int verbIndex = fullSentence.IndexOf(
-            correctVerb,
-            StringComparison.OrdinalIgnoreCase
-        );
-
-        if (verbIndex != -1) // Nếu tìm thấy động từ
-        {
-            preVerb = fullSentence.Substring(0, verbIndex - 1);
-            int postIndex = verbIndex + correctVerb.Length;
-            postVerb = fullSentence.Substring(postIndex);
-            Debug.Log($"Câu gốc: '{fullSentence}'");
-            Debug.Log($"Phần trước: '{preVerb}'");
-            Debug.Log($"Phần sau: '{postVerb}'");
-        }
-        else
-        {
-            Debug.LogError($"Không tìm thấy động từ '{correctVerb}' trong câu!");
-        }
-
-        exampleQuestionText.text = $"{preVerb}  __________ {postVerb}";
-        inputKeyBoardCustom.initButtonWord(conjugatedVerb);
-    }
-
-
-    IEnumerator setTypeInputField(Enum colorIndex)
-    {
-        verbInputField.GetComponent<Image>().sprite = backgroundInput[Convert.ToInt32(colorIndex)];
+        verbInputField.GetComponent<Image>().sprite = backgroundInputField[Convert.ToInt32(colorIndex)];
         if (Convert.ToInt32(colorIndex) == 0)
         {
             resultText.text = "Correct";
@@ -168,22 +62,28 @@ public class FlashcardUIController : BaseCode
             resultText.color = Color.softRed;
         }
         yield return new WaitForSeconds(0.75f);
-        verbInputField.GetComponent<Image>().sprite = backgroundInput[Convert.ToInt32(TypeInputField.Default)];
+        verbInputField.GetComponent<Image>().sprite = backgroundInputField[Convert.ToInt32(TypeInputField.Default)];
         resultText.text = "";
         resultText.color = Color.white;
     }
     
-    IEnumerator HandleAnswer(Enum type)
+    public virtual void HandleAnswer(Enum type)
     {
-        yield return setTypeInputField(type);
-        cardExampleIndexCurrent++;
-        ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
-        updateProgressBar();
+        StartCoroutine(setTypeInputField(type));
+        if (Convert.ToInt32(type) == 0) 
+        {
+            updateProgressBar();
+        }
     }
 
     void updateProgressBar()
     {
-        incrementValue = (progressBar.maxValue / listCardExample.Count);
+        incrementValue = (progressBar.maxValue / listCard.Count);
         progressBar.value = progressBar.value + incrementValue;
+    }
+    
+    protected void setActiveFlashCard(bool active = true)
+    {
+        flashCardContainer.SetActive(active);  
     }
 }
