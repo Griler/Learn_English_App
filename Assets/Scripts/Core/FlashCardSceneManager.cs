@@ -26,7 +26,7 @@ public class FlashCardSceneManager : MonoBehaviour
     {
         pathLoad = "AnimalSO/" + GlobalData.selectedNameSO;
         animalCategorySo = ScriptableObject
-            .Instantiate(Resources.Load<AnimalCategorySO>(pathLoad));
+            .Instantiate(ResourceManager.Load<AnimalCategorySO>(pathLoad));
         listAnimals = animalCategorySo.animals;
         updateCard(currentAnimal);
     }

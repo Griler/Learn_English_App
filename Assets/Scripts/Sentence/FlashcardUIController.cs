@@ -26,7 +26,6 @@ public class FlashcardUIController : BaseCode
     [SerializeField] protected InputKeyBoardCustom inputKeyBoardCustom;
     [SerializeField] protected List<Sprite> backgroundInputField;
     [SerializeField] private Slider progressBar;
-    [SerializeField] private List<GrammarFlashcardExercise> listCardExercise;
     [SerializeField] protected List<GrammarFlashcard> listCard;
     [SerializeField] protected Button nextButton;
     

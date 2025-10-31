@@ -24,10 +24,14 @@ public class UnitItem : MonoBehaviour
             Debug.LogError("No Lesson Item Prefab Set");
             return;
         }
+        
+        foreach (Transform child in layout.transform)
+            Destroy(child.gameObject);
+        
         for (int i = 0; i < containerSo.GetItemCount(); i++)
         {
-            GameObject lessonItem = Instantiate(lessonItemPrefab);
-            lessonItem.transform.SetParent(layout.transform);
+            GameObject lessonItem = Instantiate(lessonItemPrefab,layout.transform);
+            //lessonItem.transform.SetParent(layout.transform);
             lessonItem.GetComponent<LessonItem>().setData(containerSo.items[i]);
         }
     }

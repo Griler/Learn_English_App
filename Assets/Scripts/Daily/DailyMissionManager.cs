@@ -63,7 +63,7 @@ public class DailyMissionManager : MonoBehaviour
 
     void ResetUserDailyMissions(string today)
     {
-        // Reset dữ liệu user mission: set tất cả nhiệm vụ là chưa hoàn thành
+        //Reset dữ liệu user mission: set tất cả nhiệm vụ là chưa hoàn thành
         FirebaseDatabase.DefaultInstance
             .GetReference("daily_missions")
             .GetValueAsync()
@@ -97,33 +97,61 @@ public class DailyMissionManager : MonoBehaviour
             });
     }
 
-    void LoadMissionsFromServer()
+void LoadMissionsFromServer()
     {
-        FirebaseDatabase.DefaultInstance
-            .GetReference("daily_missions")
-            .GetValueAsync()
-            .ContinueWithOnMainThread(task =>
+        string userId = FirebaseAuth.DefaultInstance.CurrentUser?.UserId;
+        if (string.IsNullOrEmpty(userId))
+        {
+            Debug.LogWarning("⚠️ Chưa đăng nhập Firebase!");
+            return;
+        }
+
+        var db = FirebaseDatabase.DefaultInstance;
+
+        // 1️⃣ Tải danh sách nhiệm vụ gốc
+        db.GetReference("daily_missions").GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (!task.IsCompleted) return;
+
+            DataSnapshot missionSnap = task.Result;
+            missions.Clear();
+
+            foreach (var child in missionSnap.Children)
             {
-                if (task.IsCompleted)
+                DailyMission m = new DailyMission
                 {
-                    DataSnapshot snapshot = task.Result;
-                    missions.Clear();
+                    id = child.Key,
+                    title = child.Child("title").Value.ToString(),
+                    description = child.Child("description").Value.ToString(),
+                    reward = int.Parse(child.Child("reward").Value.ToString()),
+                    isCompleted = false,
+                    isClaimed = false
+                };
+                missions.Add(m);
+            }
+            db.GetReference($"user_missions/{userId}/missions")
+              .GetValueAsync()
+              .ContinueWithOnMainThread(userTask =>
+              {
+                  if (!userTask.IsCompleted) return;
 
-                    foreach (var child in snapshot.Children)
-                    {
-                        DailyMission m = new DailyMission();
-                        m.id = child.Key;
-                        m.title = child.Child("title").Value.ToString();
-                        m.description = child.Child("description").Value.ToString();
-                        m.reward = int.Parse(child.Child("reward").Value.ToString());
-                        m.isCompleted = false;
-                        m.isClaimed = false;
-                        missions.Add(m);
-                    }
+                  DataSnapshot userSnap = userTask.Result;
 
-                    LoadUserMissionProgress();
-                }
-            });
+                  foreach (var m in missions)
+                  {
+                      var userMission = userSnap.Child(m.id);
+                      if (userMission.Exists)
+                      {
+                          if (userMission.Child("isCompleted").Exists)
+                              m.isCompleted = bool.Parse(userMission.Child("isCompleted").Value.ToString());
+                          if (userMission.Child("isClaimed").Exists)
+                              m.isClaimed = bool.Parse(userMission.Child("isClaimed").Value.ToString());
+                      }
+                  }
+                  CompleteMission(GlobalData.MissionKeys.LOGIN);
+                  LoadUserMissionProgress();
+              });
+        });
     }
 
     void LoadUserMissionProgress()
@@ -142,8 +170,8 @@ public class DailyMissionManager : MonoBehaviour
                         if (snapshot.HasChild(mission.id))
                         {
                             var userData = snapshot.Child(mission.id);
-                            mission.isCompleted = userData.Child("isCompleted").Value as bool? ?? false;
-                            mission.isClaimed = userData.Child("isClaimed").Value as bool? ?? false;
+                           mission.isCompleted = userData.Child("isCompleted").Value as bool? ?? false;
+                           mission.isClaimed = userData.Child("isClaimed").Value as bool? ?? false;
                         }
                     }
                 }
@@ -156,17 +184,21 @@ public class DailyMissionManager : MonoBehaviour
         foreach (Transform child in contentParent)
             Destroy(child.gameObject);
 
-        foreach (var mission in missions)
+        for (int i = 0; i < missions.Count; i++)
         {
-            GameObject item = Instantiate(missionItemPrefab, contentParent);
-            item.transform.Find("Title").GetComponent<Text>().text = mission.title;
-            item.transform.Find("Description").GetComponent<Text>().text = mission.description;
-            item.transform.Find("Reward").GetComponent<Text>().text = $"+{mission.reward}";
-
-            Button claimBtn = item.transform.Find("ClaimButton").GetComponent<Button>();
-            claimBtn.interactable = mission.isCompleted && !mission.isClaimed;
-            claimBtn.onClick.AddListener(() => ClaimMission(mission, claimBtn));
+            GameObject itemObj = Instantiate(missionItemPrefab, contentParent);
+            MissionItem item = itemObj.GetComponent<MissionItem>();
+            item.Setup(missions[i], OnMissionClaimed);
         }
+    }
+
+    private void OnMissionClaimed(DailyMission mission)
+    {
+        // Xử lý logic khi người chơi nhấn Claim
+        Debug.Log($"✅ Nhận {mission.reward} vàng cho nhiệm vụ: {mission.title}");
+        mission.isClaimed = true;
+        SaveUserMission(mission);
+        FirebaseDatabaseManager.Instance.AddCoins(mission.reward);
     }
 
     public void CompleteMission(string missionId)
@@ -179,18 +211,7 @@ public class DailyMissionManager : MonoBehaviour
             DisplayMissions();
         }
     }
-
-    void ClaimMission(DailyMission mission, Button btn)
-    {
-        if (mission.isClaimed) return;
-        mission.isClaimed = true;
-        btn.interactable = false;
-
-        SaveUserMission(mission);
-
-        Debug.Log($"✅ Nhận {mission.reward} vàng cho nhiệm vụ: {mission.title}");
-        // TODO: Cộng vàng vào tài khoản người chơi
-    }
+    
 
     void SaveUserMission(DailyMission m)
     {
@@ -199,7 +220,7 @@ public class DailyMissionManager : MonoBehaviour
             { "isCompleted", m.isCompleted },
             { "isClaimed", m.isClaimed }
         };
-
+        Debug.LogError(m.isClaimed);
         dbRef.Child("user_missions").Child(userId).Child("missions").Child(m.id)
             .UpdateChildrenAsync(missionData);
     }

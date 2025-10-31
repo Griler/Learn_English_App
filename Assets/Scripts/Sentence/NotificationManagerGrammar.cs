@@ -46,6 +46,6 @@ public class NotificationManagerGrammar : NotificationManager
             notificationText.color = color ?? new Color32(255, 255, 255, 255);
         }
         notificationPanel.SetActive(true);
-
+        canvasGroup.DOFade(1f, fadeInDuration);
     }
 }

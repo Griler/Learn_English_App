@@ -6,6 +6,7 @@ using Firebase.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Firebase.Auth;
+using UnityEditor;
 
 public class FirebaseDatabaseManager : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     {
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
         currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
+        LoadUserData(currentUser.UserId);
     }
 
     public void SaveUserData()
@@ -47,6 +49,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     // 📥 Đọc dữ liệu người chơi
     public void LoadUserData(string userId)
     {
+        
         dbReference.Child("users").Child(userId).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted)
@@ -59,8 +62,20 @@ public class FirebaseDatabaseManager : MonoBehaviour
                 if (snapshot.Exists)
                 {
                     string email = snapshot.Child("email").Value.ToString();
-                    int score = int.Parse(snapshot.Child("score").Value.ToString());
-                    Debug.Log($"User: {email}, Score: {score}");
+                    string username = email.Split('@')[0];
+                    int coin = 0;
+                    var coinNode = snapshot.Child("coins");
+
+                    if (coinNode.Exists && coinNode.Value != null)
+                    {
+                        int.TryParse(coinNode.Value.ToString(), out coin);
+                    }         
+                    string pathLoad = $" {GlobalData.pathData}/{GlobalData.pathData}";
+                    PlayerPrefs.SetString("user", username);
+                    PlayerPrefs.SetString("email", email);
+                    PlayerPrefs.SetInt("coin", coin);
+                    
+                    Debug.Log($"User: {email}, coin: {coin}");
                 }
                 else
                 {
@@ -110,6 +125,42 @@ public class FirebaseDatabaseManager : MonoBehaviour
             Debug.Log("Already collected today.");
         }
     }
+    
+    public async Task CompleteMissionById(string missionId)
+    {
+        if (currentUser == null)
+        {
+            Debug.LogWarning("⚠️ Không có user đăng nhập Firebase!");
+            return;
+        }
+
+        string userId = currentUser.UserId;
+
+        var userMissionRef = FirebaseDatabase.DefaultInstance
+            .GetReference("user_missions")
+            .Child(userId)
+            .Child("missions")
+            .Child(missionId);
+
+        // Kiểm tra xem nhiệm vụ có tồn tại không
+        var snapshot = await userMissionRef.GetValueAsync();
+
+        if (!snapshot.Exists)
+        {
+            Debug.LogWarning($"⚠️ Không tìm thấy missionId: {missionId}");
+            return;
+        }
+
+        // Cập nhật trạng thái hoàn thành
+        var updateData = new Dictionary<string, object>
+        {
+            { "isCompleted", true }
+        };
+
+        await userMissionRef.UpdateChildrenAsync(updateData);
+        Debug.Log($"✅ Mission {missionId} set isCompleted = true thành công!");
+    }
+
 }
 
 [System.Serializable]

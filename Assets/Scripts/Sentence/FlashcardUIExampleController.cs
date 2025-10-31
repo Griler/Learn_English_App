@@ -38,6 +38,8 @@ public class FlashcardUIExampleController : FlashcardUIController
         translationText.text = card.translation;
         resultText.text = "";
         resultText.color = Color.white;
+        nextButton.onClick.RemoveAllListeners();
+        nextButton.onClick.AddListener(OnSubmitAnswer);
         SentenceSplitter(card.sentence, card.conjugatedVerb);
     }
     
@@ -73,26 +75,37 @@ public class FlashcardUIExampleController : FlashcardUIController
     public override void HandleAnswer(Enum type)
     {
         base.HandleAnswer(type);
-        cardExampleIndexCurrent++;
-        if (cardExampleIndexCurrent < listCardExample.Count)
+        if (Convert.ToInt32(type) == 0)
         {
-            ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
-        }
-        else
-        {
-            ShowFinishPanel();
+            cardExampleIndexCurrent++;
+            if (cardExampleIndexCurrent < listCardExample.Count)
+            {
+                ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
+            }
+            else
+            {
+                ShowFinishPanel();
+            }
         }
     }
 
     void ShowFinishPanel()
     {
         setActiveFlashCard(false);
-        GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài kiểm tra nhanh không ?",Color.black);
+        GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài luyện tập nhanh không ?",Color.black);
+        UpdateMissionState();
     }
     
+    private async void UpdateMissionState()
+    {
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_NEW);
+    }
+
 
     public override void OnSubmitAnswer()
     {
+        ShowFinishPanel();
+        return;
         string userAnswer = verbInputField.text.ToLower();
         string correctAnswer = currentGrammarFlashcardExmpale.conjugatedVerb.ToLower();
         if (userAnswer == correctAnswer)

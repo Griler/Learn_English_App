@@ -17,4 +17,10 @@ public static class GameEvents
         showExerciseUI?.Invoke();
     }
 
+    public static event Action<string> onCompletionMissionDaily;
+
+    public static void CompleteMissionById(string missionId)
+    {
+        onCompletionMissionDaily?.Invoke(missionId);
+    }
 }
