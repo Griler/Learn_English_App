@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class GrammarFlashcard{
@@ -38,4 +39,15 @@ public class GrammarFlashcardExercise : GrammarFlashcard
         easeFactor = 2.5f;
         nextReviewDate = DateTime.UtcNow;
     }
+}
+
+
+[System.Serializable]
+public class GrammarTopic
+{
+    public string grammarPointID;
+    public string rule;
+    public string description;
+    public List<GrammarFlashcardExmpale> examples;
+    public List<GrammarFlashcardExercise> miniExercises;
 }

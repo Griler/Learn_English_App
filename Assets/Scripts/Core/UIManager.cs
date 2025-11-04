@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
     public GameObject viewReview;
     public GameObject viewProfile;
     public GameObject informationUser;
+    public GameObject viewTopic;
+    public GameObject viewSubTopic;
 
     private void Start()
     {
@@ -53,6 +55,8 @@ public class UIManager : MonoBehaviour
     {
         currentView = viewLesson;
         viewLesson.SetActive(true);
+        viewTopic.SetActive(true);
+        viewSubTopic.SetActive(false);
     }
 
     public void openViewGrammar()

@@ -12,11 +12,10 @@ public class LessonItem : BaseCode
     [SerializeField] private TextMeshProUGUI lessonStar;
     [SerializeField] private Button playLessonButton;
     private string lessonPlay;
-    public void setData(AnimalCategorySO animalCategorySo)
+    public void setData(string topicName)
     {
-        setImage(animalCategorySo.categoryName);
-        setName(animalCategorySo.categoryName);
-        lessonPlay = animalCategorySo.categoryName;
+        setName(topicName);
+        setImage(topicName);
     }
 
     private void setName(string name)
@@ -48,11 +47,5 @@ public class LessonItem : BaseCode
         }
         lessonImage.sprite = assetManager.getSpriteAnimal(name);
         lessonImage.SetNativeSize();
-    }
-
-    public void onClickButtonPlay()
-    {
-        GlobalData.selectedNameSO = lessonPlay.Replace(" ","_");
-        SceneManager.LoadSceneAsync(GlobalData.flashCardScene);
     }
 }

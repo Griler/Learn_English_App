@@ -14,14 +14,40 @@ public class FirebaseDatabaseManager : MonoBehaviour
     private FirebaseUser currentUser;
     public static FirebaseDatabaseManager Instance;
 
-    private void Awake()
+
+    private DatabaseReference dbRef;
+    public static bool IsReady { get; private set; } = false;
+
+    private async void Awake()
     {
+        // Singleton
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        await InitializeFirebase();
+    }
+
+    private async Task InitializeFirebase()
+    {
+        var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync();
+        if (dependencyStatus == DependencyStatus.Available)
+        {
+            dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+            IsReady = true;
+            Debug.Log("✅ Firebase initialized successfully!");
+        }
+        else
+        {
+            Debug.LogError("❌ Firebase dependencies could not be resolved: " + dependencyStatus);
+        }
     }
     
     void Start()
@@ -160,7 +186,46 @@ public class FirebaseDatabaseManager : MonoBehaviour
         await userMissionRef.UpdateChildrenAsync(updateData);
         Debug.Log($"✅ Mission {missionId} set isCompleted = true thành công!");
     }
+    
+    public void LoadWords(string mainTopic, string category, Action<List<AnimalData>> onComplete)
+    {
+        FirebaseDatabase.DefaultInstance
+            .GetReference("vocab_topics")
+            .Child(mainTopic)
+            .Child(category)
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("❌ Firebase load failed: " + task.Exception);
+                    onComplete?.Invoke(null);
+                    return;
+                }
 
+                if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    List<AnimalData> words = new List<AnimalData>();
+
+                    foreach (DataSnapshot child in snapshot.Children)
+                    {
+                        try
+                        {
+                            string json = child.GetRawJsonValue();
+                            AnimalData word = JsonUtility.FromJson<AnimalData>(json);
+                            words.Add(word);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning("⚠️ Parse error: " + e.Message);
+                        }
+                    }
+
+                    onComplete?.Invoke(words);
+                }
+            });
+    }
 }
 
 [System.Serializable]

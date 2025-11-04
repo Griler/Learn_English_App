@@ -220,7 +220,6 @@ void LoadMissionsFromServer()
             { "isCompleted", m.isCompleted },
             { "isClaimed", m.isClaimed }
         };
-        Debug.LogError(m.isClaimed);
         dbRef.Child("user_missions").Child(userId).Child("missions").Child(m.id)
             .UpdateChildrenAsync(missionData);
     }

@@ -12,7 +12,7 @@ public class UnitItem : MonoBehaviour
     [SerializeField] private GameObject layout;
     [SerializeField] private GameObject lessonItemPrefab;
 
-    private void Start()
+    private void OnEnable()
     {
         nameUnit.text = containerSo.containerName;
         loadData();
@@ -32,7 +32,7 @@ public class UnitItem : MonoBehaviour
         {
             GameObject lessonItem = Instantiate(lessonItemPrefab,layout.transform);
             //lessonItem.transform.SetParent(layout.transform);
-            lessonItem.GetComponent<LessonItem>().setData(containerSo.items[i]);
+            //lessonItem.GetComponent<LessonItem>().setData(containerSo.items[i]);
         }
     }
 }

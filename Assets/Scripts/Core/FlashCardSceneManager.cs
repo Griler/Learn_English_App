@@ -7,7 +7,7 @@ public class FlashCardSceneManager : MonoBehaviour
 {
     private AnimalCategorySO animalCategorySo;
     private string pathLoad = $" {GlobalData.pathData}/{GlobalData.pathAnimalData}/{GlobalData.selectedNameSO}";
-    private List<AnimalData> listAnimals;
+    private List<AnimalData> listAnimals = new List<AnimalData>();
     [SerializeField] private int currentAnimal = 0;
     [SerializeField] private GameObject cardItem;
     [SerializeField] private Button nextButton;
@@ -24,13 +24,28 @@ public class FlashCardSceneManager : MonoBehaviour
 
     private void setUpData()
     {
-        pathLoad = "AnimalSO/" + GlobalData.selectedNameSO;
-        animalCategorySo = ScriptableObject
-            .Instantiate(ResourceManager.Load<AnimalCategorySO>(pathLoad));
-        listAnimals = animalCategorySo.animals;
-        updateCard(currentAnimal);
+        string topic = PlayerPrefs.GetString("SelectedMainTopic");
+        string subTopic = PlayerPrefs.GetString("SelectedSubTopic");
+        FirebaseDatabaseManager.Instance.LoadWords(topic,subTopic,OnWordsLoaded);
     }
 
+    void OnWordsLoaded(List<AnimalData> words)
+    {
+        if (words == null)
+        {
+            Debug.LogError("Không tải được dữ liệu!");
+            return;
+        }
+
+        Debug.Log("✅ Đã load " + words.Count + " từ!");
+        foreach (var w in words)
+        {
+            Debug.Log($"{w.name_en} - {w.name_vi}");
+        }
+        listAnimals.AddRange(words);
+        updateCard(currentAnimal);
+    }
+    
     private void updateCard(int currentAnimal = 0)
     {
         cardItemCmp = cardItem.GetComponent<CardItem>();
@@ -57,6 +72,6 @@ public class FlashCardSceneManager : MonoBehaviour
 
     void btnBackClicked()
     {
-        SceneManager.LoadSceneAsync("MainScene");
+        SceneManager.LoadSceneAsync("HomeScene");
     }
 }
