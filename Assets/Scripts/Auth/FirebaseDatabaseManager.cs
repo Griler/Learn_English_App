@@ -226,6 +226,79 @@ public class FirebaseDatabaseManager : MonoBehaviour
                 }
             });
     }
+    
+     public async Task AddLearnedVocabulary(string userId, string topic, string subtopic, List<string> words)
+    {
+        var vocabPath = dbRef.Child("user_progress").Child(userId)
+                             .Child("vocab_learned").Child(topic).Child(subtopic);
+
+        // Lấy danh sách hiện tại nếu có
+        var snapshot = await vocabPath.GetValueAsync();
+        HashSet<string> currentWords = new HashSet<string>();
+
+        if (snapshot.Exists)
+        {
+            foreach (var child in snapshot.Children)
+                currentWords.Add(child.Value.ToString());
+        }
+
+        // Thêm các từ mới (tránh trùng)
+        foreach (var word in words)
+            currentWords.Add(word);
+
+        // Lưu lại danh sách hoàn chỉnh
+        await vocabPath.SetValueAsync(new List<string>(currentWords));
+    }
+
+    /// <summary>
+    /// Thêm ngữ pháp đã học
+    /// </summary>
+    public async Task AddLearnedGrammar(string userId, string grammarKey)
+    {
+        var grammarPath = dbRef.Child("user_progress").Child(userId).Child("grammar_learned");
+
+        var snapshot = await grammarPath.GetValueAsync();
+        HashSet<string> learned = new HashSet<string>();
+
+        if (snapshot.Exists)
+        {
+            foreach (var child in snapshot.Children)
+                learned.Add(child.Value.ToString());
+        }
+
+        learned.Add(grammarKey);
+
+        await grammarPath.SetValueAsync(new List<string>(learned));
+    }
+
+    /// <summary>
+    /// Tải toàn bộ từ vựng đã học (theo topic/subtopic)
+    /// </summary>
+    public async Task<Dictionary<string, Dictionary<string, List<string>>>> LoadAllLearnedVocabulary(string userId)
+    {
+        var result = new Dictionary<string, Dictionary<string, List<string>>>();
+        var snapshot = await dbRef.Child("user_progress").Child(userId).Child("vocab_learned").GetValueAsync();
+
+        if (snapshot.Exists)
+        {
+            foreach (var topicSnap in snapshot.Children)
+            {
+                var topicDict = new Dictionary<string, List<string>>();
+
+                foreach (var subSnap in topicSnap.Children)
+                {
+                    List<string> words = new List<string>();
+                    foreach (var w in subSnap.Children)
+                        words.Add(w.Value.ToString());
+
+                    topicDict[subSnap.Key] = words;
+                }
+
+                result[topicSnap.Key] = topicDict;
+            }
+        }
+        return result;
+    }
 }
 
 [System.Serializable]

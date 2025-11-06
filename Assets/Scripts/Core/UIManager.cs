@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
         informationUser.GetComponent<InformationUser>().updateInformation();
         viewDaily.SetActive(false);
         viewLesson.SetActive(true);
-        viewGrammar.SetActive(false);
+        viewGrammar.SetActive(true);
         viewReview.SetActive(false);
         viewProfile.SetActive(false);
         informationUser.SetActive(true);

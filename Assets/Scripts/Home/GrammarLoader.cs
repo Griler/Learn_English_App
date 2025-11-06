@@ -32,7 +32,8 @@ public class GrammarLoader : MonoBehaviour
     public void LoadTopicsFromFirebase()
     {
         FirebaseDatabase.DefaultInstance
-            .GetReference("grammar_topics")
+            .GetReference("grammar")
+            .Child("topics")
             .GetValueAsync()
             .ContinueWithOnMainThread(task =>
             {
@@ -47,7 +48,7 @@ public class GrammarLoader : MonoBehaviour
                     DataSnapshot snapshot = task.Result;
 
                     loadedTopics.Clear();
-
+                    
                     foreach (DataSnapshot topicSnap in snapshot.Children)
                     {
                         string json = topicSnap.GetRawJsonValue();
@@ -69,7 +70,8 @@ public class GrammarLoader : MonoBehaviour
             try
             {
                 GameObject topicChild = Instantiate(topicPrefab, contentParent);
-                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = topic.grammarPointID;
+                string titleTopic = topic.grammarPointID.Replace("_","\n");
+                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = titleTopic;
                 topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.grammarPointID));
             }
             catch (Exception e)
