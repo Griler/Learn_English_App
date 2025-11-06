@@ -104,8 +104,6 @@ public class FlashcardUIExampleController : FlashcardUIController
 
     public override void OnSubmitAnswer()
     {
-        ShowFinishPanel();
-        return;
         string userAnswer = verbInputField.text.ToLower();
         string correctAnswer = currentGrammarFlashcardExmpale.conjugatedVerb.ToLower();
         if (userAnswer == correctAnswer)

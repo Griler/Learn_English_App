@@ -58,8 +58,8 @@ public class Config : MonoBehaviour
     {
         if (!_spriteNames.ContainsKey(name))
         {
-            Debug.LogError("không có ảnh con vật đó"  + name);
-            return null;
+            Debug.LogWarning("không có ảnh con vật đó"  + name);
+            return "";
         }
         else
         {

@@ -13,6 +13,7 @@ public class FlashCardSceneManager : MonoBehaviour
     [SerializeField] private Button nextButton;
     [SerializeField] private Button preButton;
     [SerializeField] private Button backButton;
+    [SerializeField] private QuizManager quizManager; 
     private CardItem cardItemCmp;
     void Start()
     {
@@ -43,6 +44,7 @@ public class FlashCardSceneManager : MonoBehaviour
             Debug.Log($"{w.name_en} - {w.name_vi}");
         }
         listAnimals.AddRange(words);
+        quizManager.initQuiz(listAnimals);
         updateCard(currentAnimal);
     }
     
