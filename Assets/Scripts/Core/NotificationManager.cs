@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
-using DG.Tweening; // Nhớ import DOTween
+using DG.Tweening;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI; // Nhớ import DOTween
 
 public class NotificationManager : BaseCode
 {
@@ -12,6 +14,7 @@ public class NotificationManager : BaseCode
     [Header("Animation Settings")]
     public float fadeInDuration = 0.5f;
     public float fadeOutDuration = 0.5f;
+    [SerializeField]protected Button homeBtn;
 
     protected virtual void Awake()
     {
@@ -24,6 +27,16 @@ public class NotificationManager : BaseCode
 
         canvasGroup.alpha = 0;
         notificationPanel.SetActive(false);
+        homeBtn.onClick.AddListener(onClickHomeButton);
+    }
+
+    private void OnEnable()
+    {
+        GameEvents.showNotification += ShowNotification;
+    } 
+    private void OnDestroy()
+    {
+        GameEvents.showNotification -= ShowNotification;
     }
 
     
@@ -52,5 +65,10 @@ public class NotificationManager : BaseCode
             .OnComplete(() => {
                 notificationPanel.SetActive(false);
             });
+    }
+
+    void onClickHomeButton()
+    {
+        SceneManager.LoadSceneAsync(GlobalData.homeScene);
     }
 }

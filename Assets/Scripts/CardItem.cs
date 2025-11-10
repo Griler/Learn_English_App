@@ -19,14 +19,15 @@ public class CardItem : BaseCode
     public void setUpCard(AnimalData animal = null)
     {
         string nameSprite = config.formatSpriteName(animal.name_en);
-        petImage.sprite = assetManager.getSpriteAnimal(nameSprite);
+        if(nameSprite != "")
+            petImage.sprite = assetManager.getSpriteAnimal(nameSprite);
         petImage.SetNativeSize();
         nameEN.text = animal.name_en;
         nameVI.text = animal.name_vi;
         wordToVoice = animal.name_en;
     }
 
-    public void playVoice( )
+    public void playVoice()
     {
         audioManager.playVoiceWord(wordToVoice);
     }

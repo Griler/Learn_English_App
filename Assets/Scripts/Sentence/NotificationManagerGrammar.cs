@@ -6,7 +6,6 @@ using DG.Tweening; // Nhớ import DOTween
 
 public class NotificationManagerGrammar : NotificationManager
 {
-    [SerializeField]Button homeBtn;
     [SerializeField]Button PracticeBtn;
 
     private void OnEnable()

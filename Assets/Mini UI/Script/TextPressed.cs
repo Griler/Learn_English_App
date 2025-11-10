@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class TextPressed : MonoBehaviour ,IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private RectTransform gameObject;
     private Vector2 vector2;
     public float UnitsToMove;
-
     void Start()
     {
        
