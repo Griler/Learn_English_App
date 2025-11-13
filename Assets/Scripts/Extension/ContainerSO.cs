@@ -9,10 +9,10 @@ public class ContainerSO : ScriptableObject
     public string containerName;
     
     [Header("Data List")]
-    public List<AnimalCategorySO> items = new List<AnimalCategorySO>();
+    public List<WordCategorySO> items = new List<WordCategorySO>();
     
     // Method để thêm item
-    public void AddItem(AnimalCategorySO item)
+    public void AddItem(WordCategorySO item)
     {
         if (item != null && !items.Contains(item))
         {
@@ -21,7 +21,7 @@ public class ContainerSO : ScriptableObject
     }
     
     // Method để xóa item
-    public void RemoveItem(AnimalCategorySO item)
+    public void RemoveItem(WordCategorySO item)
     {
         if (items.Contains(item))
         {
@@ -30,7 +30,7 @@ public class ContainerSO : ScriptableObject
     }
     
     // Method để tìm item theo tên
-    public AnimalCategorySO FindItemByCategoryName(string name)
+    public WordCategorySO FindItemByCategoryName(string name)
     {
         return items.Find(item => item.categoryName == name);
     }

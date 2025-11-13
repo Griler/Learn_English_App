@@ -48,7 +48,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
         // 1️⃣ Lấy category
         string category = PlayerPrefs.GetString("SelectedCategory", "All");
 
-        List<AnimalData> animals;
+        List<WordData> animals;
         if (category == "All")
         {
             animals = VocabularyDataManager.Instance.GetRandomAnimals(totalPairs);
@@ -59,7 +59,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
         }
 
         // Tạo danh sách tất cả card (mỗi con 2 cái)
-        List<AnimalData> allCards = new List<AnimalData>();
+        List<WordData> allCards = new List<WordData>();
         allCards.AddRange(animals);
         allCards.AddRange(animals);
 
@@ -128,7 +128,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
     
     void CheckMatch()
     {
-        if (firstCard.animalData.id == secondCard.animalData.id)
+        if (firstCard.wordData.id == secondCard.wordData.id)
         {
             // Match found
             pairsFound++;
@@ -138,8 +138,8 @@ public class MemoryMatchGameJSON : MonoBehaviour
                 audioSource.PlayOneShot(matchSound);
             
             // Play animal sound
-            if (firstCard.animalData.audioClip)
-                audioSource.PlayOneShot(firstCard.animalData.audioClip);
+            if (firstCard.wordData.audioClip)
+                audioSource.PlayOneShot(firstCard.wordData.audioClip);
             
             if (pairsFound >= totalPairs)
             {

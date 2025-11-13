@@ -16,6 +16,7 @@ public class FlashcardUIExampleController : FlashcardUIController
 
     private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
     private int cardExampleIndexCurrent = 0;
+    private string grammaId = "";
 
     protected override void Start()
     {
@@ -33,6 +34,7 @@ public class FlashcardUIExampleController : FlashcardUIController
     {
         StartCoroutine(setTypeInputField(TypeInputField.Default));
         currentGrammarFlashcardExmpale = card;
+        grammaId = card.grammarPointID;
         ruleText.text = card.ruleText;
         exampleText.text = card.sentence;
         translationText.text = card.translation;
@@ -92,6 +94,7 @@ public class FlashcardUIExampleController : FlashcardUIController
     void ShowFinishPanel()
     {
         setActiveFlashCard(false);
+        FirebaseDatabaseManager.Instance.SaveLearnedGrammar(grammarId:grammaId);
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài luyện tập nhanh không ?",Color.black);
         UpdateMissionState();
     }

@@ -6,6 +6,7 @@ using Firebase.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Firebase.Auth;
+using Newtonsoft.Json;
 using UnityEditor;
 
 public class FirebaseDatabaseManager : MonoBehaviour
@@ -187,7 +188,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
         Debug.Log($"✅ Mission {missionId} set isCompleted = true thành công!");
     }
     
-    public void LoadWords(string mainTopic, string category, Action<List<AnimalData>> onComplete)
+    public void LoadWords(string mainTopic, string category, Action<List<WordData>> onComplete)
     {
         FirebaseDatabase.DefaultInstance
             .GetReference("vocab_topics")
@@ -206,14 +207,14 @@ public class FirebaseDatabaseManager : MonoBehaviour
                 if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
-                    List<AnimalData> words = new List<AnimalData>();
+                    List<WordData> words = new List<WordData>();
 
                     foreach (DataSnapshot child in snapshot.Children)
                     {
                         try
                         {
                             string json = child.GetRawJsonValue();
-                            AnimalData word = JsonUtility.FromJson<AnimalData>(json);
+                            WordData word = JsonUtility.FromJson<WordData>(json);
                             words.Add(word);
                         }
                         catch (Exception e)
@@ -227,105 +228,215 @@ public class FirebaseDatabaseManager : MonoBehaviour
             });
     }
     
-     public async Task AddLearnedVocabulary(string userId, string topic, string subtopic, List<string> words)
+    public void SaveLearnedVocabTopic(string topic, string subtopic)
     {
-        
-        var vocabPath = dbRef.Child("users").Child(currentUser.UserId)
-                             .Child("vocab_learned").Child(topic).Child(subtopic);
+        string userId = currentUser.UserId;
+        if (userId == null) return;
 
-        // Lấy danh sách hiện tại nếu có
-        var snapshot = await vocabPath.GetValueAsync();
-        HashSet<string> currentWords = new HashSet<string>();
-
-        if (snapshot.Exists)
+        // Kiểm tra đầu vào, không để trống
+        if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(subtopic))
         {
-            foreach (var child in snapshot.Children)
-                currentWords.Add(child.Value.ToString());
+            Debug.LogError("Lỗi: Topic và Subtopic không được để trống!");
+            return;
         }
 
-        // Thêm các từ mới (tránh trùng)
-        foreach (var word in words)
-            currentWords.Add(word);
+        // Đường dẫn mới sẽ là: 
+        // users/{userId}/has_learn/vocabulary/{topic}/{subtopic}
+        string path = $"users/{userId}/has_learn/vocabulary/{topic}/{subtopic}";
 
-        // Lưu lại danh sách hoàn chỉnh
-        await vocabPath.SetValueAsync(new List<string>(currentWords));
-    }
+        Debug.Log($"Đang gửi yêu cầu lưu: {path}");
 
-    /// <summary>
-    /// Thêm ngữ pháp đã học
-    /// </summary>
-    public async Task AddLearnedGrammar(string userId, string grammarKey)
-    {
-        var grammarPath = dbRef.Child("user_progress").Child(userId).Child("grammar_learned");
-
-        var snapshot = await grammarPath.GetValueAsync();
-        HashSet<string> learned = new HashSet<string>();
-
-        if (snapshot.Exists)
-        {
-            foreach (var child in snapshot.Children)
-                learned.Add(child.Value.ToString());
-        }
-
-        learned.Add(grammarKey);
-
-        await grammarPath.SetValueAsync(new List<string>(learned));
-    }
-
-    /// <summary>
-    /// Tải toàn bộ từ vựng đã học (theo topic/subtopic)
-    /// </summary>
-    public async Task<Dictionary<string, Dictionary<string, List<string>>>> LoadAllLearnedVocabulary()
-    {
-        
-        var result = new Dictionary<string, Dictionary<string, List<string>>>();
-        var snapshot = await dbRef.Child("users").Child(currentUser.UserId).Child("vocab_learned").GetValueAsync();
-
-        if (snapshot.Exists)
-        {
-            foreach (var topicSnap in snapshot.Children)
+        // Vẫn dùng SetValueAsync(true) để đánh dấu là đã học
+        dbReference.Child(path).SetValueAsync(true).ContinueWithOnMainThread(task => {
+            if (task.IsFaulted)
             {
-                var topicDict = new Dictionary<string, List<string>>();
-
-                foreach (var subSnap in topicSnap.Children)
-                {
-                    List<string> words = new List<string>();
-                    foreach (var w in subSnap.Children)
-                        words.Add(w.Value.ToString());
-
-                    topicDict[subSnap.Key] = words;
-                }
-
-                result[topicSnap.Key] = topicDict;
+                Debug.LogError($"Lỗi khi lưu vocabulary topic: {task.Exception.Message}");
             }
-        }
-        return result;
+            else if (task.IsCompleted)
+            {
+                Debug.Log($"Lưu topic '{topic}/{subtopic}' thành công!");
+            }
+        });
     }
     
-    public async Task<Dictionary<string, Dictionary<string, List<string>>>> LoadAllLearnedGrammar()
+    public void SaveLearnedGrammar(string grammarId)
     {
-        var result = new Dictionary<string, Dictionary<string, List<string>>>();
-        var snapshot = await dbRef.Child("users").Child(currentUser.UserId).Child("grammar_learned").GetValueAsync();
+        string userId = currentUser.UserId;
+        if (userId == null) return; // Dừng nếu chưa đăng nhập
 
-        if (snapshot.Exists)
-        {
-            foreach (var topicSnap in snapshot.Children)
+        string path = $"users/{userId}/has_learn/grammar/{grammarId}";
+        Debug.Log($"Đang gửi yêu cầu lưu: {path}");
+
+        // Không "await", thay vào đó dùng ".ContinueWithOnMainThread"
+        dbReference.Child(path).SetValueAsync(true).ContinueWithOnMainThread(task => {
+            if (task.IsFaulted)
             {
-                var topicDict = new Dictionary<string, List<string>>();
+                // Nếu có lỗi (ví dụ: mất mạng, không có quyền ghi)
+                Debug.LogError($"Lỗi khi lưu grammar: {task.Exception.Message}");
+            }
+            else if (task.IsCompleted)
+            {
+                // Nếu thành công
+                Debug.Log($"Lưu grammar '{grammarId}' thành công!");
+            }
+        });
 
-                foreach (var subSnap in topicSnap.Children)
+        // Hàm sẽ chạy đến đây và kết thúc ngay,
+        // không chờ Firebase trả lời.
+    }
+    
+    
+    public void FetchAllQuestionsByGrammar(string grammarKey, Action<List<GrammarQuestion>>onComplete)
+    {
+
+        List<GrammarQuestion> questionList = new List<GrammarQuestion>();
+        dbReference.Child("grammar-review").Child(grammarKey).GetValueAsync().ContinueWithOnMainThread(task => {
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Không thể lấy dữ liệu: " + task.Exception);
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                
+                // Lấy chuỗi JSON thô từ Firebase
+                string jsonString = snapshot.GetRawJsonValue();
+
+                if (string.IsNullOrEmpty(jsonString))
                 {
-                    List<string> grammars = new List<string>();
-                    foreach (var w in subSnap.Children)
-                        grammars.Add(w.Value.ToString());
-
-                    topicDict[subSnap.Key] = grammars;
+                    Debug.LogWarning("Không có dữ liệu tại 'allQuestions'.");
+                    return;
                 }
 
-                result[topicSnap.Key] = topicDict;
+                // Dùng Newtonsoft để parse danh sách
+                try
+                { 
+                    questionList = JsonConvert.DeserializeObject<List<GrammarQuestion>>(jsonString);
+                    Debug.Log("Lấy thành công " + questionList.Count + " câu hỏi.");
+                    // In ra câu hỏi đầu tiên để kiểm tra
+                    if(questionList.Count > 0)
+                    {
+                        Debug.Log("Câu 1: " + questionList[0].question);
+                        onComplete.Invoke(questionList);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Lỗi parse JSON: " + e.Message);
+
+                }
             }
+            
+        });
+    }
+    
+    public void LoadLearnedVocabTopics(Action<Dictionary<string, List<string>>> onComplete)
+    {
+        string userId = currentUser.UserId;
+        if (userId == null)
+        {
+            // Nếu chưa đăng nhập, trả về một Dictionary rỗng ngay lập tức
+            onComplete?.Invoke(new Dictionary<string, List<string>>());
+            return;
         }
-        return result;
+
+        // Đường dẫn đến mục vocabulary
+        string path = $"users/{userId}/has_learn/vocabulary";
+        Debug.Log($"Đang tải dữ liệu từ: {path}");
+
+        dbReference.Child(path).GetValueAsync().ContinueWithOnMainThread(task => {
+            
+            // Chuẩn bị kết quả
+            var learnedTopics = new Dictionary<string, List<string>>();
+
+            if (task.IsFaulted)
+            {
+                Debug.LogError($"Lỗi khi tải vocabulary: {task.Exception.Message}");
+                // Vẫn gọi callback với danh sách rỗng
+                onComplete?.Invoke(learnedTopics); 
+                return;
+            }
+            
+            if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+
+                // Kiểm tra xem có dữ liệu không
+                if (!snapshot.Exists || !snapshot.HasChildren)
+                {
+                    Debug.Log("Không tìm thấy dữ liệu vocabulary đã học.");
+                    onComplete?.Invoke(learnedTopics);
+                    return;
+                }
+
+                // --- Bóc tách dữ liệu ---
+                // Vòng lặp 1: Lặp qua các Topic (ví dụ: "Animals", "Food")
+                foreach (var topicSnapshot in snapshot.Children)
+                {
+                    string topicName = topicSnapshot.Key;
+                    var subtopicsList = new List<string>();
+
+                    // Vòng lặp 2: Lặp qua các Subtopic (ví dụ: "Farm Animals", "Fruits")
+                    foreach (var subtopicSnapshot in topicSnapshot.Children)
+                    {
+                        // Kiểm tra xem giá trị có phải là 'true' không
+                        if (subtopicSnapshot.Value != null && (bool)subtopicSnapshot.Value == true)
+                        {
+                            subtopicsList.Add(subtopicSnapshot.Key);
+                        }
+                    }
+
+                    // Thêm vào kết quả
+                    if (subtopicsList.Count > 0)
+                    {
+                        learnedTopics.Add(topicName, subtopicsList);
+                    }
+                }
+
+                Debug.Log($"Tải thành công {learnedTopics.Count} topic đã học.");
+            }
+
+            // GỌI CALLBACK với kết quả (dù có hay không)
+            onComplete?.Invoke(learnedTopics);
+        });
+    }
+
+    // ----- VÍ DỤ CÁCH GỌI HÀM MỚI -----
+    public void TestLoadFunction()
+    {
+        Debug.Log("Bắt đầu tải danh sách đã học...");
+
+        // Gọi hàm và truyền vào một hàm (lambda) để xử lý kết quả
+        LoadLearnedVocabTopics(topicsDictionary => {
+            
+            // Code bên trong này sẽ chạy KHI CÓ KẾT QUẢ
+            
+            if (topicsDictionary.Count == 0)
+            {
+                Debug.Log("Kết quả: Chưa học topic nào.");
+                return;
+            }
+
+            Debug.Log("--- DANH SÁCH ĐÃ HỌC ---");
+            foreach (var topicEntry in topicsDictionary)
+            {
+                string topic = topicEntry.Key;
+                List<string> subtopics = topicEntry.Value;
+
+                // In ra Topic
+                Debug.Log($"Topic: {topic}");
+
+                // In ra các Subtopic
+                foreach (string sub in subtopics)
+                {
+                    Debug.Log($"  - Subtopic: {sub}");
+                }
+            }
+            Debug.Log("---------------------------");
+
+        });
+
+        Debug.Log("... Yêu cầu tải đã được gửi đi.");
     }
 }
 

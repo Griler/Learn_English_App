@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class MemoryCardJson : MonoBehaviour
@@ -7,13 +8,13 @@ public class MemoryCardJson : MonoBehaviour
     public Button cardButton;
     public Sprite backSprite;
     
-    [SerializeField] public AnimalData animalData;
+    [FormerlySerializedAs("animalData")] [SerializeField] public WordData wordData;
     [HideInInspector] public bool isRevealed = false;
     [SerializeField] public int pairId;
     
-    public void Setup(AnimalData data, Sprite back)
+    public void Setup(WordData data, Sprite back)
     {
-        animalData = data;
+        wordData = data;
         backSprite = back;
         cardImage.sprite = backSprite;
         
@@ -23,7 +24,7 @@ public class MemoryCardJson : MonoBehaviour
     public void Reveal()
     {
         isRevealed = true;
-        cardImage.sprite = animalData.sprite;
+        cardImage.sprite = wordData.sprite;
     }
     
     public void Hide()

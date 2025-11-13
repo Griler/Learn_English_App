@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [System.Serializable]
-public class AnimalData
+public class WordData
 {
     public int id;
     public string name_en;
@@ -17,14 +18,14 @@ public class AnimalData
 }
 [CreateAssetMenu(fileName = "New Container", menuName = "Game Data/AnimalCategorySO")]
 [System.Serializable]
-public class AnimalCategorySO : ScriptableObject
+public class WordCategorySO : ScriptableObject
 {
     public string categoryName;
-    public List<AnimalData> animals;
+    public List<WordData> animals;
 }
 
 [Serializable]
-public class AnimalDatabase
+public class WordDatabase
 {
-    public AnimalCategorySO animals;
+    [FormerlySerializedAs("animals")] public WordCategorySO words;
 }

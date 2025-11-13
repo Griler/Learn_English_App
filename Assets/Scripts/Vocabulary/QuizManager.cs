@@ -27,23 +27,23 @@ public class QuizManager : BaseCode
     public Color correctColor;
     public Color defaultColor;
 
-    private List<AnimalData> allAnimals;
-    public List<AnimalData> vocabulary = new List<AnimalData>();
+    private List<WordData> allAnimals;
+    public List<WordData> vocabulary = new List<WordData>();
     private int currentQuestion = 0;
     private GameObject currentButtonClick;
-    private AnimalData currentVocabulary;
+    private WordData currentVocabulary;
     private string correctAnswers = "";
     private int totalQuestions = 10;
     private bool showEnglish = false;
     private string chooseAnswer = "";
     [SerializeField]private Button nextButton;
 
-    public void initQuiz(List<AnimalData> allAnimals)
+    public void initQuiz(List<WordData> allAnimals)
     {
         vocabulary.AddRange(allAnimals);
     }
 
-    public void ShowQuestion(AnimalData previousWord = null)
+    public void ShowQuestion(WordData previousWord = null)
     {
         showEnglish = Random.value > 0.5f;
 
@@ -59,10 +59,10 @@ public class QuizManager : BaseCode
         
         correctAnswers = !showEnglish ? currentVocabulary.name_en : currentVocabulary.name_vi;
         // tạo danh sách 4 đáp án (1 đúng + 3 sai)
-        List<AnimalData> options = new List<AnimalData> { currentVocabulary };
+        List<WordData> options = new List<WordData> { currentVocabulary };
         while (options.Count < 4)
         {
-            AnimalData randomPair = vocabulary[Random.Range(0, vocabulary.Count)];
+            WordData randomPair = vocabulary[Random.Range(0, vocabulary.Count)];
             if (!options.Contains(randomPair))
                 options.Add(randomPair);
         }
@@ -150,7 +150,7 @@ public class QuizManager : BaseCode
     }
 
 
-    public void UpdateUI(AnimalData previousWord = null)
+    public void UpdateUI(WordData previousWord = null)
     {
         resetUi();
         ShowQuestion(previousWord);

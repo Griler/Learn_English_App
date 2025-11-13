@@ -7,10 +7,10 @@ public class VocabularyDataManager : BaseCode
     public static VocabularyDataManager Instance;
     private string path= "Data/AnimalData/Animals";
 
-    [SerializeField] private AnimalDatabase database;
+    [SerializeField] private WordDatabase database;
     [SerializeField] private ContainerSO dataContainer;
     
-    public List<AnimalData> allAnimals = new List<AnimalData>();
+    public List<WordData> allAnimals = new List<WordData>();
     
     void Awake()
     {
@@ -51,7 +51,7 @@ public class VocabularyDataManager : BaseCode
         }
     }
     
-    void LinkResources(List<AnimalData> animals)
+    void LinkResources(List<WordData> animals)
     {
         foreach (var animal in animals)
         {
@@ -74,7 +74,7 @@ public class VocabularyDataManager : BaseCode
     }
     
     // Get animals by category
-    public List<AnimalData> GetAnimalsByCategory(string category)
+    public List<WordData> GetAnimalsByCategory(string category)
     {
         switch (category)
         {
@@ -87,10 +87,10 @@ public class VocabularyDataManager : BaseCode
     }
     
     // Get random animals
-    public List<AnimalData> GetRandomAnimals(int count)
+    public List<WordData> GetRandomAnimals(int count)
     {
-        List<AnimalData> result = new List<AnimalData>();
-        List<AnimalData> temp = new List<AnimalData>(allAnimals);
+        List<WordData> result = new List<WordData>();
+        List<WordData> temp = new List<WordData>(allAnimals);
         
         for (int i = 0; i < Mathf.Min(count, temp.Count); i++)
         {
@@ -103,11 +103,11 @@ public class VocabularyDataManager : BaseCode
     }
     
     // Get random animals from category
-    public List<AnimalData> GetRandomAnimalsFromCategory(string category, int count)
+    public List<WordData> GetRandomAnimalsFromCategory(string category, int count)
     {
-        List<AnimalData> categoryAnimals = GetAnimalsByCategory(category);
-        List<AnimalData> result = new List<AnimalData>();
-        List<AnimalData> temp = new List<AnimalData>(categoryAnimals);
+        List<WordData> categoryAnimals = GetAnimalsByCategory(category);
+        List<WordData> result = new List<WordData>();
+        List<WordData> temp = new List<WordData>(categoryAnimals);
         
         for (int i = 0; i < Mathf.Min(count, temp.Count); i++)
         {

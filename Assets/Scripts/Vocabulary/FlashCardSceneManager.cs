@@ -9,10 +9,10 @@ public class FlashCardSceneManager : MonoBehaviour
 
     [SerializeField] private GameObject cardItem;
     private CardItem cardItemCmp;
-    public void updateCard(AnimalData currentAnimal )
+    public void updateCard(WordData currentWord )
     {
         cardItemCmp = cardItem.GetComponent<CardItem>();
-        cardItemCmp.setUpCard(currentAnimal);
+        cardItemCmp.setUpCard(currentWord);
     }
     
 }

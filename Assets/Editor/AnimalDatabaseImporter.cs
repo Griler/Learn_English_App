@@ -55,7 +55,7 @@ public class AnimalImporterWindow : EditorWindow
         // Tạo từng SO theo category
         foreach (var category in wrapper.animals.Keys)
         {
-            AnimalCategorySO so = ScriptableObject.CreateInstance<AnimalCategorySO>();
+            WordCategorySO so = ScriptableObject.CreateInstance<WordCategorySO>();
             so.categoryName = category;
             so.animals = wrapper.animals[category];
 
@@ -77,7 +77,7 @@ public class AnimalImporterWindow : EditorWindow
 [System.Serializable]
 public class AnimalWrapper
 {
-    public Dictionary<string, List<AnimalData>> animals;
+    public Dictionary<string, List<WordData>> animals;
 }
 
 #endregion

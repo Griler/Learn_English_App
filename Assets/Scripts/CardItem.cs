@@ -16,15 +16,15 @@ public class CardItem : BaseCode
         //setUpCard();
     }
     
-    public void setUpCard(AnimalData animal = null)
+    public void setUpCard(WordData word = null)
     {
-        string nameSprite = config.formatSpriteName(animal.name_en);
+        string nameSprite = config.formatSpriteName(word.name_en);
         if(nameSprite != "")
             petImage.sprite = assetManager.getSpriteAnimal(nameSprite);
         petImage.SetNativeSize();
-        nameEN.text = animal.name_en;
-        nameVI.text = animal.name_vi;
-        wordToVoice = animal.name_en;
+        nameEN.text = word.name_en;
+        nameVI.text = word.name_vi;
+        wordToVoice = word.name_en;
     }
 
     public void playVoice()

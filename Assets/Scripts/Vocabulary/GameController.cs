@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
@@ -9,12 +10,13 @@ public class GameController : MonoBehaviour
     [Header("UI Panels")]
     public GameObject flashcardPanel;
     public GameObject quizPanel;
-    private List<AnimalData> listAnimals = new List<AnimalData>();
+    private List<WordData> listAnimals = new List<WordData>();
     [SerializeField] private int currentAnimalIndex = 0;
     [SerializeField] private int currentQuiz = 0;
-    [SerializeField] private AnimalData currentAnimalData;
+    [FormerlySerializedAs("currentAnimalData")] [SerializeField] private WordData currentWordData;
     [SerializeField] private Button backButton;
-
+    private string topic = "";
+    private string subTopic = "";
     private void Start()
     {
         backButton.onClick.AddListener(onClickBackButton);
@@ -24,8 +26,8 @@ public class GameController : MonoBehaviour
     public void ShowFlashcard()
     {   
         flashcardPanel.SetActive(true);
-        currentAnimalData = listAnimals[0];
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentAnimalData);
+        currentWordData = listAnimals[0];
+        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentWordData);
         quizPanel.SetActive(false);
     }
 
@@ -44,8 +46,8 @@ public class GameController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.75f);
         flashcardPanel.SetActive(true);
-        currentAnimalData = listAnimals[currentAnimalIndex];
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentAnimalData);
+        currentWordData = listAnimals[currentAnimalIndex];
+        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentWordData);
         quizPanel.SetActive(false);
     }
 
@@ -57,18 +59,18 @@ public class GameController : MonoBehaviour
         {
             currentAnimalIndex++;
         }      
-        quizPanel.GetComponent<QuizManager>().UpdateUI(currentAnimalData);
+        quizPanel.GetComponent<QuizManager>().UpdateUI(currentWordData);
         quizPanel.SetActive(true);
     }
     
     private void setUpData()
     {
-        string topic = PlayerPrefs.GetString("SelectedMainTopic");
-        string subTopic = PlayerPrefs.GetString("SelectedSubTopic");
+         topic = PlayerPrefs.GetString("SelectedMainTopic");
+         subTopic = PlayerPrefs.GetString("SelectedSubTopic");
         FirebaseDatabaseManager.Instance.LoadWords(topic,subTopic,OnWordsLoaded);
     }
 
-    void OnWordsLoaded(List<AnimalData> words)
+    void OnWordsLoaded(List<WordData> words)
     {
         if (words == null)
         {
@@ -93,6 +95,7 @@ public class GameController : MonoBehaviour
     
     void ShowFinishPanel()
     {
+        FirebaseDatabaseManager.Instance.SaveLearnedVocabTopic(topic,subTopic);
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Sẽ Trở Về Trang Chủ",Color.black);
     }
 }
