@@ -2815,7 +2815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a51dbedf126e48b19eb3db4de4820d90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  apiKey: AIzaSyCzygztH8TE1U0D4NG9kvIFkje0ptRNFf4
+  apiKey: ""
   audioSource: {fileID: 1388744604}
   statusText: {fileID: 898466306}
   recordButton: {fileID: 697377048}
