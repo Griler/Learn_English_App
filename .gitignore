@@ -151,3 +151,5 @@ Assets/Editor Default Resources/Firebase/fb_storage_dark.png.meta
 Assets/Editor Default Resources/Firebase/firebase_lockup.png
 Assets/Editor Default Resources/Firebase/firebase_lockup.png.meta
 Assets/Editor Default Resources/Firebase/firebase_lockup_dark.png
+Assets/Scripts/DotEnv.cs
+Assets/Scripts/DotEnv.cs.meta

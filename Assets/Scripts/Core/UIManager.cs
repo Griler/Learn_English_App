@@ -13,15 +13,18 @@ public class UIManager : MonoBehaviour
     public GameObject informationUser;
     public GameObject viewTopic;
     public GameObject viewSubTopic;
+    public GameObject viewChoose;
+    public GameObject viewListen;
+    public GameObject viewSpeaking;
 
     private void Start()
     {
-        currentView = viewDaily;
+        currentView = viewChoose;
         //viewLesson.SetActive(true);
         informationUser.GetComponent<InformationUser>().updateInformation();
         viewDaily.SetActive(false);
-        viewLesson.SetActive(true);
-        viewGrammar.SetActive(true);
+        viewLesson.SetActive(false);
+        viewGrammar.SetActive(false);
         viewReview.SetActive(false);
         viewProfile.SetActive(false);
         informationUser.SetActive(true);
@@ -80,5 +83,21 @@ public class UIManager : MonoBehaviour
     public void closeCurentView()
     {
         currentView.SetActive(false);
+    }
+
+    public void openViewChoose()
+    {
+        currentView = viewChoose;
+        viewChoose.SetActive(true);
+    } 
+    public void openViewListen()
+    {
+        currentView = viewChoose;
+        viewListen.SetActive(true);
+    }  
+    public void openViewSpeaking()
+    {
+        currentView = viewChoose;
+        viewSpeaking.SetActive(true);
     }
 }
