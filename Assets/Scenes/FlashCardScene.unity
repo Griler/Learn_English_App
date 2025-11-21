@@ -152,7 +152,7 @@ MonoBehaviour:
   quizPanel: {fileID: 107132059}
   currentAnimalIndex: 0
   currentQuiz: 0
-  currentAnimalData:
+  currentWordData:
     id: 0
     name_en: 
     name_vi: 
@@ -420,7 +420,7 @@ GameObject:
   - component: {fileID: 365845527}
   - component: {fileID: 365845528}
   m_Layer: 5
-  m_Name: Button
+  m_Name: HomeBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

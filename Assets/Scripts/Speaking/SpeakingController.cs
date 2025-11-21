@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using Firebase.Database;
-using Firebase.Extensions; // Nếu bạn dùng DOTween
+using Firebase.Extensions;
+using UnityEngine.SceneManagement; // Nếu bạn dùng DOTween
 
 public class SpeakingController : MonoBehaviour
 {
@@ -292,4 +293,8 @@ public class SpeakingController : MonoBehaviour
             });
     }
 
+    public void onClickHomeButton()
+    {
+        SceneManager.LoadScene("HomeScene");
+    }
 }

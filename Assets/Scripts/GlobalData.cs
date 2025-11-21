@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class GlobalData
 {
@@ -29,4 +30,5 @@ public static class GlobalData
         public static string EMAIL = "";
         public static int COIN = 0;
     }
+    public static List<ListeningQuestion> questionsToListen;
 }

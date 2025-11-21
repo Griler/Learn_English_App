@@ -125,12 +125,12 @@ TextureImporter:
       name: speak_0
       rect:
         serializedVersion: 2
-        x: 5
+        x: 6
         y: 0
-        width: 162
+        width: 190
         height: 200
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -143,77 +143,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: speak_1
-      rect:
-        serializedVersion: 2
-        x: 164
-        y: 79
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 965322a8ed4ba68e0800000000000000
-      internalID: -1699347041485703831
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: speak_2
-      rect:
-        serializedVersion: 2
-        x: 157
-        y: 35
-        width: 19
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e57fc2f5dd4612ce0800000000000000
-      internalID: -1431752304579774626
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: speak_3
-      rect:
-        serializedVersion: 2
-        x: 168
-        y: 58
-        width: 27
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 16624626ef81d8100800000000000000
-      internalID: 111773046605620833
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 29acaa72efb07114da050a03179a6099
     internalID: 0
     vertices: []
     indices: 

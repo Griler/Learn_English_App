@@ -69,7 +69,7 @@ public class InputKeyBoardCustom : MonoBehaviour
         }
     }
     
-    public List<char> GenerateCharacterList(string targetWord)
+    private List<char> GenerateCharacterList(string targetWord)
     {
         int totalSize = listButton.Count;
         List<char> resultList = new List<char>(totalSize);

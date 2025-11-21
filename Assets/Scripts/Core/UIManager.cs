@@ -92,12 +92,12 @@ public class UIManager : MonoBehaviour
     } 
     public void openViewListen()
     {
-        currentView = viewChoose;
+        currentView = viewListen;
         viewListen.SetActive(true);
     }  
     public void openViewSpeaking()
     {
-        currentView = viewChoose;
+        currentView = viewSpeaking;
         viewSpeaking.SetActive(true);
     }
 }
