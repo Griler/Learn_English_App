@@ -4,66 +4,172 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq;
 using DG.Tweening;
-using Random = UnityEngine.Random; // Dùng để trộn đáp án
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
+
 
 public class ListeningGameManager : MonoBehaviour
 {
-    [Header("--- DATA CONFIG ---")]
-    // Bạn nhập dữ liệu thủ công vào List này trên Inspector
-    public List<ListeningQuestion> questions;
+    public static ListeningGameManager Instance; // Singleton đơn giản để Handler gọi lại
 
-    [Header("--- AUDIO ---")] public AudioSource audioSource;
+    [Header("--- MODULES ---")]
+    public ListeningMultipleChoiceHandler mcHandler;
+    public ListeningTypingHandler typingHandler;
+    public GameObject dashBoard;
+    public GameObject container;
+    public GameObject itemAnswer;
+    public GameObject canavas;
+
+    [Header("--- DATA CONFIG ---")]
+    public List<ListeningQuestion> questions;
+    public List<ListenAnswer> answerChoose;
+
+    [Header("--- AUDIO ---")] 
+    public AudioSource audioSource;
 
     [Header("--- UI COMMON ---")]
-    public TextMeshProUGUI questionInstruction; // VD: "Nghe và chọn đáp án"
+    public TextMeshProUGUI questionInstruction;
     public Button playAudioBtn;
-    public TextMeshProUGUI feedbackText;
-    public Button nextBtn;
-    public GameObject loadingPanel; // Panel Loading xoay xoay
+    public TextMeshProUGUI resultText; 
+    public Button nextBtn; 
+    public Button skipBtn; 
+    public GameObject loadingPanel;
+   
 
-    [Header("--- UI MULTIPLE CHOICE ---")] public GameObject choiceContainer;
-    public Button[] choiceButtons; 
-    public Button nextBtnMultipleChoice;
-
-    [Header("--- UI TYPING ---")] public GameObject typingContainer;
-    public TMP_InputField inputField;
-    public Button submitTypingBtn;
-    public Button nextBtnTyping;
-
-    [Header("Feedback")] 
-    public Color clickColor;
-    public Color wrongColor;
-    public Color correctColor;
-    public Color defaultColor;
-    
     private int currentIndex = 0;
     private ListeningQuestion currentQ;
-    private GameObject currentButtonClick;
-    [SerializeField] private TextMeshProUGUI resultText;
-    private string chooseAnswer = "";
+    
+    private bool isModeMultipleChoice = false; 
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
         playAudioBtn.onClick.AddListener(PlayCurrentAudio);
-        nextBtn.onClick.AddListener(HandleAnswer);
-        //submitTypingBtn.onClick.AddListener(CheckTypingAnswer);
+        nextBtn.onClick.AddListener(HandleNextButton);
+        skipBtn.onClick.AddListener(onSkipClick);
+        canavas.SetActive(true);
+        dashBoard.SetActive(false);
         if (GlobalData.questionsToListen != null && GlobalData.questionsToListen.Count > 0)
         {
+            questions.Clear();
             questions.AddRange(GlobalData.questionsToListen);
         }
 
-        // Kiểm tra Service
-        if (GoogleSpeechService.Instance == null)
-        {
-            return;
-        }
+        if (GoogleSpeechService.Instance == null) return;
 
         LoadQuestion(0);
     }
 
-    // --- LOGIC CHUYỂN CÂU HỎI ---
+    // --- LUỒNG CHÍNH ---
+    void LoadQuestion(int index)
+    {
+        resultText.text = "";
+        nextBtn.interactable = false;
+        nextBtn.GetComponent<Image>().color = Color.darkGray;
+        
+        mcHandler.Hide();
+        typingHandler.Hide();
+
+        currentQ = questions[index];
+        
+        SetupGameMode();
+        
+        if (loadingPanel) loadingPanel.SetActive(true);
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            GoogleSpeechService.Instance.TextToSpeech(currentQ.correctAnswer,
+                (clip =>
+                {
+                    if (loadingPanel) loadingPanel.SetActive(false);
+                    audioSource.clip = clip;
+                    audioSource.Play();
+                }),
+                s => {
+                    if (loadingPanel) loadingPanel.SetActive(false);
+                    Debug.LogError(s);
+                });
+        });
+    }
+
+    void SetupGameMode()
+    {
+        bool randomChoice = (Random.value > 0.5f); 
+
+        if (randomChoice) 
+        {
+            isModeMultipleChoice = true;
+            questionInstruction.text = "Nghe và chọn đáp án đúng:";
+            mcHandler.gameObject.SetActive(true);
+            mcHandler.Setup(currentQ);
+        }
+        else
+        {
+            typingHandler.gameObject.SetActive(true);
+            isModeMultipleChoice = false;
+            questionInstruction.text = "Nghe và viết lại câu:";
+            typingHandler.Setup(currentQ, NextQuestion, onSkipClick);
+        }
+    }
+
+    public void OnAnswerSelected()
+    {
+        nextBtn.interactable = true;
+        nextBtn.GetComponent<Image>().color = Color.white;
+    }
+
+    void HandleNextButton()
+    {
+        if (isModeMultipleChoice)
+        {
+            bool isCorrect = mcHandler.CheckAnswerAndShowFeedback();
+            if (isCorrect)
+            {
+                StartCoroutine(ProcessCorrectAnswer());
+            }
+            else
+            {
+                StartCoroutine(ProcessWrongAnswerMC());
+            }
+        }
+    }
+
+
+    IEnumerator ProcessCorrectAnswer()
+    {
+        resultText.text = "Correct";
+        resultText.color = Color.green;
+        ListenAnswer answer = new ListenAnswer();
+        answer.correctAws = currentQ.correctAnswer;
+        answer.isCorrect = true;
+        answerChoose.Add(answer);
+        yield return new WaitForSeconds(0.5f);
+        NextQuestion();
+    }
+
+    IEnumerator ProcessWrongAnswerMC()
+    {
+        resultText.text = "Wrong";
+        resultText.color = Color.red;
+        
+        // Khóa nút next
+        nextBtn.interactable = false;
+        nextBtn.GetComponent<Image>().color = Color.darkGray;
+        ListenAnswer answer = new ListenAnswer();
+        answer.correctAws = currentQ.correctAnswer;
+        answer.isCorrect = false;
+        answerChoose.Add(answer);
+        yield return new WaitForSeconds(0.5f);
+        
+        resultText.text = "";
+        mcHandler.ResetColorCurrentButton();
+        NextQuestion();
+    }
+
     void NextQuestion()
     {
         currentIndex++;
@@ -73,61 +179,21 @@ public class ListeningGameManager : MonoBehaviour
         }
         else
         {
-            // Hết câu hỏi
-            nextBtn.gameObject.SetActive(false);
-            choiceContainer.SetActive(false);
-            typingContainer.SetActive(false);
-            questionInstruction.text = "";
+            // End Game
+            canavas.SetActive(false);
+            mcHandler.Hide();
+            typingHandler.Hide();
+            initDashBoad();
         }
     }
 
-    void LoadQuestion(int index)
+    void onSkipClick()
     {
-        // Reset UI
-        resultText.text = "";
-        nextBtn.interactable = false;
-        nextBtn.GetComponent<Image>().color = Color.darkGray;
-        inputField.text = "";
-        choiceContainer.SetActive(false);
-        typingContainer.SetActive(false);
-
-        currentQ = questions[index];
-        
-        setUpGame();
-        DOVirtual.DelayedCall(0.5f, () =>
-        {
-            GoogleSpeechService.Instance.TextToSpeech(currentQ.correctAnswer,
-                (clip =>
-                {
-                    audioSource.clip = clip;
-                    audioSource.Play();
-                }),
-                s => Debug.LogError(s));
-        });
-    }
-
-    // --- XỬ LÝ AUDIO ---
-    void setUpGame()
-    {
-        //bool canPlayMultipleChoice = (currentQ.wrongAnswers != null && currentQ.wrongAnswers.Count >= 3);
-        bool randomChoice = (Random.value > 0.5f); // Tung đồng xu
-
-        // Nếu random trúng MC và dữ liệu đủ điều kiện -> Chơi MC
-        if (false)
-        {
-            SetupMultipleChoice();
-        }
-        else
-        {
-            // Còn lại thì chơi Typing
-            SetupTyping();
-        }
-    }
-
-    void OnAudioError(string error)
-    {
-        if (loadingPanel) loadingPanel.SetActive(false);
-        Debug.LogError("TTS Error: " + error);
+        ListenAnswer answer = new ListenAnswer();
+        answer.correctAws = currentQ.correctAnswer;
+        answer.isCorrect = false;
+        answerChoose.Add(answer);
+        NextQuestion();
     }
 
     public void PlayCurrentAudio()
@@ -135,147 +201,34 @@ public class ListeningGameManager : MonoBehaviour
         if (audioSource.clip != null) audioSource.Play();
     }
 
-    // --- LOGIC TRẮC NGHIỆM (Dùng wrongAnswers bạn đã nhập) ---
-    void SetupMultipleChoice()
+    void initDashBoad()
     {
-        questionInstruction.text = "Nghe và chọn đáp án đúng:";
-        choiceContainer.SetActive(true);
-        resetUi();
-        // Gom đáp án đúng và các đáp án sai vào 1 list
-        List<string> options = new List<string>();
-        options.Add(currentQ.correctAnswer);
-
-        if (currentQ.wrongAnswers != null)
+        
+        dashBoard.SetActive(true);
+        for (int i = 0; i < answerChoose.Count; i++)
         {
-            options.AddRange(currentQ.wrongAnswers);
-        }
-
-        // Trộn vị trí (Shuffle)
-        options = options.OrderBy(x => Random.value).ToList();
-
-        // Gán vào nút
-        for (int i = 0; i < choiceButtons.Length; i++)
-        {
-            if (i < options.Count)
+            GameObject item = Instantiate(itemAnswer, container.transform);
+            item.SetActive(true);
+            item.GetComponentsInChildren<TextMeshProUGUI>()[0].text = (i+1).ToString();
+            item.GetComponentsInChildren<TextMeshProUGUI>()[1].text = questions[i].correctAnswer;
+            if (answerChoose[i].isCorrect)
             {
-                choiceButtons[i].gameObject.SetActive(true);
-                choiceButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = options[i];
-
-                // Lưu lại giá trị cho nút bấm
-                string selectedText = options[i];
-                choiceButtons[i].onClick.RemoveAllListeners();
-                var btn =    choiceButtons[i];
-                choiceButtons[i].onClick.AddListener(() => initChooseAnswer(btn.gameObject));
+                item.GetComponentsInChildren<TextMeshProUGUI>()[1].color = Color.green;;
             }
             else
             {
-                choiceButtons[i].gameObject.SetActive(false);
+                item.GetComponentsInChildren<TextMeshProUGUI>()[1].color = Color.softRed;;
             }
         }
     }
 
-    void initChooseAnswer(GameObject chooseButton)
+    public void onHomeButton()
     {
-        if (currentButtonClick != null)
-        {
-            currentButtonClick.GetComponent<Image>().color = defaultColor;
-        }
-        chooseAnswer = chooseButton.GetComponentInChildren<TextMeshProUGUI>().text;
-        currentButtonClick = chooseButton;
-        chooseButton.GetComponent<Image>().color = clickColor;
-        nextBtn.interactable = true;
-        nextBtn.GetComponent<Image>().color = Color.white;
-    }
-    
-    public void HandleAnswer()
-    {
-        bool isCorrect = chooseAnswer == currentQ.correctAnswer;
-        StartCoroutine(ShowFeedback(isCorrect, currentButtonClick));
-    }
-    
-    IEnumerator ShowFeedback(bool isCorrect, GameObject chooseButton)
-    {
-        if (isCorrect)
-        {
-            chooseButton.GetComponent<Image>().color = correctColor;
-            resultText.GetComponent<TextMeshProUGUI>().text = "Correct";
-            resultText.GetComponent<TextMeshProUGUI>().color = Color.lawnGreen;
-            yield return new WaitForSeconds(0.5f);
-            NextQuestion();
-        }
-        else if (!isCorrect)
-        {
-            chooseButton.GetComponent<Image>().color = wrongColor;
-            resultText.GetComponent<TextMeshProUGUI>().text = "Wrong";
-            resultText.GetComponent<TextMeshProUGUI>().color = Color.softRed;
-            currentButtonClick = null;
-            chooseAnswer = "";
-            resultText.text = "";
-            nextBtn.interactable = false;
-            nextBtn.GetComponent<Image>().color = Color.darkGray;
-            yield return new WaitForSeconds(0.5f);
-            chooseButton.GetComponent<Image>().color = defaultColor;
-        }
+        SceneManager.LoadScene("HomeScene");
     }
 
-    // --- LOGIC GÕ PHÍM ---
-    void SetupTyping()
+    public void onPlayAgain()
     {
-        try
-        {
-            questionInstruction.text = "Nghe và viết lại câu:";
-            typingContainer.SetActive(true);
-            submitTypingBtn.interactable = true;
-            inputField.ActivateInputField();
-            typingContainer.GetComponent<InputKeyBoardCustom>().initButtonWord(currentQ.correctAnswer);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-            throw;
-        }
-
-    }
-
-    void CheckTypingAnswer()
-    {
-        // So sánh chuỗi (bỏ viết hoa thường, bỏ khoảng trắng thừa 2 đầu)
-        string userInput = inputField.text.Trim().ToLower();
-        string correct = currentQ.correctAnswer.Trim().ToLower();
-
-        if (userInput == correct)
-        {
-            OnCorrect();
-        }
-        else
-        {
-            OnWrong();
-        }
-    }
-
-    // --- KẾT QUẢ ---
-    void OnCorrect()
-    {
-        nextBtn.gameObject.SetActive(true);
-
-        // Khóa input
-        choiceContainer.SetActive(false);
-        submitTypingBtn.interactable = false;
-    }
-
-    void OnWrong()
-    {
-        feedbackText.text = "<color=red>Sai rồi, nghe lại nhé!</color>";
-    }
-
-    void resetUi()
-    {
-        foreach (Button answerButton in choiceButtons)
-        {
-            answerButton.GetComponent<Image>().color = defaultColor;
-            answerButton.GetComponentInChildren<TextMeshProUGUI>().text = "";
-        }
-
-        //nextBtn.interactable = false;
+        SceneManager.LoadScene("ListenScene");
     }
 }

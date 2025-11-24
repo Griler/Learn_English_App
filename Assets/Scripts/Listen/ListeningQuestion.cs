@@ -22,3 +22,10 @@ public class ListeningQuestion
     public string correctAnswer;
     public List<string> wrongAnswers;
 }
+
+[System.Serializable]
+public class ListenAnswer
+{
+    public string correctAws;
+    public bool isCorrect;
+}
