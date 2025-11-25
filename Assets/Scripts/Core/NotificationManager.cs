@@ -27,7 +27,7 @@ public class NotificationManager : BaseCode
 
         canvasGroup.alpha = 0;
         notificationPanel.SetActive(false);
-        homeBtn.onClick.AddListener(onClickHomeButton);
+        if(homeBtn) homeBtn.onClick.AddListener(onClickHomeButton);
     }
 
     private void OnEnable()

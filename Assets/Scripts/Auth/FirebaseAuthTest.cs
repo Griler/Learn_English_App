@@ -44,21 +44,26 @@ namespace demo
                 if (dependencyStatus == DependencyStatus.Available)
                 {
                     auth = FirebaseAuth.DefaultInstance;
+                    if (auth.CurrentUser == null) {
+                        Debug.Log("Hiện chưa có ai đăng nhập.");
+                    } else {
+                        Debug.Log("User đang đăng nhập là: " + auth.CurrentUser.Email);
+                    }
                 }
             });
         }
 
         public void OnLoginButtonPressed()
         {
-            string email = "thienloc662001@gmail.com";
-            string password = "123456";
+            string email = emailInputLogin.text;
+            string password = passwordInputLogin.text;
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-            {
-                statusTextLoginForm.text = "Vui lòng nhập đầy đủ email và mật khẩu.";
-                statusTextResigterForm.color = new Color32(220, 20, 60,255);
-                return;
-            }
+            // if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            // {
+            //     statusTextLoginForm.text = "Vui lòng nhập đầy đủ email và mật khẩu.";
+            //     statusTextResigterForm.color = new Color32(220, 20, 60,255);
+            //     return;
+            // }
 
             StartCoroutine(LoginUser(email, password));
         }
@@ -186,7 +191,7 @@ namespace demo
         private void loadNextScene()
         {
             // Ví dụ: load scene có tên "GameScene"
-            SceneManager.LoadSceneAsync(GlobalData.homeScene);
+            SceneManager.LoadSceneAsync("PvpScene");
         }
     }
 }

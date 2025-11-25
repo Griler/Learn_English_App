@@ -5747,6 +5747,7 @@ MonoBehaviour:
   notificationText: {fileID: 8171878649644104012}
   fadeInDuration: 0.5
   fadeOutDuration: 0.5
+  homeBtn: {fileID: 0}
 --- !u!224 &6841677717581251687
 RectTransform:
   m_ObjectHideFlags: 0

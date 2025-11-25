@@ -55,7 +55,8 @@ public class FirebaseDatabaseManager : MonoBehaviour
     {
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
         currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
-        LoadUserData(currentUser.UserId);
+        if(currentUser != null)
+            LoadUserData(currentUser.UserId);
     }
 
     public void SaveUserData()

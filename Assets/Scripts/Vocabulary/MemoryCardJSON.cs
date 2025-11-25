@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -7,6 +8,7 @@ public class MemoryCardJson : MonoBehaviour
     public Image cardImage;
     public Button cardButton;
     public Sprite backSprite;
+    public TextMeshProUGUI nameCard;
     
     [FormerlySerializedAs("animalData")] [SerializeField] public WordData wordData;
     [HideInInspector] public bool isRevealed = false;
