@@ -65,9 +65,8 @@ public class GameController : MonoBehaviour
     
     private void setUpData()
     {
-         topic = PlayerPrefs.GetString("SelectedMainTopic");
-         subTopic = PlayerPrefs.GetString("SelectedSubTopic");
-        FirebaseDatabaseManager.Instance.LoadWords(topic,subTopic,OnWordsLoaded);
+         int catogeryId = PlayerPrefs.GetInt("SelectedSubCategory");
+         StartCoroutine(ApiController.Instance.GetVocabulariesByCategoryId(catogeryId, OnWordsLoaded));
     }
 
     void OnWordsLoaded(List<WordData> words)
@@ -81,7 +80,7 @@ public class GameController : MonoBehaviour
         Debug.Log("✅ Đã load " + words.Count + " từ!");
         foreach (var w in words)
         {
-            Debug.Log($"{w.name_en} - {w.name_vi}");
+            Debug.Log($"{w.nameEn} - {w.nameVi}");
         }
         listAnimals.AddRange(words);
         quizPanel.GetComponent<QuizManager>().initQuiz(listAnimals);
@@ -96,6 +95,6 @@ public class GameController : MonoBehaviour
     void ShowFinishPanel()
     {
         FirebaseDatabaseManager.Instance.SaveLearnedVocabTopic(topic,subTopic);
-        GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Sẽ Trở Về Trang Chủ",Color.black);
+        GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học.\n Sẽ Trở Về Trang Chủ",Color.black);
     }
 }

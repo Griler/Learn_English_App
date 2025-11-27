@@ -14,54 +14,26 @@ public class TopicSelectManager : MonoBehaviour
     [SerializeField] GameObject topicButtonPrefab;
     [SerializeField] GameObject viewSubTopic;
     
-    IEnumerator Start()
+    void Start()
     {
-        while (!FirebaseDatabaseManager.IsReady)
-        {
-            Debug.Log("⏳ Waiting for Firebase init...");
-            yield return null;
-        }
-
-        // Gọi load data khi Firebase đã sẵn sàng
         LoadMainTopics();
-        
     }
 
     void LoadMainTopics()
     {
-        FirebaseDatabase.DefaultInstance
-            .GetReference("vocab_topics")
-            .GetValueAsync()
-            .ContinueWithOnMainThread(task =>
-            {
-                if (task.IsCompleted)
-                {
-                    DataSnapshot snapshot = task.Result;
-                    List<string> mainTopics = new List<string>();
-                    foreach (var child in snapshot.Children)
-                    {
-                        mainTopics.Add(child.Key);
-                    }
-
-                    Populate(mainTopics);
-                }
-                else
-                {
-                    Debug.LogError("Error loading topics!");
-                }
-            });
+        StartCoroutine(ApiController.Instance.GetCategoriesByParent(null,Populate));
     }
 
-    void Populate(List<string> topics)
+    void Populate(List<Category> topics)
     {
         foreach (Transform c in contentParent) Destroy(c.gameObject);
-        foreach (string topic in topics)
+        foreach (Category topic in topics)
         {
             try
             {
                 GameObject topicChild = Instantiate(topicButtonPrefab, contentParent);
-                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = topic;
-                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic));
+                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = topic.name;
+                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.id));
             }
             catch (Exception e)
             {
@@ -71,9 +43,9 @@ public class TopicSelectManager : MonoBehaviour
         }
     }
 
-    void OnTopicSelected(string topicId)
+    void OnTopicSelected(int parentCategoryId)
     {
-        PlayerPrefs.SetString("SelectedMainTopic", topicId);
+        PlayerPrefs.SetInt("SelectedMainCategoryId", parentCategoryId);
         viewSubTopic.SetActive(true);
         gameObject.SetActive(false);
     }

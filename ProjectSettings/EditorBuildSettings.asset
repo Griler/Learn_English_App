@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoginScene.unity
     guid: 2f4a58595baf56048812d7c54ec3aa80
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/FlashCardScene.unity
     guid: 26c5f98a0cd2f5b43b09b97a84595b85
   - enabled: 0

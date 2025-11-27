@@ -18,13 +18,13 @@ public class CardItem : BaseCode
     
     public void setUpCard(WordData word = null)
     {
-        string nameSprite = config.formatSpriteName(word.name_en);
+        string nameSprite = config.formatSpriteName(word.nameEn);
         if(nameSprite != "")
             petImage.sprite = assetManager.getSpriteAnimal(nameSprite);
         petImage.SetNativeSize();
-        nameEN.text = word.name_en;
-        nameVI.text = word.name_vi;
-        wordToVoice = word.name_en;
+        nameEN.text = word.nameEn;
+        nameVI.text = word.nameVi;
+        wordToVoice = word.nameEn;
     }
 
     public void playVoice()

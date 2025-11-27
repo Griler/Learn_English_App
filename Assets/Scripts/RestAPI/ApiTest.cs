@@ -16,7 +16,8 @@ public class ApiTest : MonoBehaviour
 
         // Example: Test getting all categories
         Debug.Log("Attempting to fetch categories...");
-        StartCoroutine(apiController.GetCategories(OnCategoriesReceived));
+        StartCoroutine(apiController.GetCategoriesByParent(1,OnCategoriesReceived));
+        StartCoroutine(apiController.GetCategoriesByParent(null,OnCategoriesReceived));
 
         // Example: Test getting all vocabularies
         // Debug.Log("Attempting to fetch vocabularies...");

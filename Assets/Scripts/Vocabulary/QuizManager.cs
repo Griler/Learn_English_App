@@ -57,7 +57,7 @@ public class QuizManager : BaseCode
             currentVocabulary = previousWord;
         }
         
-        correctAnswers = !showEnglish ? currentVocabulary.name_en : currentVocabulary.name_vi;
+        correctAnswers = !showEnglish ? currentVocabulary.nameEn : currentVocabulary.nameVi;
         // tạo danh sách 4 đáp án (1 đúng + 3 sai)
         List<WordData> options = new List<WordData> { currentVocabulary };
         while (options.Count < 4)
@@ -69,19 +69,19 @@ public class QuizManager : BaseCode
 
         Shuffle(options);
         
-        string nameSprite = config.formatSpriteName(currentVocabulary.name_en);
+        string nameSprite = config.formatSpriteName(currentVocabulary.nameEn);
         if(nameSprite != "")
             questionImage.sprite = assetManager.getSpriteAnimal(nameSprite);
         
         if (showEnglish)
         {
-            questionText.text = $"Từ này có nghĩa là gì: {currentVocabulary.name_en}?";
-            showText.text = currentVocabulary.name_en;
+            questionText.text = $"Từ này có nghĩa là gì: {currentVocabulary.nameEn}?";
+            showText.text = currentVocabulary.nameEn;
         }
         else
         {
-            questionText.text = $"Từ tiếng Anh của \"{currentVocabulary.name_vi}\" là gì?";
-            showText.text = currentVocabulary.name_vi;
+            questionText.text = $"Từ tiếng Anh của \"{currentVocabulary.nameVi}\" là gì?";
+            showText.text = currentVocabulary.nameVi;
         }
 
         // gán text và event cho button
@@ -90,7 +90,7 @@ public class QuizManager : BaseCode
             var btn = answerButtons[i];
             var pair = options[i];
 
-            string answerText = showEnglish ? pair.name_vi : pair.name_en;
+            string answerText = showEnglish ? pair.nameVi : pair.nameEn;
             try
             {
                 btn.GetComponentInChildren<TextMeshProUGUI>().text = answerText;

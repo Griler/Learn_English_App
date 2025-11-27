@@ -45,6 +45,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
     
     void GenerateCards()
     {
+        /*
         // 1️⃣ Lấy category
         string category = PlayerPrefs.GetString("SelectedCategory", "All");
 
@@ -55,7 +56,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
         }
         else
         {
-            animals = VocabularyDataManager.Instance.GetRandomAnimalsFromCategory(category, totalPairs);
+            /animals = VocabularyDataManager.Instance.GetRandomAnimalsFromCategory(category, totalPairs);
         }
 
         // Tạo danh sách tất cả card (mỗi con 2 cái)
@@ -101,6 +102,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
         // Ẩn các card dư (nếu có)
         for (int i = allCards.Count; i < existingCards.Count; i++)
             existingCards[i].gameObject.SetActive(false);
+            */
 
         UpdateUI();
     }
@@ -138,9 +140,7 @@ public class MemoryMatchGameJSON : MonoBehaviour
                 audioSource.PlayOneShot(matchSound);
             
             // Play animal sound
-            if (firstCard.wordData.audioClip)
-                audioSource.PlayOneShot(firstCard.wordData.audioClip);
-            
+
             if (pairsFound >= totalPairs)
             {
                 gameActive = false;

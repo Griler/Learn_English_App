@@ -7,14 +7,10 @@ using UnityEngine.Serialization;
 public class WordData
 {
     public int id;
-    public string name_en;
-    public string name_vi;
+    public string name;
+    public string nameEn;
+    public string nameVi;
     public string image;
-    
-    [NonSerialized]
-    public Sprite sprite;
-    [NonSerialized]
-    public AudioClip audioClip;
 }
 [CreateAssetMenu(fileName = "New Container", menuName = "Game Data/AnimalCategorySO")]
 [System.Serializable]

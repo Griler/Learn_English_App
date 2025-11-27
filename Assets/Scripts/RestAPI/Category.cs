@@ -4,9 +4,9 @@ using System.Collections.Generic;
 [Serializable]
 public class Category
 {
-    public long id;
+    public int id;
     public string name;
-    public long? parent_id; // Nullable for root categories
+    public int? parent_id; // Nullable for root categories
 
     // We remove the nested lists to prevent serialization depth errors with JsonUtility.
     // After fetching the flat list of all categories, you can manually

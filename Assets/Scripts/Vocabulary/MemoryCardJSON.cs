@@ -26,7 +26,7 @@ public class MemoryCardJson : MonoBehaviour
     public void Reveal()
     {
         isRevealed = true;
-        cardImage.sprite = wordData.sprite;
+        //cardImage.sprite = wordData.sprite;
     }
     
     public void Hide()

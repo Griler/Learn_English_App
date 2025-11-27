@@ -3,15 +3,11 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-/// <summary>
-/// A helper class to deserialize JSON arrays using JsonUtility.
-/// JsonUtility cannot deserialize a root array directly, so we wrap it in an object.
-/// </summary>
+// Helper class for JSON deserialization
 public static class JsonHelper
 {
     public static List<T> FromJson<T>(string json)
     {
-        // Wrap the json array string into a JSON object with an "items" key
         string newJson = "{\"items\":" + json + "}";
         Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
         return wrapper.items;
@@ -20,56 +16,78 @@ public static class JsonHelper
     [System.Serializable]
     private class Wrapper<T>
     {
-        // The field name "items" must match the key used in the wrapper string.
         public List<T> items;
     }
 }
 
 public class ApiController : MonoBehaviour
 {
-    // IMPORTANT: Make sure this URL is correct for your local server
+    #region Singleton
+    
+    public static ApiController Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    #endregion
+
     private const string BASE_URL = "http://localhost:8080/api"; 
 
-    // Example method to get all vocabularies
-    public IEnumerator GetVocabularies(System.Action<List<Vocabulary>> callback)
+    public IEnumerator GetCategoriesByParent(int? parentId = null, System.Action<List<Category>> callback = null)
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(BASE_URL + "/vocabularies"))
+        string url = parentId.HasValue
+            ? $"{BASE_URL}/vocabulary-categories?parentId={parentId.Value}"
+            : $"{BASE_URL}/vocabulary-categories";
+
+        Debug.Log($"Fetching categories from URL: {url}");
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
             yield return webRequest.SendWebRequest();
 
             if (webRequest.result == UnityWebRequest.Result.Success)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
-                // Use the corrected JsonHelper to deserialize the JSON array
-                List<Vocabulary> vocabularies = JsonHelper.FromJson<Vocabulary>(jsonResponse);
-                callback(vocabularies);
+                List<Category> categories = JsonHelper.FromJson<Category>(jsonResponse);
+                callback?.Invoke(categories);
             }
             else
             {
-                Debug.LogError("Error getting vocabularies: " + webRequest.error);
-                callback(null);
+                Debug.LogError($"Error getting categories from {url}: {webRequest.error}");
+                callback?.Invoke(null);
             }
         }
     }
 
-    // Example method to get all categories
-    public IEnumerator GetCategories(System.Action<List<Category>> callback)
+
+    public IEnumerator GetVocabulariesByCategoryId(int categoryId, System.Action<List<WordData>> callback)
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(BASE_URL + "/categories"))
+        string url = $"{BASE_URL}/vocabularies?categoryId={categoryId}";
+        Debug.Log($"Fetching vocabularies from URL: {url}");
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
             yield return webRequest.SendWebRequest();
 
             if (webRequest.result == UnityWebRequest.Result.Success)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
-                // Use the corrected JsonHelper to deserialize the JSON array
-                List<Category> categories = JsonHelper.FromJson<Category>(jsonResponse);
-                callback(categories);
+                List<WordData> vocabularies = JsonHelper.FromJson<WordData>(jsonResponse);
+                callback?.Invoke(vocabularies);
             }
             else
             {
-                Debug.LogError("Error getting categories: " + webRequest.error);
-                callback(null);
+                Debug.LogError($"Error getting vocabularies for category {categoryId}: {webRequest.error}");
+                callback?.Invoke(null);
             }
         }
     }
