@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class FlashcardUIExerciseController : FlashcardUIController
 {
-    [SerializeField] protected List<GrammarFlashcardExercise> listCardExercise;
+    [SerializeField] protected List<GrammarExercise> listCardExercise;
     private int cardExerciseIndexCurrent = 0;
-    private GrammarFlashcardExercise currentGrammarFlashcardExercise;
+    private GrammarExercise currentGrammarFlashcardExercise;
     
     private void OnEnable()
     {
@@ -27,15 +27,18 @@ public class FlashcardUIExerciseController : FlashcardUIController
 
     void initUI()
     {
-        listCardExercise = GrammarManager.GetCardsToWrite();
-        listCard.AddRange(listCardExercise);
-        if (listCard.Count > 0)
-        {
-            ShowCardExercise(listCardExercise[cardExerciseIndexCurrent]);
-        }
+        GrammarManager.GetCardsToWrite(
+            (list) =>
+            {
+                listCardExercise.AddRange(list);
+                if (listCardExercise.Count > 0)
+                {
+                    ShowCardExercise(listCardExercise[cardExerciseIndexCurrent]);
+                }
+            });
     }
     
-    void ShowCardExercise(GrammarFlashcardExercise card)
+    void ShowCardExercise(GrammarExercise card)
     {
         StartCoroutine(setTypeInputField(TypeInputField.Default));
         currentGrammarFlashcardExercise = card;
@@ -89,5 +92,11 @@ public class FlashcardUIExerciseController : FlashcardUIController
             HandleAnswer(TypeInputField.Wrong);
         }
         
+    }
+    
+    protected override void updateProgressBar()
+    {
+        float incrementValue = (progressBar.maxValue / listCardExercise.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

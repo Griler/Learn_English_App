@@ -2,17 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
-using Firebase.Database;
-using Firebase.Extensions;
-using UnityEngine.SceneManagement; // Nếu bạn dùng DOTween
+using UnityEngine.SceneManagement;
 
 public class SpeakingController : MonoBehaviour
 {
     [Header("UI Components")]
     [SerializeField] private Button recordButton;
-    [SerializeField] private Button speakButton;
+    [SerializeField] private Button speakButton; // Button to hear the reference text
     [SerializeField] private Button replayButton;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button prevButton;
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI transcriptText;
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -29,9 +28,13 @@ public class SpeakingController : MonoBehaviour
 
     private AudioSource audioSource;
     private AudioClip recordedClip;
+    private List<AudioClip> ListRecordedClip = new List<AudioClip>();
     private string micDeviceName;
     private bool isRecording = false;
-    [SerializeField] private List<SentenceItem> listSentences = new List<SentenceItem>();
+
+    private List<SpeakingQuestion> listSentences = new List<SpeakingQuestion>();
+    private int currentQuestionIndex = 0;
+
     void Start()
     {
         // Setup AudioSource
@@ -42,10 +45,21 @@ public class SpeakingController : MonoBehaviour
         if (recordButton) recordButton.onClick.AddListener(OnRecordToggle);
         if (speakButton) speakButton.onClick.AddListener(OnSpeakClicked);
         if (replayButton) replayButton.onClick.AddListener(OnReplayClicked);
-        string currentTopic = PlayerPrefs.GetString("CurrentSpeakingTopic");
+        if (nextButton) nextButton.onClick.AddListener(OnClickNextBtn);
+        if (prevButton) prevButton.onClick.AddListener(OnClickPrevBtn);
 
-        GetSentencesByTopic(currentTopic, initProp);
-        UpdateStatus("Ready");
+        // Fetch questions from API
+        int currentTopicId = PlayerPrefs.GetInt("SelectedSpeakingTopic");
+        if (currentTopicId > 0)
+        {
+            UpdateStatus("Loading questions...");
+            StartCoroutine(ApiController.Instance.GetSpeakingQuestionsByCategoryId(currentTopicId, OnQuestionsLoaded));
+        }
+        else
+        {
+            UpdateStatus("No topic selected!");
+            Debug.LogError("SelectedSpeakingTopic not found in PlayerPrefs.");
+        }
     }
 
     void Update()
@@ -56,9 +70,68 @@ public class SpeakingController : MonoBehaviour
         }
         else
         {
-             // Reset slider từ từ về 0
+             // Reset slider
              if (volumeSlider && volumeSlider.value > 0)
                 volumeSlider.value = Mathf.Lerp(volumeSlider.value, 0, Time.deltaTime * 10);
+        }
+    }
+
+    // ##################################################################
+    // ## Question Navigation
+    // ##################################################################
+
+    private void OnQuestionsLoaded(List<SpeakingQuestion> questions)
+    {
+        if (questions == null || questions.Count == 0)
+        {
+            UpdateStatus("No questions found for this topic.");
+            return;
+        }
+
+        listSentences = questions;
+        currentQuestionIndex = 0;
+        DisplayQuestion(currentQuestionIndex);
+        UpdateStatus("Ready to start!");
+    }
+
+    private void DisplayQuestion(int index)
+    {
+        if (listSentences == null || listSentences.Count == 0) return;
+
+        // Clamp index to be safe
+        currentQuestionIndex = Mathf.Clamp(index, 0, listSentences.Count - 1);
+
+        SpeakingQuestion currentQuestion = listSentences[currentQuestionIndex];
+        if (referenceTextInputEN) referenceTextInputEN.text = currentQuestion.en;
+        if (referenceTextInputVI) referenceTextInputVI.text = currentQuestion.vn;
+
+        // Reset UI for new question
+        if (transcriptText) transcriptText.text = "Your transcript will appear here.";
+        if (scoreText)
+        {
+            scoreText.text = "Score: ";
+            scoreText.color = Color.white;
+        }
+        if (statusText) statusText.text = $"Question {currentQuestionIndex + 1}/{listSentences.Count}";
+
+        // Update button states
+        if (prevButton) prevButton.interactable = (currentQuestionIndex > 0);
+        if (nextButton) nextButton.interactable = (currentQuestionIndex < listSentences.Count - 1);
+    }
+
+    public void OnClickNextBtn()
+    {
+        if (currentQuestionIndex < listSentences.Count - 1)
+        {
+            DisplayQuestion(currentQuestionIndex + 1);
+        }
+    }
+
+    public void OnClickPrevBtn()
+    {
+        if (currentQuestionIndex > 0)
+        {
+            DisplayQuestion(currentQuestionIndex - 1);
         }
     }
 
@@ -82,9 +155,9 @@ public class SpeakingController : MonoBehaviour
 
         micDeviceName = Microphone.devices[0];
         recordedClip = Microphone.Start(micDeviceName, false, recordingLength, recordingSampleRate);
+        ListRecordedClip.Add(recordedClip);
         isRecording = true;
-        string currentTopic = PlayerPrefs.GetString("CurrentSpeakingTopic");
-            
+
         UpdateStatus("Recording...");
         if (recordButton) recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Stop";
     }
@@ -99,14 +172,8 @@ public class SpeakingController : MonoBehaviour
 
         if (!IsAudioValid(recordedClip)) return;
 
-        UpdateStatus("Processing STT...");
-        
-        // Gọi qua Service
-        GoogleSpeechService.Instance.SpeechToText(
-            recordedClip, 
-            OnSTTSuccess, 
-            OnApiError
-        );
+        UpdateStatus("Processing...");
+        GoogleSpeechService.Instance.SpeechToText(recordedClip, OnSTTSuccess, OnApiError);
     }
 
     private bool IsAudioValid(AudioClip clip)
@@ -116,13 +183,12 @@ public class SpeakingController : MonoBehaviour
             UpdateStatus("Recording too short.");
             return false;
         }
-        
-        // Check silence logic (Simplified)
+
         float[] samples = new float[128];
         clip.GetData(samples, 0);
         float maxAmp = 0;
         foreach (var s in samples) if (Mathf.Abs(s) > maxAmp) maxAmp = Mathf.Abs(s);
-        
+
         if (maxAmp < silenceThreshold)
         {
             UpdateStatus("Too quiet. Speak louder.");
@@ -133,38 +199,35 @@ public class SpeakingController : MonoBehaviour
 
     private void UpdateVolumeMeter()
     {
-        if (!volumeSlider) return;
-        
-        int micPos = Microphone.GetPosition(micDeviceName) - 128;
-        if (micPos < 0) return;
+        if (!volumeSlider || !isRecording) return;
+
+        int micPos = Microphone.GetPosition(micDeviceName);
+        if (micPos < 128) return;
 
         float[] samples = new float[128];
-        recordedClip.GetData(samples, micPos);
-        
+        recordedClip.GetData(samples, micPos - 128);
+
         float sum = 0;
         foreach (var s in samples) sum += Mathf.Abs(s);
         float avg = sum / 128f;
 
         volumeSlider.value = Mathf.Lerp(volumeSlider.value, avg * 10f, 0.5f);
-        
-        // Đổi màu slider dựa trên độ lớn (Optional)
-        Color c = avg < 0.02f ? Color.red : (avg < 0.08f ? Color.yellow : Color.green);
-        if(volumeSlider.targetGraphic) volumeSlider.targetGraphic.color = c;
     }
 
     // ##################################################################
-    // ## TTS LOGIC
+    // ## AUDIO PLAYBACK & API CALLBACKS
     // ##################################################################
 
     public void OnSpeakClicked()
     {
-        string text = ttsTextInput ? ttsTextInput.text : "Hello World";
-        UpdateStatus("Synthesizing TTS...");
-        
+        string textToSpeak = referenceTextInputEN ? referenceTextInputEN.text : "";
+        if (string.IsNullOrEmpty(textToSpeak)) return;
+
+        UpdateStatus("Synthesizing audio...");
         GoogleSpeechService.Instance.TextToSpeech(
-            text,
+            textToSpeak,
             (clip) => {
-                UpdateStatus("Playing TTS...");
+                UpdateStatus("Playing reference audio...");
                 audioSource.clip = clip;
                 audioSource.Play();
             },
@@ -174,32 +237,40 @@ public class SpeakingController : MonoBehaviour
 
     private void OnReplayClicked()
     {
-        if (recordedClip)
+        if (HasClipAtIndex(currentQuestionIndex))
         {
-            audioSource.clip = recordedClip;
+            audioSource.clip = ListRecordedClip[currentQuestionIndex];
             audioSource.Play();
-            UpdateStatus("Replaying...");
+            UpdateStatus("Replaying your recording...");
+        }
+        else
+        {
+            UpdateStatus("No recording found at this question.");
         }
     }
+    
+    bool HasClipAtIndex(int index)
+    {
+        return ListRecordedClip != null &&
+               index >= 0 &&
+               index < ListRecordedClip.Count &&
+               ListRecordedClip[index] != null;
+    }
 
-    // ##################################################################
-    // ## CALLBACKS & SCORING
-    // ##################################################################
 
     private void OnSTTSuccess(string transcript, float confidence)
     {
         if (transcriptText) transcriptText.text = $"You said: {transcript}";
-        
-        // Tính điểm
+
         string reference = referenceTextInputEN ? referenceTextInputEN.text : "";
         float score = CalculateScore(transcript, reference, confidence);
-        
+
         if (scoreText)
         {
             scoreText.text = $"Score: {score:F1}/100";
             scoreText.color = score > 80 ? Color.green : (score > 50 ? Color.yellow : Color.red);
         }
-        
+
         UpdateStatus("Done!");
     }
 
@@ -215,7 +286,10 @@ public class SpeakingController : MonoBehaviour
         Debug.Log($"[Status] {msg}");
     }
 
-    // --- Scoring Logic (Chuyển từ Service sang) ---
+    // ##################################################################
+    // ## SCORING & UTILITIES
+    // ##################################################################
+
     private float CalculateScore(string transcript, string reference, float confidence)
     {
         if (string.IsNullOrEmpty(reference)) return 0;
@@ -225,11 +299,10 @@ public class SpeakingController : MonoBehaviour
 
         int distance = LevenshteinDistance(transcript, reference);
         int maxLen = Mathf.Max(transcript.Length, reference.Length);
-        
+
         float accuracy = maxLen == 0 ? 100f : (1f - (float)distance / maxLen) * 100f;
         float confScore = confidence * 100f;
 
-        // Công thức cũ của bạn: 70% độ chính xác + 30% độ tự tin
         return Mathf.Clamp((accuracy * 0.7f) + (confScore * 0.3f), 0, 100);
     }
 
@@ -249,51 +322,7 @@ public class SpeakingController : MonoBehaviour
         return d[s1.Length, s2.Length];
     }
 
-    void initProp(List<SentenceItem> listItem)
-    {
-        listSentences.AddRange(listItem);
-        updateUI(listSentences[0]);
-    }
-    
-    void updateUI(SentenceItem item)
-    {
-        referenceTextInputVI.text = item.vn;
-        referenceTextInputEN.text = item.en;
-    }
-    
-    public void GetSentencesByTopic(string topic, System.Action<List<SentenceItem>> callback)
-    {
-        FirebaseDatabase.DefaultInstance
-            .GetReference("speaking") // root json
-            .Child(topic)                     // load đúng topic
-            .GetValueAsync()
-            .ContinueWithOnMainThread(task =>
-            {
-                if (!task.IsCompleted)
-                {
-                    Debug.LogError("Cannot load topic: " + topic);
-                    callback?.Invoke(null);
-                    return;
-                }
-
-                DataSnapshot snapshot = task.Result;
-
-                List<SentenceItem> list = new List<SentenceItem>();
-
-                foreach (var child in snapshot.Children)
-                {
-                    SentenceItem item = new SentenceItem();
-                    item.vn = child.Child("vn").Value.ToString();
-                    item.en = child.Child("en").Value.ToString();
-
-                    list.Add(item);
-                }
-
-                callback?.Invoke(list);
-            });
-    }
-
-    public void onClickHomeButton()
+    public void OnClickHomeButton()
     {
         SceneManager.LoadScene("HomeScene");
     }

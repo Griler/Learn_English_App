@@ -25,7 +25,7 @@ public class FlashcardUIController : BaseCode
     [SerializeField] protected TextMeshProUGUI exampleQuestionText;
     [SerializeField] protected InputKeyBoardCustom inputKeyBoardCustom;
     [SerializeField] protected List<Sprite> backgroundInputField;
-    [SerializeField] private Slider progressBar;
+    [SerializeField] protected Slider progressBar;
     [SerializeField] protected List<GrammarFlashcard> listCard;
     [SerializeField] protected Button nextButton;
     
@@ -75,7 +75,7 @@ public class FlashcardUIController : BaseCode
         }
     }
 
-    void updateProgressBar()
+    protected virtual void updateProgressBar()
     {
         incrementValue = (progressBar.maxValue / listCard.Count);
         progressBar.value = progressBar.value + incrementValue;

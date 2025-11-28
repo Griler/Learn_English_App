@@ -22,8 +22,8 @@ public class ListeningGameManager : MonoBehaviour
     public GameObject canavas;
 
     [Header("--- DATA CONFIG ---")]
-    public List<ListeningQuestion> questions;
-    public List<ListenAnswer> answerChoose;
+    public List<ListeningQuestion> questions = new List<ListeningQuestion>();
+    public List<ListenAnswer> answerChoose = new List<ListenAnswer>();
 
     [Header("--- AUDIO ---")] 
     public AudioSource audioSource;
@@ -35,7 +35,7 @@ public class ListeningGameManager : MonoBehaviour
     public Button nextBtn; 
     public Button skipBtn; 
     public GameObject loadingPanel;
-   
+    public TextMeshProUGUI textQuestion;
 
     private int currentIndex = 0;
     private ListeningQuestion currentQ;
@@ -54,28 +54,31 @@ public class ListeningGameManager : MonoBehaviour
         skipBtn.onClick.AddListener(onSkipClick);
         canavas.SetActive(true);
         dashBoard.SetActive(false);
-        if (GlobalData.questionsToListen != null && GlobalData.questionsToListen.Count > 0)
-        {
-            questions.Clear();
-            questions.AddRange(GlobalData.questionsToListen);
-        }
-
+        int categoryId = PlayerPrefs.GetInt("SelectedListenTopic");
         if (GoogleSpeechService.Instance == null) return;
-
-        LoadQuestion(0);
+        StartCoroutine(ApiController.Instance.GetListenQuestionsByCategoryId(categoryId,
+            (list) =>
+            {
+                questions.AddRange(list);
+                if (questions.Count > 0)
+                {
+                    LoadQuestion(questions[currentIndex]);
+                }
+            }));
     }
 
     // --- LUỒNG CHÍNH ---
-    void LoadQuestion(int index)
+    void LoadQuestion(ListeningQuestion question)
     {
+        currentQ = questions[currentIndex];
+
         resultText.text = "";
         nextBtn.interactable = false;
         nextBtn.GetComponent<Image>().color = Color.darkGray;
         
         mcHandler.Hide();
         typingHandler.Hide();
-
-        currentQ = questions[index];
+        textQuestion.text = "Question: " + currentIndex + 1; 
         
         SetupGameMode();
         
@@ -175,7 +178,7 @@ public class ListeningGameManager : MonoBehaviour
         currentIndex++;
         if (currentIndex < questions.Count)
         {
-            LoadQuestion(currentIndex);
+            LoadQuestion(questions[currentIndex]);
         }
         else
         {

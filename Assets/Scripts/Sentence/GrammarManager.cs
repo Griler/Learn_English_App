@@ -110,50 +110,15 @@ public class GrammarManager : MonoBehaviour
         return flashcards;
     }
 
-    public List<GrammarFlashcardExmpale> GetCardsToLearn()
+    public void GetCardsToLearn(Action<List<GrammarExample>> cb)  
     {
-        int randomCardToLearn =
-            Random.Range(Convert.ToInt32(totalFlashcards / 2) - 1, Convert.ToInt32(totalFlashcards / 2));
-
-        List<GrammarFlashcardExmpale> shuffledList = new List<GrammarFlashcardExmpale>(listExample);
-        int count = shuffledList.Count;
-
-        if (count < randomCardToLearn)
-        {
-            randomCardToLearn = count; // Giới hạn số lượng bằng kích thước của danh sách
-        }
-
-        for (int i = count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            GrammarFlashcardExmpale temp = shuffledList[i];
-            shuffledList[i] = shuffledList[j];
-            shuffledList[j] = temp;
-        }
-
-        return shuffledList.GetRange(0, randomCardToLearn);
+        int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
+        StartCoroutine(ApiController.Instance.GetGrammarExamByCategoryId(grammarCategoryId, cb , 1));
     }
 
-    public List<GrammarFlashcardExercise> GetCardsToWrite()
+    public void GetCardsToWrite(Action<List<GrammarExercise>> cb)
     {
-        int randomCardToLearn = Random.Range(8, 11);
-
-        List<GrammarFlashcardExercise> shuffledList = new List<GrammarFlashcardExercise>(listExercise);
-        int count = shuffledList.Count;
-
-        if (count < randomCardToLearn)
-        {
-            randomCardToLearn = count;
-        }
-
-        for (int i = count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            GrammarFlashcardExercise temp = shuffledList[i];
-            shuffledList[i] = shuffledList[j];
-            shuffledList[j] = temp;
-        }
-
-        return shuffledList.GetRange(0, randomCardToLearn);
+        int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
+        StartCoroutine(ApiController.Instance.GetGrammarExercisesByCategoryId(grammarCategoryId, cb));
     }
 }

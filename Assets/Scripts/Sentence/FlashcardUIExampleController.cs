@@ -12,30 +12,33 @@ public class FlashcardUIExampleController : FlashcardUIController
     [SerializeField] private TextMeshProUGUI ruleText;
     [SerializeField] private TextMeshProUGUI exampleText;
     [SerializeField] private TextMeshProUGUI translationText;
-    [SerializeField] public List<GrammarFlashcardExmpale> listCardExample;
+    [SerializeField] public List<GrammarExample> listCardExample = new List<GrammarExample>();
 
-    private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
+    private GrammarExample currentGrammarFlashcardExmpale;
     private int cardExampleIndexCurrent = 0;
-    private string grammaId = "";
+    private int grammaId;
 
     protected override void Start()
     {
         base.Start();
         nextButton.onClick.AddListener(OnSubmitAnswer);
-        listCardExample = GrammarManager.GetCardsToLearn();
-        listCard.AddRange(listCardExample);
-        if (listCardExample.Count > 0)
-        {
-            ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
-        }
+        GrammarManager.GetCardsToLearn(
+            (list) =>
+            {
+                listCardExample.AddRange(list);
+                if (listCardExample.Count > 0)
+                {
+                    ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
+                }
+            });
     }
     
-    void ShowCardLearn(GrammarFlashcardExmpale card)
+    void ShowCardLearn(GrammarExample card)
     {
         StartCoroutine(setTypeInputField(TypeInputField.Default));
         currentGrammarFlashcardExmpale = card;
-        grammaId = card.grammarPointID;
-        ruleText.text = card.ruleText;
+        grammaId = card.category.id;
+        ruleText.text = card.category.rule;
         exampleText.text = card.sentence;
         translationText.text = card.translation;
         resultText.text = "";
@@ -94,7 +97,7 @@ public class FlashcardUIExampleController : FlashcardUIController
     void ShowFinishPanel()
     {
         setActiveFlashCard(false);
-        FirebaseDatabaseManager.Instance.SaveLearnedGrammar(grammarId:grammaId);
+        //FirebaseDatabaseManager.Instance.SaveLearnedGrammar(grammarId:grammaId);
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài luyện tập nhanh không ?",Color.black);
         UpdateMissionState();
     }
@@ -120,4 +123,11 @@ public class FlashcardUIExampleController : FlashcardUIController
         }
         
     }
+    
+    protected override void updateProgressBar()
+    {
+        float incrementValue = (progressBar.maxValue / listCardExample.Count);
+        progressBar.value = progressBar.value + incrementValue;
+    }
+
 }

@@ -28,7 +28,7 @@ public class ListeningTypingHandler : MonoBehaviour
         onSkipCallback = onSkip;
         typingContainer.SetActive(true);
         submitTypingBtn.interactable = true;
-
+        resultText.text = "";
         // Gọi script bàn phím ảo (đảm bảo typingContainer có script này)
         try
         {

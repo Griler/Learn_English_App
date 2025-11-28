@@ -30,9 +30,11 @@ public class ListeningMultipleChoiceHandler : MonoBehaviour
 
         // Tạo list đáp án (Đúng + Sai)
         List<string> options = new List<string> { q.correctAnswer };
-        if (q.wrongAnswers != null)
+        if (!string.IsNullOrEmpty(q.wrongAnswers))
         {
-            options.AddRange(q.wrongAnswers);
+            // Tách chuỗi các đáp án sai (phân cách bởi dấu phẩy) và thêm vào danh sách
+            var wrongOptions = q.wrongAnswers.Split(',').Select(o => o.Trim());
+            options.AddRange(wrongOptions);
         }
 
         // Trộn đáp án

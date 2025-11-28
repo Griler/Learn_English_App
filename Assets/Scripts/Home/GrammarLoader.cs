@@ -16,63 +16,27 @@ public class GrammarLoader : MonoBehaviour
     [SerializeField] GameObject topicPrefab;
 
     
-    IEnumerator Start()
+    void OnEnable()
     {
-        while (!FirebaseDatabaseManager.IsReady)
-        {
-            Debug.Log("⏳ Waiting for Firebase init...");
-            yield return null;
-        }
-
-        // Gọi load data khi Firebase đã sẵn sàng
-        LoadTopicsFromFirebase();
-        
+        LoadData();
     }
 
-    public void LoadTopicsFromFirebase()
+    public void LoadData()
     {
-        FirebaseDatabase.DefaultInstance
-            .GetReference("grammar")
-            .Child("topics")
-            .GetValueAsync()
-            .ContinueWithOnMainThread(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("❌ Lỗi tải topics từ Firebase: " + task.Exception);
-                    return;
-                }
-
-                if (task.IsCompleted)
-                {
-                    DataSnapshot snapshot = task.Result;
-
-                    loadedTopics.Clear();
-                    
-                    foreach (DataSnapshot topicSnap in snapshot.Children)
-                    {
-                        string json = topicSnap.GetRawJsonValue();
-                        GrammarTopic topic = JsonUtility.FromJson<GrammarTopic>(json);
-                        loadedTopics.Add(topic);
-                    }
-
-                    Populate(loadedTopics);
-                    Debug.Log($"✅ Đã load {loadedTopics.Count} topic grammar từ Firebase.");
-                }
-            });
+        StartCoroutine(ApiController.Instance.GetGrammarCategories(Populate));
     }
     
-    void Populate(List<GrammarTopic> topics)
+    void Populate(List<GrammarCategory> topics)
     {
         foreach (Transform c in contentParent) Destroy(c.gameObject);
-        foreach (GrammarTopic topic in topics)
+        foreach (GrammarCategory topic in topics)
         {
             try
             {
                 GameObject topicChild = Instantiate(topicPrefab, contentParent);
-                string titleTopic = topic.grammarPointID.Replace("_","\n");
+                string titleTopic = topic.name.Replace("_","\n");
                 topicChild.GetComponentInChildren<TextMeshProUGUI>().text = titleTopic;
-                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.grammarPointID));
+                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.id));
             }
             catch (Exception e)
             {
@@ -82,10 +46,10 @@ public class GrammarLoader : MonoBehaviour
         }
     }
 
-    void OnTopicSelected(string topicId)
+    void OnTopicSelected(int topicId)
     {
-        PlayerPrefs.SetString("SelectedGrammarTopic", topicId);
-        SceneManager.LoadScene("FlashCardScene");
+        PlayerPrefs.SetInt("SelectedGrammarTopic", topicId);
+        SceneManager.LoadScene("SentenceBuildingScene");
     }
 
 }
