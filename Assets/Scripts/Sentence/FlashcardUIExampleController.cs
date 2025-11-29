@@ -98,6 +98,10 @@ public class FlashcardUIExampleController : FlashcardUIController
     {
         setActiveFlashCard(false);
         //FirebaseDatabaseManager.Instance.SaveLearnedGrammar(grammarId:grammaId);
+        string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
+        ApiController.Instance.SaveUserCategoryHistory(userId, grammarCategoryId, ApiController.CategoryType.Grammar);
+
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài luyện tập nhanh không ?",Color.black);
         UpdateMissionState();
     }

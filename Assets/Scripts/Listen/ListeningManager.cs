@@ -206,7 +206,9 @@ public class ListeningGameManager : MonoBehaviour
 
     void initDashBoad()
     {
-        
+        string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        int categoryId = PlayerPrefs.GetInt("SelectedListenTopic");
+        ApiController.Instance.SaveUserCategoryHistory(userId, categoryId, ApiController.CategoryType.Listening);
         dashBoard.SetActive(true);
         for (int i = 0; i < answerChoose.Count; i++)
         {

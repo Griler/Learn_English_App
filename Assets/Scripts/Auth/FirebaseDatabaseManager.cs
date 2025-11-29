@@ -12,7 +12,7 @@ using UnityEditor;
 public class FirebaseDatabaseManager : MonoBehaviour
 {
     DatabaseReference dbReference;
-    private FirebaseUser currentUser;
+    public FirebaseUser currentUser;
     public static FirebaseDatabaseManager Instance;
 
 
