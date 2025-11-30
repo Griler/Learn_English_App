@@ -23,13 +23,13 @@ public class MissionActionManager : MonoBehaviour
                 OpenLessonSelectView();
                 break;
 
-            case GlobalData.MissionKeys.REVIEW:
-                OpenReviewView();
-                break;
-
-            case GlobalData.MissionKeys.PVP:
-                OpenPvPMode();
-                break;
+            // case GlobalData.MissionKeys.REVIEW:
+            //     OpenReviewView();
+            //     break;
+            //
+            // case GlobalData.MissionKeys.PVP:
+            //     OpenPvPMode();
+            //     break;
 
             case GlobalData.MissionKeys.PRACTICE3:
                 OpenPracticeView();
@@ -50,13 +50,13 @@ public class MissionActionManager : MonoBehaviour
     void OpenReviewView()
     {
         Debug.Log("👉 Mở màn hình ôn tập");
-        UIManager.OpenViewByMissionid(GlobalData.MissionKeys.REVIEW);
+        //UIManager.OpenViewByMissionid(GlobalData.MissionKeys.REVIEW);
     }
 
     void OpenPvPMode()
     {
         Debug.Log("👉 Chuyển sang chế độ PvP");
-        UIManager.OpenViewByMissionid(GlobalData.MissionKeys.PVP);
+        //UIManager.OpenViewByMissionid(GlobalData.MissionKeys.PVP);
     }
 
     void OpenPracticeView()

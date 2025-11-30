@@ -23,4 +23,7 @@ public static class GameEvents
     {
         onCompletionMissionDaily?.Invoke(missionId);
     }
+    
+    public static event Action updateUserInfo;
+
 }

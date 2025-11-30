@@ -27,7 +27,9 @@ public class MissionItem : MonoBehaviour
         //if (missionIcon) missionIcon.sprite = mission.title;
         if (descriptionText) descriptionText.text = mission.description;
         if (rewardCoin) rewardCoin.text = $"{mission.reward}";
-
+        descriptionText.ForceMeshUpdate(); 
+        rewardCoin.ForceMeshUpdate();
+        
         if (claimButton)
         {
             bool isActive = mission.isCompleted && !mission.isClaimed;
@@ -45,7 +47,6 @@ public class MissionItem : MonoBehaviour
             {
                 MissionActionManager.Instance.ExecuteMissionAction(missionData.id);
             });
-            
         }
 
         if (statusIcon)
@@ -54,11 +55,21 @@ public class MissionItem : MonoBehaviour
             {
                 statusIcon.SetActive(true);
             }
+            else if(mission.isCompleted && mission.isClaimed == false)
+            {
+                statusIcon.SetActive(false);
+                claimButton.gameObject.SetActive(true);
+                goButton.gameObject.SetActive(false);
+            }
             else
             {
                 statusIcon.SetActive(false);
+                claimButton.gameObject.SetActive(false);
+                goButton.gameObject.SetActive(true);
             }
         }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
+
     }
 
     private void OnClaimClicked()
@@ -95,9 +106,9 @@ public class MissionItem : MonoBehaviour
                 break;
             case GlobalData.MissionKeys.LOGIN:
                 break;
-            case GlobalData.MissionKeys.PVP:
+            case GlobalData.MissionKeys.LEARN_LISTEN:
                 break;
-            case GlobalData.MissionKeys.REVIEW:
+            case GlobalData.MissionKeys.LEARN_SPEAKING:
                 break;
             case GlobalData.MissionKeys.PERFECT_SCORE:
                 break;

@@ -21,7 +21,6 @@ public class UIManager : MonoBehaviour
     {
         currentView = viewChoose;
         //viewLesson.SetActive(true);
-        informationUser.GetComponent<InformationUser>().updateInformation();
         viewDaily.SetActive(false);
         viewLesson.SetActive(false);
         viewGrammar.SetActive(false);
@@ -38,10 +37,10 @@ public class UIManager : MonoBehaviour
             case GlobalData.MissionKeys.LEARN_NEW:
                 openViewLesson();
                 break;
-            case GlobalData.MissionKeys.PVP:
+            /*case GlobalData.MissionKeys.PVP:
             case GlobalData.MissionKeys.REVIEW:
                 openViewReview();
-                break;
+                break;*/
             case GlobalData.MissionKeys.PRACTICE3:
                 openViewGrammar();
                 break;

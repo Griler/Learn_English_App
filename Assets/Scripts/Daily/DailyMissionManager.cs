@@ -16,7 +16,7 @@ public class DailyMissionManager : MonoBehaviour
     private DatabaseReference dbRef;
     private List<DailyMission> missions = new List<DailyMission>();
 
-    void Start()
+    void OnEnable()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
@@ -97,7 +97,7 @@ public class DailyMissionManager : MonoBehaviour
             });
     }
 
-void LoadMissionsFromServer()
+    void LoadMissionsFromServer()
     {
         string userId = FirebaseAuth.DefaultInstance.CurrentUser?.UserId;
         if (string.IsNullOrEmpty(userId))
@@ -129,28 +129,30 @@ void LoadMissionsFromServer()
                 };
                 missions.Add(m);
             }
+
             db.GetReference($"user_missions/{userId}/missions")
-              .GetValueAsync()
-              .ContinueWithOnMainThread(userTask =>
-              {
-                  if (!userTask.IsCompleted) return;
+                .GetValueAsync()
+                .ContinueWithOnMainThread(userTask =>
+                {
+                    if (!userTask.IsCompleted) return;
 
-                  DataSnapshot userSnap = userTask.Result;
+                    DataSnapshot userSnap = userTask.Result;
 
-                  foreach (var m in missions)
-                  {
-                      var userMission = userSnap.Child(m.id);
-                      if (userMission.Exists)
-                      {
-                          if (userMission.Child("isCompleted").Exists)
-                              m.isCompleted = bool.Parse(userMission.Child("isCompleted").Value.ToString());
-                          if (userMission.Child("isClaimed").Exists)
-                              m.isClaimed = bool.Parse(userMission.Child("isClaimed").Value.ToString());
-                      }
-                  }
-                  CompleteMission(GlobalData.MissionKeys.LOGIN);
-                  LoadUserMissionProgress();
-              });
+                    foreach (var m in missions)
+                    {
+                        var userMission = userSnap.Child(m.id);
+                        if (userMission.Exists)
+                        {
+                            if (userMission.Child("isCompleted").Exists)
+                                m.isCompleted = bool.Parse(userMission.Child("isCompleted").Value.ToString());
+                            if (userMission.Child("isClaimed").Exists)
+                                m.isClaimed = bool.Parse(userMission.Child("isClaimed").Value.ToString());
+                        }
+                    }
+
+                    CompleteMission(GlobalData.MissionKeys.LOGIN);
+                    LoadUserMissionProgress();
+                });
         });
     }
 
@@ -170,25 +172,68 @@ void LoadMissionsFromServer()
                         if (snapshot.HasChild(mission.id))
                         {
                             var userData = snapshot.Child(mission.id);
-                           mission.isCompleted = userData.Child("isCompleted").Value as bool? ?? false;
-                           mission.isClaimed = userData.Child("isClaimed").Value as bool? ?? false;
+                            mission.isCompleted = userData.Child("isCompleted").Value as bool? ?? false;
+                            mission.isClaimed = userData.Child("isClaimed").Value as bool? ?? false;
                         }
                     }
                 }
+
                 DisplayMissions();
             });
     }
 
     void DisplayMissions()
     {
-        foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
+        int dataCount = missions.Count;
+        int currentUICount = contentParent.childCount;
 
-        for (int i = 0; i < missions.Count; i++)
+        // BƯỚC 2: TÁI SỬ DỤNG HOẶC TẠO MỚI (POOLING)
+        for (int i = 0; i < dataCount; i++)
         {
-            GameObject itemObj = Instantiate(missionItemPrefab, contentParent);
-            MissionItem item = itemObj.GetComponent<MissionItem>();
-            item.Setup(missions[i], OnMissionClaimed);
+            MissionItem item;
+            if (i < currentUICount)
+            {
+                // Lấy cái cũ ra dùng
+                Transform child = contentParent.GetChild(i);
+
+                // QUAN TRỌNG: Kiểm tra null phòng trường hợp object bị user xóa tay hoặc lỗi gì đó
+                if (child == null) continue;
+
+                child.gameObject.SetActive(true);
+                item = child.GetComponent<MissionItem>();
+            }
+            else
+            {
+                // Thiếu thì tạo mới
+                GameObject newObj = Instantiate(missionItemPrefab, contentParent);
+                item = newObj.GetComponent<MissionItem>();
+            }
+
+            // Setup data
+            if (item != null)
+            {
+                item.Setup(missions[i], OnMissionClaimed);
+            }
+        }
+
+        // BƯỚC 3: ẨN CÁC OBJECT THỪA (THAY VÌ DESTROY)
+        for (int i = dataCount; i < currentUICount; i++)
+        {
+            Transform child = contentParent.GetChild(i);
+            if (child != null)
+            {
+                // Chỉ ẩn đi để lần sau dùng lại -> Không gây lỗi layout
+                child.gameObject.SetActive(false);
+            }
+        }
+
+        // BƯỚC 4: CẬP NHẬT LAYOUT (Bây giờ an toàn rồi vì không có ai bị Destroy cả)
+        Canvas.ForceUpdateCanvases();
+
+        // Kiểm tra null trước khi Rebuild cho chắc chắn
+        if (contentParent != null && contentParent.gameObject.activeInHierarchy)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent.GetComponent<RectTransform>());
         }
     }
 
@@ -211,7 +256,7 @@ void LoadMissionsFromServer()
             DisplayMissions();
         }
     }
-    
+
 
     void SaveUserMission(DailyMission m)
     {
