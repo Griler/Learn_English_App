@@ -129,7 +129,6 @@ GameObject:
   m_Component:
   - component: {fileID: 17490753}
   - component: {fileID: 17490754}
-  - component: {fileID: 17490755}
   m_Layer: 5
   m_Name: PopupFriend
   m_TagString: Untagged
@@ -183,21 +182,6 @@ MonoBehaviour:
   panelFriendAdd: {fileID: 1544133781}
   title: {fileID: 647384426}
   panelFriendRequests: {fileID: 215686356}
---- !u!114 &17490755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17490752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 295b93b803e3a1f46b15647016a81233, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myUserId: 
-  myUserName: 
-  invitePopup: {fileID: 1262880001}
 --- !u!1 &43521241
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +649,7 @@ GameObject:
   m_Component:
   - component: {fileID: 251397981}
   - component: {fileID: 251397982}
+  - component: {fileID: 251397983}
   m_Layer: 5
   m_Name: TabInfo
   m_TagString: Untagged
@@ -707,6 +692,21 @@ MonoBehaviour:
   contentContainer: {fileID: 4214823572455580401}
   friendItemPrefab: {fileID: 3490729526726087466, guid: 2d497456a1279df4881af5069a2add51, type: 3}
   resultText: {fileID: 288632301}
+--- !u!114 &251397983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251397980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 295b93b803e3a1f46b15647016a81233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myUserId: UserA
+  myUserName: Player A
+  invitePopup: {fileID: 1262880001}
 --- !u!1 &288632299
 GameObject:
   m_ObjectHideFlags: 0

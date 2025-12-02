@@ -13,6 +13,7 @@ public class FriendItemUI : BaseCode
     public Button deleteBtn;
 
     private string currentFriendId;
+    private string currentFriendName;
     private UserInfoData cachedInfo;
 
     // Hàm này được gọi khi Instantiate prefab
@@ -20,6 +21,7 @@ public class FriendItemUI : BaseCode
     {
         // Đăng ký sự kiện cho các nút
         currentFriendId = friendId;
+        currentFriendName = info.name;
         invitePvpBtn.onClick.AddListener(OnInviteClicked);
         deleteBtn.onClick.AddListener(OnDeleteClicked);
         cachedInfo = info;
@@ -38,7 +40,7 @@ public class FriendItemUI : BaseCode
 
     void OnInviteClicked()
     {
-        FriendActionService.Instance.InvitePvP(currentFriendId);
+        FriendSystem.Instance.SendInvite(currentFriendId,currentFriendName);
     }
 
     void OnDeleteClicked()

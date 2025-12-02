@@ -7,8 +7,8 @@ public class FriendSystem : MonoBehaviour
     public static FriendSystem Instance;
 
     [Header("User Info (Giả lập)")]
-    public string myUserId = "UserA"; // ID của chính mình (thực tế lấy từ Auth)
-    public string myUserName = "Player A";
+    public string myUserId = ""; // ID của chính mình (thực tế lấy từ Auth)
+    public string myUserName = "";
 
     [Header("References")]
     public InvitePopupUI invitePopup; // Kéo cái UI Popup vào đây
@@ -25,8 +25,6 @@ public class FriendSystem : MonoBehaviour
 
     void Start()
     {
-        // Bắt đầu lắng nghe hộp thư ngay khi mở app
-        // (Dù chưa kết nối Photon vẫn nhận được thông báo)
         ListenForInvites();
     }
 
@@ -34,8 +32,10 @@ public class FriendSystem : MonoBehaviour
     // PHẦN 1: GỬI LỜI MỜI (Sender Logic)
     // =========================================================
     
-    public void SendInvite(string friendId)
+    public void SendInvite(string friendId, string friendName)
     {
+        myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        
         // 1. Tạo một mã phòng ngẫu nhiên (Ví dụ: Room_4821)
         string roomCode = "Room_" + Random.Range(1000, 9999);
         Debug.Log($"Đang gửi lời mời tới {friendId} vào phòng {roomCode}");
@@ -45,7 +45,7 @@ public class FriendSystem : MonoBehaviour
             .GetReference($"users/{friendId}/invitations");
 
         Dictionary<string, object> inviteData = new Dictionary<string, object>();
-        inviteData["senderName"] = myUserName;
+        inviteData["senderName"] = friendName;
         inviteData["roomCode"] = roomCode;
 
         friendRef.Push().SetValueAsync(inviteData);
