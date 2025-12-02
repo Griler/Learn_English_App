@@ -36,7 +36,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         await InitializeFirebase();
     }
 
-    private async Task InitializeFirebase()
+    public async Task InitializeFirebase()
     {
         var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync();
         if (dependencyStatus == DependencyStatus.Available)

@@ -5,6 +5,7 @@ public class AssetManager : MonoBehaviour
 {
     [SerializeField] private SpriteAtlas   assetAnimal;
     [SerializeField] private SpriteAtlas   assetAvatar;
+    [SerializeField] private SpriteAtlas   assetBorder;
     public static AssetManager Instance { get; private set; }
 
     void Awake()
@@ -25,5 +26,9 @@ public class AssetManager : MonoBehaviour
     public Sprite getSpriteAvatar(string name)
     {
         return assetAvatar.GetSprite(name);
+    } 
+    public Sprite getSpriteBorder(string name)
+    {
+        return assetBorder.GetSprite(name);
     }
 }

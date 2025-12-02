@@ -10,7 +10,6 @@ public class FriendActionService : MonoBehaviour
 
     private DatabaseReference dbRef;
     // ID của chính mình (cần set cái này khi login thành công)
-    public string MyCurrentUserId = "user_123"; 
 
     private void Awake()
     {
@@ -25,6 +24,8 @@ public class FriendActionService : MonoBehaviour
     // 1. Thêm bạn bè (Ghi vào node friend của mình)
     public void AddFriend(string friendIdToAdd, Action<bool, string> callback)
     {
+        string MyCurrentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        
         if (string.IsNullOrEmpty(friendIdToAdd) || friendIdToAdd == MyCurrentUserId)
         {
             callback?.Invoke(false, "ID không hợp lệ");
@@ -44,18 +45,15 @@ public class FriendActionService : MonoBehaviour
     // 2. Xóa bạn bè
     public void RemoveFriend(string friendIdToRemove)
     {
-        // Xóa node: users/myId/friend/friendIdToRemove
+        string MyCurrentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         dbRef.Child("users").Child(MyCurrentUserId).Child("friend").Child(friendIdToRemove).RemoveValueAsync();
         Debug.Log($"Đã gửi lệnh xóa bạn: {friendIdToRemove}");
-        // Không cần callback, vì FirebaseFetcher đang lắng nghe node này, 
-        // khi xóa xong trên server, nó sẽ tự động báo về và UI tự cập nhật.
     }
 
     // 3. Mời PvP (Giả lập)
     public void InvitePvP(string friendId)
     {
         Debug.Log($"[PVP] Đang gửi lời mời đến: {friendId}...");
-        // Thực tế bạn sẽ bắn một notification hoặc ghi vào node "invites" của người kia trên Firebase
     }
 
     // --- QUAN TRỌNG: LẤY INFO NGƯỜI KHÁC ---

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InformationUser : MonoBehaviour
+public class InformationUser : BaseCode
 {
     public Image avatar;
     public Image avatarBorder;
@@ -29,6 +29,8 @@ public class InformationUser : MonoBehaviour
         int coin = userInfo.coin;
         usernameText.text = username;
         coinText.text = coin.ToString();
+        avatar.sprite = assetManager.getSpriteAvatar(userInfo.avatar);
+        avatarBorder.sprite = assetManager.getSpriteBorder(userInfo.border);
     }
 
     private void OnDisable()

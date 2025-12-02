@@ -10,7 +10,9 @@ using UnityEngine.SceneManagement; // Nếu bạn dùng TextMeshPro cho UI
 public class FirebaseLogin : MonoBehaviour
 {
     [Header("Firebase")] private FirebaseAuth auth;
+
     private FirebaseUser user;
+
     // Tham chiếu đến Database
     [Header("UI References Login")] public GameObject loginForm;
     public TMP_InputField emailInputLogin;
@@ -40,6 +42,7 @@ public class FirebaseLogin : MonoBehaviour
             if (dependencyStatus == DependencyStatus.Available)
             {
                 auth = FirebaseAuth.DefaultInstance;
+#if UNITY_EDITOR
                 if (auth.CurrentUser == null)
                 {
                     Debug.Log("Hiện chưa có ai đăng nhập.");
@@ -48,6 +51,14 @@ public class FirebaseLogin : MonoBehaviour
                 {
                     loadNextScene();
                     Debug.Log("User đang đăng nhập là: " + auth.CurrentUser.Email);
+                }
+#else
+                if (auth.CurrentUser != null)
+                {auth.SignOut();
+
+                }
+#endif
+                {
                 }
             }
         });
@@ -61,7 +72,7 @@ public class FirebaseLogin : MonoBehaviour
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             statusTextLoginForm.text = "Vui lòng nhập đầy đủ email và mật khẩu.";
-            statusTextResigterForm.color = new Color32(220, 20, 60,255);
+            statusTextResigterForm.color = new Color32(220, 20, 60, 255);
             return;
         }
 
@@ -152,8 +163,8 @@ public class FirebaseLogin : MonoBehaviour
         // Đăng ký Auth thành công
         FirebaseUser newUser = registerTask.Result.User;
         string name = email.Split("@")[0];
-        UserInfoData userData = new UserInfoData("ava_1","null",email, name, 0, 0);
-        
+        UserInfoData userData = new UserInfoData("ava_1", "null", email, name, 0, 0);
+
         string json = JsonUtility.ToJson(userData);
 
         // BƯỚC 3: Lưu vào Realtime Database theo UserId
@@ -163,7 +174,7 @@ public class FirebaseLogin : MonoBehaviour
             .Child(newUser.UserId)
             .Child("userInfo")
             .SetRawJsonValueAsync(json);
-        
+
         yield return new WaitUntil(() => dbTask.IsCompleted);
 
         if (dbTask.Exception != null)
@@ -175,9 +186,9 @@ public class FirebaseLogin : MonoBehaviour
         {
             user = newUser;
             popupNotification.ShowNotification($"Đăng ký thành công! Email: {user.Email}");
-                
+
             // Reset form hoặc chuyển scene tùy bạn
-            onMovetoLoginForm(); 
+            onMovetoLoginForm();
         }
     }
 
@@ -217,6 +228,6 @@ public class FirebaseLogin : MonoBehaviour
     private void loadNextScene()
     {
         // Ví dụ: load scene có tên "GameScene"
-        SceneManager.LoadSceneAsync("HomeScene");
+        SceneManager.LoadSceneAsync("Test");
     }
 }

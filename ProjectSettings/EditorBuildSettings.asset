@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/HomeScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 0
@@ -14,28 +14,28 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoginScene.unity
     guid: 2f4a58595baf56048812d7c54ec3aa80
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/FlashCardScene.unity
     guid: 26c5f98a0cd2f5b43b09b97a84595b85
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SentenceBuildingScene.unity
     guid: 2fcd3390902721a4e8f2e8756514b11f
-  - enabled: 1
-    path: Assets/Scenes/speakingScene.unity
+  - enabled: 0
+    path: Assets/Scenes/SpeakingScene.unity
     guid: adbb8792e4995094aa226d384f312f24
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ListenScene.unity
     guid: 51ddb69e4376ef1478695ac88e068863
   - enabled: 1
     path: Assets/Scenes/Test.unity
     guid: 892b87cdbc3d79e43a80b367809e17c8
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/PvpScene.unity
     guid: 2d515a07ad0bc5f45a6d458c4dd3f402
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Test 1.unity
     guid: 27a8bd65add5639478c772a15d48825d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MultiPlayer.unity
     guid: b42da4f75c282014e9aeb4df34f90d33
   m_configObjects:
