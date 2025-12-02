@@ -16,9 +16,10 @@ public class FriendItemUI : BaseCode
     private UserInfoData cachedInfo;
 
     // Hàm này được gọi khi Instantiate prefab
-    public void SetupUI(UserInfoData info)
+    public void SetupUI(UserInfoData info, string friendId)
     {
         // Đăng ký sự kiện cho các nút
+        currentFriendId = friendId;
         invitePvpBtn.onClick.AddListener(OnInviteClicked);
         deleteBtn.onClick.AddListener(OnDeleteClicked);
         cachedInfo = info;

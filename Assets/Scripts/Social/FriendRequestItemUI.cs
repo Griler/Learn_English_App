@@ -25,10 +25,19 @@ public class FriendRequestItemUI : BaseCode
         // Set UI
         if (info != null)
         {
-            nameText.text = info.name;
-            avatarImage.sprite = assetManager.getSpriteAvatar(info.avatar);
-            borderImage.sprite = assetManager.getSpriteAvatar(info.border);
-            rankText.text = info.rankPoint.ToString();
+            try
+            {
+                nameText.text = info.name;
+                avatarImage.sprite = assetManager.getSpriteAvatar(info.avatar);
+                borderImage.sprite = assetManager.getSpriteBorder(info.border);
+                rankText.text = info.rankPoint.ToString();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                throw;
+            }
+
             // Set avatar...
         }
 

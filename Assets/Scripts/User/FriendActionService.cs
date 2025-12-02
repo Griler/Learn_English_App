@@ -46,7 +46,11 @@ public class FriendActionService : MonoBehaviour
     public void RemoveFriend(string friendIdToRemove)
     {
         string MyCurrentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        dbRef.Child("users").Child(MyCurrentUserId).Child("friend").Child(friendIdToRemove).RemoveValueAsync();
+        dbRef.Child("users")
+            .Child(MyCurrentUserId)
+            .Child("friend")
+            .Child("userId")
+            .Child(friendIdToRemove).RemoveValueAsync();
         Debug.Log($"Đã gửi lệnh xóa bạn: {friendIdToRemove}");
     }
 

@@ -89,7 +89,7 @@ public class FriendListPanel : MonoBehaviour
                 FriendItemUI itemScript = newItem.GetComponent<FriendItemUI>();
                 if (itemScript != null)
                 {
-                    itemScript.SetupUI(info);
+                    itemScript.SetupUI(info, friendId);
                 }
             },
             (error) => {

@@ -468,8 +468,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2262930f0168a6a41830a17e8f0fc2d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txtMessage: {fileID: 1918256989}
   panelObj: {fileID: 707690146}
+  txtMessage: {fileID: 1918256989}
+  btnAccept: {fileID: 0}
+  btnDecline: {fileID: 0}
 --- !u!114 &1483874800
 MonoBehaviour:
   m_ObjectHideFlags: 0

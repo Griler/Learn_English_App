@@ -102,7 +102,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -143,12 +143,12 @@ TextureImporter:
       name: border_0
       rect:
         serializedVersion: 2
-        x: 52
-        y: 161
+        x: 49
+        y: 144
         width: 110
-        height: 131
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        height: 145
+      alignment: 9
+      pivot: {x: 0.48627138, y: 0.21468441}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -157,28 +157,6 @@ TextureImporter:
       bones: []
       spriteID: 3dc392eb7f63662e0800000000000000
       internalID: -2132956935838155565
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: border_1
-      rect:
-        serializedVersion: 2
-        x: 181
-        y: 171
-        width: 126
-        height: 124
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d85b07d1993e08c80800000000000000
-      internalID: -8322401864617249395
       vertices: []
       indices: 
       edges: []

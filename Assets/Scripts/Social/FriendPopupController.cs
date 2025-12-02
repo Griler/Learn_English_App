@@ -41,17 +41,27 @@ public class FriendPopupController : MonoBehaviour
             case 0:
                 panelListFriend.gameObject.SetActive(true);
                 title.text = "Friends List";
-                panelListFriend.OnShow(); // Hàm load lại list friend
+                panelListFriend.OnShow();
+                btnTabList.GetComponent<Image>().color = Color.white;
+                btnTabAdd.GetComponent<Image>().color = Color.gray2;
+                btnTabRequests.GetComponent<Image>().color = Color.gray2;
                 break;
             case 1:
                 panelFriendAdd.gameObject.SetActive(true);
                 title.text = "Add Friends";
-                panelFriendAdd.OnShow(); // Hàm reset giao diện tìm kiếm
+                panelFriendAdd.OnShow();
+                btnTabList.GetComponent<Image>().color = Color.gray2;
+                btnTabAdd.GetComponent<Image>().color = Color.white;
+                btnTabRequests.GetComponent<Image>().color= Color.gray2;
+
                 break;
             case 2:
                 panelFriendRequests.gameObject.SetActive(true);
                 title.text = "Accept Friends";
-                panelFriendRequests.OnShow(); // Hàm load danh sách lời mời
+                panelFriendRequests.OnShow();
+                btnTabList.GetComponent<Image>().color = Color.gray2;
+                btnTabAdd.GetComponent<Image>().color = Color.gray2;
+                btnTabRequests.GetComponent<Image>().color = Color.white;
                 break;
         }
     }

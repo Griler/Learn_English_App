@@ -337,7 +337,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 2874053793936686234}
   avatarImage: {fileID: 2646174053329450979}
-  borderImage: {fileID: 0}
+  borderImage: {fileID: 8150036119137131161}
   rankPoint: {fileID: 3194886093247045964}
   invitePvpBtn: {fileID: 4538781431504235465}
   deleteBtn: {fileID: 6693508909344065662}
@@ -820,7 +820,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5937248419731054708, guid: 570de63e77c119b4e976e12aa0c40fc7, type: 3}
+  m_Sprite: {fileID: -2132956935838155565, guid: 570de63e77c119b4e976e12aa0c40fc7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

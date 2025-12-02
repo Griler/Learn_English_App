@@ -220,7 +220,7 @@ SpriteRenderer:
   m_Size: {x: 1.26, y: 1.24}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2691368634342533294
@@ -426,6 +426,7 @@ MonoBehaviour:
   nameText: {fileID: 2874053793936686234}
   rankText: {fileID: 3194886093247045964}
   avatarImage: {fileID: 2646174053329450979}
+  borderImage: {fileID: 8150036119137131161}
   acceptButton: {fileID: 8114263817918401337}
   declineButton: {fileID: 6693508909344065662}
 --- !u!1 &3843525121369975124
