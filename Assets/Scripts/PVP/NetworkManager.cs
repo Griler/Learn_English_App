@@ -18,11 +18,14 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     // Hàm này được gọi từ nút "Đồng Ý"
     public void AttemptToJoinFriendRoom(string roomCode)
     {
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 2; // Giới hạn 2 người
+        roomOptions.IsVisible = false;
         // TRƯỜNG HỢP 1: Đã kết nối sẵn rồi (đang ở sảnh PvP)
         if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InLobby)
         {
             Debug.Log("Đã có mạng, vào phòng luôn: " + roomCode);
-            PhotonNetwork.JoinRoom(roomCode);
+            PhotonNetwork.JoinOrCreateRoom(roomCode,roomOptions, TypedLobby.Default);
         }
         // TRƯỜNG HỢP 2: Chưa kết nối (Đang ở menu học bài)
         else
