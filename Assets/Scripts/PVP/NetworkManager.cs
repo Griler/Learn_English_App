@@ -5,14 +5,30 @@ using Photon.Realtime;
 public class MyNetworkManager : MonoBehaviourPunCallbacks
 {
     public static MyNetworkManager Instance;
-    
+    public UserProfileSO userProfileSo;
     // Biến tạm lưu mã phòng khi đang chờ kết nối
     private string pendingRoomCode = ""; 
 
     void Awake() 
     { 
         Instance = this; 
+        PhotonNetwork.AutomaticallySyncScene = true; // CỰC KỲ QUAN TRỌNG
         DontDestroyOnLoad(gameObject);
+    }
+    
+    public void SetMyUserData()
+    {
+        PhotonNetwork.NickName = userProfileSo.userInfo.name; // Set tên hiển thị của Photon
+
+        // Tạo bảng chứa thông tin mở rộng
+        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
+        props["AvatarID"] = userProfileSo.userInfo.avatar;
+        props["BorderID"] = userProfileSo.userInfo.border;
+        props["Rank"] = userProfileSo.userInfo.rankPoint.ToString();
+        props["IsReady"] = false; // Mặc định vào phòng là chưa Ready
+    
+        // Đẩy lên mạng
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     }
 
     // Hàm này được gọi từ nút "Đồng Ý"
@@ -21,6 +37,7 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 2; // Giới hạn 2 người
         roomOptions.IsVisible = false;
+        SetMyUserData();
         // TRƯỜNG HỢP 1: Đã kết nối sẵn rồi (đang ở sảnh PvP)
         if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InLobby)
         {
@@ -43,7 +60,15 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
     }
-
+    public override void OnJoinedRoom()
+    {
+        // Nếu là Host (người tạo phòng) thì load vào phòng chờ
+        // Client sẽ tự đi theo nhờ PhotonNetwork.AutomaticallySyncScene = true
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel("WaitingRoomScene");
+        }
+    }
     public override void OnJoinedLobby()
     {
         Debug.Log("Đã vào Lobby.");
@@ -58,11 +83,6 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinOrCreateRoom(pendingRoomCode,roomOptions, TypedLobby.Default);
             pendingRoomCode = ""; // Reset biến tạm
         }
-    }
-
-    public override void OnJoinedRoom()
-    {
-        base.OnJoinedRoom();
     }
 
     // Xử lý lỗi nếu phòng đã đầy hoặc không tồn tại

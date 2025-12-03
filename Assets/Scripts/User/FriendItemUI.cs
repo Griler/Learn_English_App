@@ -4,8 +4,7 @@ using UnityEngine.UI;
 
 public class FriendItemUI : BaseCode
 {
-    [Header("UI Elements")]
-    public TextMeshProUGUI nameText;
+    [Header("UI Elements")] public TextMeshProUGUI nameText;
     public Image avatarImage; // (Chưa xử lý load ảnh thật để code gọn)
     public Image borderImage; // (Chưa xử lý load ảnh thật để code gọn)
     public TextMeshProUGUI rankPoint;
@@ -22,25 +21,51 @@ public class FriendItemUI : BaseCode
         // Đăng ký sự kiện cho các nút
         currentFriendId = friendId;
         currentFriendName = info.name;
-        invitePvpBtn.onClick.AddListener(OnInviteClicked);
-        deleteBtn.onClick.AddListener(OnDeleteClicked);
+        if (invitePvpBtn)
+        {
+            invitePvpBtn.onClick.AddListener(OnInviteClicked);
+        }
+
+        if (deleteBtn)
+        {
+            deleteBtn.onClick.AddListener(OnDeleteClicked);
+        }
+
         cachedInfo = info;
         nameText.text = info.name;
         rankPoint.text = info.rankPoint.ToString();
         avatarImage.sprite = assetManager.getSpriteAvatar(info.avatar);
-        borderImage.sprite = assetManager.getSpriteBorder(info.border); 
+        borderImage.sprite = assetManager.getSpriteBorder(info.border);
+    }
+    
+    public void SetupUI(string name, string avatar, string border, string rank)
+    {
+        // settup watting room
+        if (invitePvpBtn)
+        {
+            invitePvpBtn.onClick.AddListener(OnInviteClicked);
+        }
+
+        if (deleteBtn)
+        {
+            deleteBtn.onClick.AddListener(OnDeleteClicked);
+        }
+        nameText.text = name;
+        rankPoint.text = rank;
+        avatarImage.sprite = assetManager.getSpriteAvatar(avatar);
+        borderImage.sprite = assetManager.getSpriteBorder(border);
     }
 
     void OnViewInfoClicked()
     {
-        if(cachedInfo == null) return;
+        if (cachedInfo == null) return;
         // Gọi popup hiển thị (Sẽ làm ở bước 4)
         //OtherUserProfilePopup.Instance.ShowPopup(cachedInfo);
     }
 
     void OnInviteClicked()
     {
-        FriendSystem.Instance.SendInvite(currentFriendId,currentFriendName);
+        FriendSystem.Instance.SendInvite(currentFriendId, currentFriendName);
     }
 
     void OnDeleteClicked()

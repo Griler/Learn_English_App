@@ -61,7 +61,7 @@ public class FriendSystem : MonoBehaviour
 
     void ListenForInvites()
     {
-        // Trỏ vào node invitations của chính mình
+        myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         myInvitesRef = FirebaseDatabase.DefaultInstance
             .GetReference($"users/{myUserId}/invitations");
 

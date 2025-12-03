@@ -14,9 +14,14 @@ public class FriendListPanel : MonoBehaviour
     
     private DatabaseReference _dbRef;
 
-    public async void OnShow()
+    public void OnShow()
     {
-        await FirebaseDatabaseManager.Instance.InitializeFirebase();
+        if (FirebaseDatabase.DefaultInstance == null) 
+        {
+            Debug.LogError("Firebase chưa được khởi tạo!");
+            return;
+        }
+
         _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         LoadFriendList();
     }

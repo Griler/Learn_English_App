@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Database;
@@ -17,6 +18,12 @@ public class InvitePopupUI : MonoBehaviour
     private string currentSenderId; // ID người gửi (để xóa trong db của mình)
 
     // Hàm hiển thị Popup (Gọi từ FriendSystem)
+    private void Start()
+    {
+        btnAccept.onClick.AddListener(OnAcceptClicked);
+        btnDecline.onClick.AddListener(OnDeclineClicked);
+    }
+
     public void ShowPopup(string senderName, string roomCode, string inviteKey)
     {
         currentRoomCode = roomCode;
