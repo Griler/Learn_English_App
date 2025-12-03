@@ -17,11 +17,10 @@ public class UserProfileSO : ScriptableObject
 
     // --- PHẦN 2: FRIEND LIST ---
     public List<FriendData> friendList = new List<FriendData>();
-    public event Action<List<FriendData>> OnFriendListChanged; // Sự kiện B
+    public event Action OnFriendListChanged; // Sự kiện B
 
-    public void UpdateFriendList(List<FriendData> newList)
+    public void UpdateFriendList()
     {
-        friendList = newList;
-        OnFriendListChanged?.Invoke(friendList); // Chỉ gọi ai quan tâm đến Friend
+        OnFriendListChanged?.Invoke(); // Chỉ gọi ai quan tâm đến Friend
     }
 }

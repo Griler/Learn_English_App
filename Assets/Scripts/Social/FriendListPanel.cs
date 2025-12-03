@@ -9,7 +9,7 @@ public class FriendListPanel : MonoBehaviour
 {
     public Transform contentContainer;
     public GameObject friendItemPrefab;
-    
+    public UserProfileSO UserProfileSo;
     public TextMeshProUGUI resultText; 
     
     private DatabaseReference _dbRef;
@@ -25,15 +25,32 @@ public class FriendListPanel : MonoBehaviour
         _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         LoadFriendList();
     }
+
+    private void OnEnable()
+    {
+        UserProfileSo.OnFriendListChanged += LoadFriendList;
+    }
+
+    private void OnDisable()
+    {
+        UserProfileSo.OnFriendListChanged -= LoadFriendList;
+    }
+
+    private void ClearCurrentList()
+    {
+        foreach (Transform child in contentContainer)
+        {
+            // FIX QUAN TRỌNG: Tắt đi trước để Layout Group không tính toán lại -> Tránh lỗi MissingReference
+            child.gameObject.SetActive(false); 
+            Destroy(child.gameObject);
+        }
+    }
     
      public void LoadFriendList()
     {
         // Xóa sạch danh sách cũ trên UI để tránh trùng lặp
-        foreach (Transform child in contentContainer)
-        {
-            Destroy(child.gameObject);
-        }
-
+        ClearCurrentList();
+        
         string currentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         string pathListID = $"users/{currentUserId}/friend/userId";
 
