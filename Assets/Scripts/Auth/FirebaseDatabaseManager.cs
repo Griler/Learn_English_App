@@ -13,6 +13,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
 {
     public DatabaseReference dbReference;
     public FirebaseUser currentUser;
+    
     public static FirebaseDatabaseManager Instance;
     
     public bool IsReady { get; private set; } = false;

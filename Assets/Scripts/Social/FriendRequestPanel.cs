@@ -64,11 +64,6 @@ public class FriendRequestPanel : MonoBehaviour
     void OnAccept(string senderId)
     {
         string myId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        
-        // Cần thực hiện 3 việc cùng lúc (Atomic Update là tốt nhất):
-        // 1. Thêm sender vào list friend của MÌNH.
-        // 2. Thêm mình vào list friend của SENDER.
-        // 3. Xóa request.
 
         Dictionary<string, object> updates = new Dictionary<string, object>();
         

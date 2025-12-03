@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -14,13 +15,15 @@ public class FriendItemUI : BaseCode
     private string currentFriendId;
     private string currentFriendName;
     private UserInfoData cachedInfo;
-
+    private Action onDelCallback;
+    
     // Hàm này được gọi khi Instantiate prefab
-    public void SetupUI(UserInfoData info, string friendId)
+    public void SetupUI(UserInfoData info, string friendId, Action onDeleteCB)
     {
         // Đăng ký sự kiện cho các nút
         currentFriendId = friendId;
         currentFriendName = info.name;
+        onDelCallback = onDeleteCB;
         if (invitePvpBtn)
         {
             invitePvpBtn.onClick.AddListener(OnInviteClicked);
@@ -70,6 +73,20 @@ public class FriendItemUI : BaseCode
 
     void OnDeleteClicked()
     {
-        FriendActionService.Instance.RemoveFriend(currentFriendId);
+        FriendActionService.Instance.RemoveFriend(currentFriendId,onDelCallback);
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if (invitePvpBtn)
+        {
+            invitePvpBtn.onClick.RemoveAllListeners();
+        }
+
+        if (deleteBtn)
+        {
+            deleteBtn.onClick.RemoveAllListeners();
+        }
     }
 }

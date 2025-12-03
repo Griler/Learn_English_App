@@ -54,6 +54,8 @@ public class FriendListPanel : MonoBehaviour
         string currentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         string pathListID = $"users/{currentUserId}/friend/userId";
 
+        Debug.LogError(pathListID);
+        
         _dbRef.Child(pathListID).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted || task.IsCanceled)
@@ -111,7 +113,7 @@ public class FriendListPanel : MonoBehaviour
                 FriendItemUI itemScript = newItem.GetComponent<FriendItemUI>();
                 if (itemScript != null)
                 {
-                    itemScript.SetupUI(info, friendId);
+                    itemScript.SetupUI(info, friendId, LoadFriendList);
                 }
             },
             (error) => {

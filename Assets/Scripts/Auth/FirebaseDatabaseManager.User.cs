@@ -54,12 +54,15 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
 
 
     // --- LUỒNG 2: FRIEND LIST ---
-    void ListenToFriends()
+    public void ListenToFriends()
     {
         // Chỉ trỏ vào node "friend"
         dbReference.Child("users").Child(currentUser.UserId).Child("friend").ValueChanged += (sender, args) => 
         {
-            if (args.DatabaseError != null || !args.Snapshot.Exists) return;
+            if (args.DatabaseError != null || !args.Snapshot.Exists)
+            {
+                return;
+            }
 
             List<FriendData> fList = new List<FriendData>();
             
