@@ -26,6 +26,10 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        if (readyButton)
+        {
+            readyButton.onClick.AddListener(OnClick_ToggleReady);
+        }
         // Khi vừa vào scene, cập nhật lại UI cho những người đang có trong phòng
         UpdatePlayerListUI();
         
@@ -47,11 +51,13 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             Player p1 = players[0];
             player1Container.SetActive(true);
             UpdateSinglePlayerUI(p1,player1Container,player1IconReady);
+            player1TextStatus.gameObject.SetActive(false);
         }
         else
         {
             // Ẩn UI nếu không có người
             player1Container.SetActive(false);
+            player1TextStatus.gameObject.SetActive(true);
             player1TextStatus.text = "Waiting...";
         }
 
@@ -60,11 +66,13 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         {
             Player p2 = players[1];
             player2Container.SetActive(true);
+            player2TextStatus.gameObject.SetActive(true);
             UpdateSinglePlayerUI(p2,player2Container, player2IconReady);
         }
         else
         {
             player2Container.SetActive(false);
+            player2TextStatus.gameObject.SetActive(true);
             player2TextStatus.text = "Waiting...";
         }
     }
@@ -148,7 +156,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     void UpdateReadyButtonUI(bool isReady)
     {
-        readyButtonText.text = isReady ? "HUỶ SẴN SÀNG" : "SẴN SÀNG";
+        readyButtonText.text = isReady ? "CANCEL" : "READY";
         readyButton.image.color = isReady ? Color.gray : Color.green;
     }
 

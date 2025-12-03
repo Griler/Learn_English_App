@@ -83,6 +83,7 @@ public class FriendListPanel : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log(snapshot.ToString());
                     Debug.Log("User này chưa có bạn bè nào.");
                     resultText.gameObject.SetActive(true);
                     string text = "You Has No Friends";  
