@@ -22,11 +22,34 @@ public class FriendSystem : MonoBehaviour
         
         DontDestroyOnLoad(gameObject);
     }
-
-    void Start()
+    
+    private void Start()
     {
+        // TRƯỜNG HỢP 1: Firebase đã xong rồi (Load scene lại hoặc vào game muộn)
+        if (FirebaseDatabaseManager.Instance.IsReady)
+        {
+            ListenForInvites();
+        }
+        // TRƯỜNG HỢP 2: Firebase chưa xong (Mới bật game)
+        else
+        {
+            Debug.Log("⏳ Đang chờ Firebase init...");
+            // Đăng ký: "Khi nào xong thì gọi hàm ListenToUserInfo của tao nhé"
+            FirebaseDatabaseManager.Instance.OnFirebaseInitialized += OnFirebaseReady;
+        }
+    }
+
+    // Hàm trung gian để gọi khi sự kiện xảy ra
+    private void OnFirebaseReady()
+    {
+        // Huỷ đăng ký ngay để tránh gọi lại 2 lần (Memory Leak)
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= OnFirebaseReady;
+        
+        // Giờ thì an toàn 100% để gọi
         ListenForInvites();
     }
+    
+
 
     // =========================================================
     // PHẦN 1: GỬI LỜI MỜI (Sender Logic)
@@ -92,6 +115,10 @@ public class FriendSystem : MonoBehaviour
         if (myInvitesRef != null)
         {
             myInvitesRef.ChildAdded -= OnNewInviteReceived;
+        }
+        if (FirebaseDatabaseManager.Instance != null)
+        {
+            FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= OnFirebaseReady;
         }
     }
 }
