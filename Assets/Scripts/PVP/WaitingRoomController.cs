@@ -66,7 +66,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         {
             Player p2 = players[1];
             player2Container.SetActive(true);
-            player2TextStatus.gameObject.SetActive(true);
+            player2TextStatus.gameObject.SetActive(false);
             UpdateSinglePlayerUI(p2,player2Container, player2IconReady);
         }
         else
@@ -217,7 +217,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsVisible = false;
 
         // Load Scene Game Chính (Tên scene phải chuẩn trong Build Settings)
-        PhotonNetwork.LoadLevel("PVP_MainScene");
+        PhotonNetwork.LoadLevel("PVPScene");
     }
     
     void UpdateRoomInfo()
