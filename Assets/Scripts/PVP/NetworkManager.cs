@@ -25,6 +25,7 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InLobby)
         {
             Debug.Log("Đã có mạng, vào phòng luôn: " + roomCode);
+            pendingRoomCode = roomCode;
             PhotonNetwork.JoinOrCreateRoom(roomCode,roomOptions, TypedLobby.Default);
         }
         // TRƯỜNG HỢP 2: Chưa kết nối (Đang ở menu học bài)
@@ -46,19 +47,29 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         Debug.Log("Đã vào Lobby.");
-        
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 2; // Giới hạn 2 người
+        roomOptions.IsVisible = false;
         // Kiểm tra xem có phòng nào đang chờ vào không?
         if (!string.IsNullOrEmpty(pendingRoomCode))
         {
+            
             Debug.Log("Giờ mới bắt đầu vào phòng chờ lúc nãy: " + pendingRoomCode);
-            PhotonNetwork.JoinRoom(pendingRoomCode);
+            PhotonNetwork.JoinOrCreateRoom(pendingRoomCode,roomOptions, TypedLobby.Default);
             pendingRoomCode = ""; // Reset biến tạm
         }
     }
-    
+
+    public override void OnJoinedRoom()
+    {
+        base.OnJoinedRoom();
+    }
+
     // Xử lý lỗi nếu phòng đã đầy hoặc không tồn tại
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        Debug.Log("Region hiện tại: " + PhotonNetwork.CloudRegion);
+
         Debug.LogError("Vào phòng thất bại: " + message);
         // Ở đây bạn nên hiện thông báo UI: "Phòng không tồn tại hoặc đã đầy"
         pendingRoomCode = "";
