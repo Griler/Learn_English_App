@@ -147,7 +147,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 }
 
     // --- RPC MỚI: NHẬN SEED VÀ TRỘN CÂU HỎI ---
-    [PunRPC]
+    [PunRPC] 
     void RPC_SetupAndStartGame(int seed, int startTurnActor, PhotonMessageInfo info)
     {
         Debug.Log("Nhận được Seed: " + seed + ". Bắt đầu trộn câu hỏi...");
