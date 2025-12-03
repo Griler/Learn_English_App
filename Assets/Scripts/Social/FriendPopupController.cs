@@ -25,10 +25,10 @@ public class FriendPopupController : MonoBehaviour
         btnTabRequests.onClick.AddListener(() => SwitchTab(2));
 
         // Mặc định mở tab List Friend
-        SwitchTab(0);
+        //SwitchTab(0);
     }
 
-    void SwitchTab(int index)
+    public void SwitchTab(int index)
     {
         // 1. Tắt tất cả panel trước
         panelListFriend.gameObject.SetActive(false);
