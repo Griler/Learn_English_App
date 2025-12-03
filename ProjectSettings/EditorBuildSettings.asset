@@ -5,15 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Scenes/LoginScene.unity
+    guid: 2f4a58595baf56048812d7c54ec3aa80
+  - enabled: 1
     path: Assets/Scenes/HomeScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 0
     path: Assets/Scenes/PairScene.unity
     guid: c3d75c6ebbc52d942aaa596d0abc1160
-  - enabled: 1
-    path: Assets/Scenes/LoginScene.unity
-    guid: 2f4a58595baf56048812d7c54ec3aa80
   - enabled: 0
     path: Assets/Scenes/FlashCardScene.unity
     guid: 26c5f98a0cd2f5b43b09b97a84595b85
@@ -30,8 +30,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Test.unity
     guid: 892b87cdbc3d79e43a80b367809e17c8
   - enabled: 0
-    path: Assets/Scenes/PvpScene.unity
-    guid: 2d515a07ad0bc5f45a6d458c4dd3f402
+    path: Assets/Scenes/PVPScene.unity
+    guid: b42da4f75c282014e9aeb4df34f90d33
   - enabled: 1
     path: Assets/Scenes/WaitingRoomScene.unity
     guid: 27a8bd65add5639478c772a15d48825d

@@ -45,6 +45,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     private void Start()
     {
         // 1. Tắt UI game hoặc hiện Loading Panel ở đây nếu muốn
+        Debug.LogError(this.gameObject.gameObject);
         SetButtonsInteractable(false);
         statusText.text = "Đang tải câu hỏi...";
 
@@ -65,26 +66,49 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     }
     
     void LoadQuestionsFromFirebase()
-    {
-        reference.Child("questions").GetValueAsync().ContinueWithOnMainThread(task => {
-            if (task.IsCompleted)
-            {
-                DataSnapshot snapshot = task.Result;
-                rawAllQuestions = new List<QuestionData>(); // Lưu vào list tạm
+{
+    // LƯU Ý: Kiểm tra kỹ đường dẫn này trên Firebase Console của bạn.
+    // Nếu data nằm ngay ngoài cùng thì bỏ .Child("questions") đi, chỉ để .Child("list")
+    reference.Child("questions").Child("list") 
+        .GetValueAsync().ContinueWithOnMainThread(task => {
+        
+        if (task.IsFaulted)
+        {
+            Debug.LogError("Lỗi kết nối Firebase: " + task.Exception);
+            return;
+        }
 
-                foreach (DataSnapshot child in snapshot.Children)
+        if (task.IsCompleted)
+        {
+            DataSnapshot snapshot = task.Result;
+
+            // Debug xem có lấy được data thô về không
+            if (snapshot.Value == null)
+            {
+                Debug.LogError("Không tìm thấy dữ liệu! Kiểm tra lại đường dẫn .Child()");
+                return;
+            }
+
+            Debug.Log("Dữ liệu thô nhận được: " + snapshot.GetRawJsonValue());
+
+            rawAllQuestions = new List<QuestionData>(); // Reset list tạm
+
+            foreach (DataSnapshot child in snapshot.Children)
+            {
+                // Bọc try-catch để nếu 1 câu lỗi thì không chết cả game
+                try 
                 {
-                    // Convert JSON từ Firebase sang Class của mình
-                    // Cách 1: Parse thủ công (An toàn nhất)
                     QuestionData newQ = new QuestionData();
                     
-                    // Lấy text câu hỏi
-                    newQ.questionText = child.Child("questionText").Value.ToString();
+                    // Lấy text câu hỏi (Thêm kiểm tra null cho an toàn)
+                    if (child.Child("questionText").Value != null)
+                        newQ.questionText = child.Child("questionText").Value.ToString();
                     
                     // Lấy đáp án đúng
-                    newQ.correctAnswerIdx = int.Parse(child.Child("correctAnswerIdx").Value.ToString());
+                    if (child.Child("correctAnswerIdx").Value != null)
+                        newQ.correctAnswerIdx = int.Parse(child.Child("correctAnswerIdx").Value.ToString());
 
-                    // Lấy mảng đáp án (Firebase trả về List<object>)
+                    // Lấy mảng đáp án
                     List<string> answersList = new List<string>();
                     foreach(DataSnapshot ans in child.Child("answers").Children)
                     {
@@ -92,27 +116,35 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                     }
                     newQ.answers = answersList.ToArray();
 
-                    // Add vào list tổng
-                    allQuestions.Add(newQ);
+                    // --- SỬA LỖI QUAN TRỌNG Ở ĐÂY ---
+                    // Phải add vào rawAllQuestions (list tạm) chứ không phải allQuestions
+                    rawAllQuestions.Add(newQ);
                 }
-                
-                Debug.Log($"Đã tải xong kho {rawAllQuestions.Count} câu hỏi! Chờ tín hiệu từ Master...");
-
-                // KHI LOAD XONG, CHƯA VÀO GAME NGAY MÀ CHỜ ĐỒNG BỘ SEED
-                if (PhotonNetwork.IsMasterClient)
+                catch (System.Exception ex)
                 {
-                    // Chỉ Master mới được quyền tạo Seed và phát lệnh bắt đầu
-                    int gameSeed = UnityEngine.Random.Range(0, 999999);
-                    
-                    // Random ai đi trước
-                    int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
-
-                    // Gửi Seed + Người đi trước cho tất cả mọi người (bao gồm chính mình)
-                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, gameSeed, startActor);
+                    Debug.LogWarning("Lỗi parse 1 câu hỏi: " + ex.Message);
                 }
             }
-        });
-    }
+            
+            Debug.Log($"Đã tải xong kho {rawAllQuestions.Count} câu hỏi! Chờ tín hiệu từ Master...");
+
+            // Logic Master Client xử lý Seed
+            if (PhotonNetwork.IsMasterClient)
+            {
+                if (rawAllQuestions.Count > 0)
+                {
+                    int gameSeed = UnityEngine.Random.Range(0, 999999);
+                    int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
+                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, gameSeed, startActor);
+                }
+                else
+                {
+                    Debug.LogError("List câu hỏi rỗng, không thể bắt đầu game!");
+                }
+            }
+        }
+    });
+}
 
     // --- RPC MỚI: NHẬN SEED VÀ TRỘN CÂU HỎI ---
     [PunRPC]

@@ -42,24 +42,6 @@ public class FirebaseLogin : MonoBehaviour
             if (dependencyStatus == DependencyStatus.Available)
             {
                 auth = FirebaseAuth.DefaultInstance;
-#if UNITY_EDITOR
-                if (auth.CurrentUser == null)
-                {
-                    Debug.Log("Hiện chưa có ai đăng nhập.");
-                }
-                else
-                {
-                    loadNextScene();
-                    Debug.Log("User đang đăng nhập là: " + auth.CurrentUser.Email);
-                }
-#else
-                if (auth.CurrentUser != null)
-                {auth.SignOut();
-
-                }
-#endif
-                {
-                }
             }
         });
     }
@@ -163,7 +145,7 @@ public class FirebaseLogin : MonoBehaviour
         // Đăng ký Auth thành công
         FirebaseUser newUser = registerTask.Result.User;
         string name = email.Split("@")[0];
-        UserInfoData userData = new UserInfoData("ava_1", "null", email, name, 0, 0);
+        UserInfoData userData = new UserInfoData("ava_1", "border_0", email, name, 0, 0);
 
         string json = JsonUtility.ToJson(userData);
 
@@ -228,6 +210,6 @@ public class FirebaseLogin : MonoBehaviour
     private void loadNextScene()
     {
         // Ví dụ: load scene có tên "GameScene"
-        SceneManager.LoadSceneAsync("Test");
+        SceneManager.LoadSceneAsync("HomeScene");
     }
 }
