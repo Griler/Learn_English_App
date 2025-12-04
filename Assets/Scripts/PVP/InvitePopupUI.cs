@@ -72,7 +72,7 @@ public class InvitePopupUI : MonoBehaviour
     public void OnDeclineClicked()
     {
         Debug.Log("Bạn đã TỪ CHỐI.");
-        ToastSystem.Instance.ShowToast("Bạn đã TỪ CHỐI");
+
         // 1. Xóa lời mời trên Firebase
         RemoveInviteFromFirebase();
 

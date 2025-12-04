@@ -80,6 +80,8 @@ public class FriendSystem : MonoBehaviour
             {
                 currentInviteRef.ValueChanged += HandleInviteChanged;
                 Debug.Log("✅ Gửi lời mời thành công!");
+                ToastSystem.Instance.ShowToast("✅ Gửi lời mời thành công!");
+
             }
         }));
     }
@@ -97,6 +99,7 @@ public class FriendSystem : MonoBehaviour
                 if (status == "accepted")
                 {
                     Debug.Log("Bạn kia đã đồng ý! Vào phòng thôi!");
+                    ToastSystem.Instance.ShowToast("Chuẩn bị vào phòng!");
                     currentInviteRef.ValueChanged -= HandleInviteChanged;
                     MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode, () => {});
                     //HideWaitingUI();
@@ -106,6 +109,7 @@ public class FriendSystem : MonoBehaviour
         else 
         {
             Debug.Log("Lời mời đã bị hủy hoặc từ chối.");
+            ToastSystem.Instance.ShowToast("Lời mời đã bị hủy hoặc từ chối");
             currentInviteRef.ValueChanged -= HandleInviteChanged;
             //HideWaitingUI();
         }

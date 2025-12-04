@@ -32,10 +32,6 @@ public class ToastSystem : MonoBehaviour
         // 2. Ẩn ngay khi vào game
         toastCanvasGroup.alpha = 0;
         toastCanvasGroup.blocksRaycasts = false;
-        DOVirtual.DelayedCall(3, () =>
-        {
-            ShowToast("DSDSD");
-        }); // Để chuột bấm xuyên qua được
     }
 
     // --- HÀM GỌI TOAST ---
