@@ -42,6 +42,7 @@ MonoBehaviour:
   - RPC_SyncState
   - RPC_SetupAndStartGame
   - RPC_StartCountdown
+  - RPC_SyncLive
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

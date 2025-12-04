@@ -1,6 +1,7 @@
 using UnityEngine;
 using Firebase.Database;
 using System.Collections.Generic;
+using Firebase.Extensions;
 
 public class FriendSystem : MonoBehaviour
 {
@@ -11,8 +12,6 @@ public class FriendSystem : MonoBehaviour
     public string myUserName = "";
 
     [Header("References")]
-    public InvitePopupUI invitePopup; // Kéo cái UI Popup vào đây
-
     private DatabaseReference myInvitesRef;
 
     void Awake()
@@ -55,12 +54,14 @@ public class FriendSystem : MonoBehaviour
     // PHẦN 1: GỬI LỜI MỜI (Sender Logic)
     // =========================================================
     
+    DatabaseReference currentInviteRef;
+    private string roomCode = "";
     public void SendInvite(string friendId, string friendName)
     {
         myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         
         // 1. Tạo một mã phòng ngẫu nhiên (Ví dụ: Room_4821)
-        string roomCode = "Room_" + Random.Range(1000, 9999);
+        roomCode = "Room_" + Random.Range(1000, 9999);
         Debug.Log($"Đang gửi lời mời tới {friendId} vào phòng {roomCode}");
 
         // 2. Gửi dữ liệu lên Firebase của BẠN BÈ
@@ -70,14 +71,46 @@ public class FriendSystem : MonoBehaviour
         Dictionary<string, object> inviteData = new Dictionary<string, object>();
         inviteData["senderName"] = friendName;
         inviteData["roomCode"] = roomCode;
+        inviteData["roomStatus"] = "waiting";
 
-        friendRef.Push().SetValueAsync(inviteData);
-
-        // 3. QUAN TRỌNG: Chính mình (người mời) cũng phải vào phòng đó!
-        // Gọi hàm xử lý kết nối thông minh bên NetworkManager
-        MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode);
+        currentInviteRef = friendRef.Push();
+        currentInviteRef.SetValueAsync(inviteData).ContinueWithOnMainThread((task =>
+        {
+            if (task.IsCompleted)
+            {
+                currentInviteRef.ValueChanged += HandleInviteChanged;
+                Debug.Log("✅ Gửi lời mời thành công!");
+            }
+        }));
     }
 
+    void HandleInviteChanged(object sender, ValueChangedEventArgs args)
+    {
+        if (args.DatabaseError != null) return;
+        
+        if (args.Snapshot.Value != null)
+        {
+            var data = args.Snapshot.Value as Dictionary<string, object>;
+            if (data != null && data.ContainsKey("status"))
+            {
+                string status = data["status"].ToString();
+                if (status == "accepted")
+                {
+                    Debug.Log("Bạn kia đã đồng ý! Vào phòng thôi!");
+                    currentInviteRef.ValueChanged -= HandleInviteChanged;
+                    MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode);
+                    //HideWaitingUI();
+                }
+            }
+        }
+        else 
+        {
+            Debug.Log("Lời mời đã bị hủy hoặc từ chối.");
+            currentInviteRef.ValueChanged -= HandleInviteChanged;
+            //HideWaitingUI();
+        }
+    }
+    
     // =========================================================
     // PHẦN 2: NHẬN LỜI MỜI (Receiver Logic)
     // =========================================================
@@ -106,7 +139,7 @@ public class FriendSystem : MonoBehaviour
         Debug.Log($"Có thư mời từ {senderName}!");
 
         // Hiện Popup lên màn hình để người chơi quyết định
-        invitePopup.ShowPopup(senderName, roomCode, inviteKey);
+        GameEvents.showInvitePopup?.Invoke(senderName, roomCode, inviteKey);
     }
 
     // Gọi hàm này khi muốn hủy lắng nghe (VD: lúc thoát app)
