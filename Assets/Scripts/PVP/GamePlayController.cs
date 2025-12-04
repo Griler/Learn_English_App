@@ -330,7 +330,6 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         {
             isCorrect = (answerIndex == allQuestions[currentQuestionIndex].correctAnswerIdx);
         }
-
         if (isCorrect)
         {
             // ĐÚNG: Load câu mới
@@ -340,24 +339,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         }
         else
         {
-            // SAI (hoặc Hết giờ): Trừ mạng
-            if (playerLives.ContainsKey(playerID))
-            {
-                playerLives[playerID]--;
-                if (PhotonNetwork.LocalPlayer.ActorNumber == currentTurnActorNumber)
-                {
-                    int myLive = playerLives[playerID];
-                    myLives[myLive].sprite = disableHeart;
-                    Debug.LogError("tru mang ban còn " + playerLives[playerID]);
-                }
-                else
-                {
-                    int otherLive = playerLives[playerID];
-                    enemyLives[otherLive].sprite = disableHeart;
-                    Debug.LogError("tru mang doi phuong còn " + playerLives[playerID]);
-                }
-            }
-
+            photonView.RPC("RPC_SyncLive", RpcTarget.All, playerID);
             if (CheckGameOverCondition())
             {
                 Debug.LogError("vào game over");
@@ -379,7 +361,28 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         }
         photonView.RPC("RPC_SyncLives", RpcTarget.All, actorArray, livesArray);
     }
-    
+
+    [PunRPC]
+    void RPC_SyncLive(int playerID)
+    {
+        if (playerLives.ContainsKey(playerID))
+        {
+            playerLives[playerID]--;
+            if (PhotonNetwork.LocalPlayer.ActorNumber == currentTurnActorNumber)
+            {
+                int myLive = playerLives[playerID];
+                myLives[myLive].sprite = disableHeart;
+                Debug.LogError("tru mang ban còn " + playerLives[playerID]);
+            }
+            else
+            {
+                int otherLive = playerLives[playerID];
+                enemyLives[otherLive].sprite = disableHeart;
+                Debug.LogError("tru mang doi phuong còn " + playerLives[playerID]);
+            }
+        }
+
+    }
     private void Update()
     {
         // Chỉ chạy timer khi cờ đang bật
