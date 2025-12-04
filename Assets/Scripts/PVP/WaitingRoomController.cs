@@ -30,7 +30,6 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         {
             readyButton.onClick.AddListener(OnClick_ToggleReady);
         }
-        // Khi vừa vào scene, cập nhật lại UI cho những người đang có trong phòng
         UpdatePlayerListUI();
         
         // Reset trạng thái nút bấm
@@ -115,8 +114,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         readyObj.SetActive(isReady); // Hiện icon check xanh nếu ready
     }
 
-    // Hàm tiện ích: Lấy giá trị int từ CustomProperties
-    // Hàm này bất chấp server gửi int hay string, nó đều trả về string an toàn
+
     private string GetSafeString(Player player, string key, string defaultValue = "0")
     {
         // 1. Kiểm tra có Key đó không
@@ -138,21 +136,6 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             return (bool)tempValue;
         }
         return false;
-    }
-    // Hàm phụ trợ để lấy thông tin đẹp (Tên + Trạng thái Ready)
-    string GetPlayerInfoString(Player p)
-    {
-        string name = p.NickName;
-        object isReadyObj;
-        bool isReady = false;
-        
-        if (p.CustomProperties.TryGetValue("IsReady", out isReadyObj))
-        {
-            isReady = (bool)isReadyObj;
-        }
-
-        string readyString = isReady ? "<color=green>[READY]</color>" : "<color=red>[NOT READY]</color>";
-        return $"{name}\n{readyString}"; // Ví dụ: "Huy [READY]"
     }
 
     // --- EVENT NÚT READY ---
@@ -187,12 +170,6 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     // 1. Có người mới vào phòng
     public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        UpdatePlayerListUI();
-    }
-
-    // 2. Có người thoát phòng
-    public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         UpdatePlayerListUI();
     }
@@ -245,17 +222,45 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     
     void UpdateRoomInfo()
     {
-        // QUAN TRỌNG: Phải kiểm tra xem có đang ở trong phòng không
         if (PhotonNetwork.CurrentRoom != null)
         {
-            // 1. Lấy Tên Phòng
             string name = PhotonNetwork.CurrentRoom.Name;
             roomName.text = name;
 
-            // 2. Lấy số lượng người chơi hiện tại / Tối đa
             int currentPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
             int maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
             Debug.Log($"Đang ở phòng: {name} | Số người: {currentPlayers}");
         }
+    }
+    
+    
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        ToastSystem.Instance.ShowToast($"Người chơi {otherPlayer.NickName} đã thoát phòng.");
+        ResetMyReadyState();
+        UpdatePlayerListUI();
+
+        if (statusText != null)
+        {
+            statusText.text = "Đối thủ đã thoát. Đang đợi người mới...";
+        }
+      
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("Tôi đã trở thành Host mới. Mở lại phòng...");
+            PhotonNetwork.CurrentRoom.IsOpen = true; 
+            PhotonNetwork.CurrentRoom.IsVisible = true;
+        }
+    }
+
+    // Hàm phụ trợ để bỏ Ready
+    void ResetMyReadyState()
+    {
+        // Set property trên Server về false
+        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
+        props["IsReady"] = false;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+
+        UpdateReadyButtonUI(false);
     }
 }
