@@ -6,10 +6,23 @@ using Photon.Realtime;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using ExitGames.Client.Photon;
 using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
+using JetBrains.Annotations;
+using UnityEngine.SceneManagement;
+[System.Serializable]
+public class userDataPVP
+{
+    public string name;
+    public int rank;
+
+    public userDataPVP()
+    {
+    }
+}
 
 public class GamePlayController : MonoBehaviourPunCallbacks
 {
@@ -28,8 +41,11 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     public GameObject player2Container;
     
     public GameObject loadingPanel; // Panel che màn hình lúc tải
+    public GameObject gameOverPanel; // Panel che màn hình lúc tải
     public TextMeshProUGUI loadingStatusText;  // Text: "Đang tải...", "Đợi người khác..."
     public TextMeshProUGUI countdownText;
+    public TextMeshProUGUI gameOverText;
+    public TextMeshProUGUI gameOverTimerPanel;
     
     [Header("Timer Settings")]
     public float timeLimit = 5f; 
@@ -44,6 +60,9 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     private int currentQuestionIndex = 0;
     private int currentTurnActorNumber;
     private bool isDataLoaded = false;
+
+    [NotNull] private userDataPVP myPlayer = new userDataPVP();
+    [NotNull] private userDataPVP otherPlayer = new userDataPVP();
     
     // Mạng của 2 người chơi (Key: ActorNumber, Value: Lives)
     private Dictionary<int, int> playerLives = new Dictionary<int, int>();
@@ -215,7 +234,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     IEnumerator<WaitForSeconds> Co_RunCountdownAndStart()
     {
         // Tắt loading, hiện số đếm ngược
-        loadingPanel.SetActive(false);
+        loadingStatusText.text = "BẮT ĐẦU SAU:";
         countdownText.gameObject.SetActive(true);
         countdownText.text = "3";
         yield return new WaitForSeconds(1f);
@@ -223,11 +242,11 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
         countdownText.text = "1";
         yield return new WaitForSeconds(1f);
-        countdownText.text = "GO!";
         
         yield return new WaitForSeconds(0.5f);
         countdownText.gameObject.SetActive(false);
-        
+        loadingPanel.SetActive(false);
+
         if (PhotonNetwork.IsMasterClient)
         {
             if (rawAllQuestions.Count > 0)
@@ -325,9 +344,25 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             if (playerLives.ContainsKey(playerID))
             {
                 playerLives[playerID]--;
+                if (PhotonNetwork.LocalPlayer.ActorNumber == currentTurnActorNumber)
+                {
+                    int myLive = playerLives[playerID];
+                    myLives[myLive].sprite = disableHeart;
+                    Debug.LogError("tru mang ban còn " + playerLives[playerID]);
+                }
+                else
+                {
+                    int otherLive = playerLives[playerID];
+                    enemyLives[otherLive].sprite = disableHeart;
+                    Debug.LogError("tru mang doi phuong còn " + playerLives[playerID]);
+                }
             }
 
-            if (CheckGameOverCondition()) return;
+            if (CheckGameOverCondition())
+            {
+                Debug.LogError("vào game over");
+                return;
+            }
             SwitchTurn();
         }
 
@@ -407,7 +442,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         {
             Debug.Log("Game Over: DRAW!");
             // Gửi RPC thông báo Hòa
-            photonView.RPC("RPC_GameOver", RpcTarget.All, "DRAW");
+            photonView.RPC("RPC_GameOver", RpcTarget.All, "DRAW", survivorActorNumber);
             return true; // Game kết thúc
         }
 
@@ -424,7 +459,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             Debug.Log("Game Over: Winner is " + survivorActorNumber);
         
             // Gửi RPC thông báo người thắng (kèm ID người thắng để hiển thị)
-            photonView.RPC("RPC_GameOver", RpcTarget.All, "WINNER_" + survivorActorNumber);
+            photonView.RPC("RPC_GameOver", RpcTarget.All, "WINNER_" + survivorActorNumber, survivorActorNumber);
             return true; // Game kết thúc
         }
 
@@ -451,9 +486,11 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         // 2. Cập nhật trạng thái nút bấm (Chỉ bật nút nếu đúng lượt của mình)
         bool isMyTurn = (PhotonNetwork.LocalPlayer.ActorNumber == currentTurnActorNumber);
         SetButtonsInteractable(isMyTurn);
-
+        Debug.Log("Lượt của bạn:" + isMyTurn);
         statusText.text = isMyTurn ? "Lượt của BẠN" : "Lượt đối thủ...";
         statusText.color = isMyTurn ? Color.green : Color.red;
+        currentTimer = timeLimit; // Đặt lại 5s
+        isTimerRunning = true;    // Bắt đầu đếm
     }
 
     [PunRPC]
@@ -466,29 +503,51 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                 playerLives[actors[i]] = lives[i];
             else 
                 playerLives.Add(actors[i], lives[i]);
-
-            // Cập nhật UI Text
-            if (actors[i] == PhotonNetwork.LocalPlayer.ActorNumber)
-                for (int j = 1; j <= lives[i]; j++)
-                {
-                    myLives[j - 1].gameObject.SetActive(true);
-                }
-            else
-            {
-                for (int j = 1; j <= lives[i]; j++)
-                {
-                    enemyLives[j - 1].gameObject.SetActive(true);
-                }
-            }
         }
     }
 
     [PunRPC]
-    void RPC_GameOver(string msg)
+    void RPC_GameOver(string msg, int survivorActorNumber)
     {
-        statusText.text = "GAME OVER: " + msg;
+        gameOverPanel.SetActive(true);
+        if (msg == "DRAW")
+        {
+            gameOverText.text = "CẢ HAI HOÀ NHAU";
+            saveMatchDatabase("DRAW",EloCalculator.GameResult.Draw,otherPlayer.name);
+        }
+        bool amIWinner = (PhotonNetwork.LocalPlayer.ActorNumber == survivorActorNumber);
+        if (amIWinner)
+        {
+            gameOverText.text = "NGƯỜI CHIẾN THẮNG LÀ: \n" + myPlayer.name;
+            saveMatchDatabase("WIN",EloCalculator.GameResult.Win,otherPlayer.name);
+        }
+        else
+        {
+            gameOverText.text = "NGƯỜI CHIẾN THẮNG LÀ: \n" + otherPlayer.name;
+            saveMatchDatabase("LOSE",EloCalculator.GameResult.Loss,otherPlayer.name);
+        }
+        isTimerRunning = false;
         SetButtonsInteractable(false);
-        // Hiện popup kết quả, nút về sảnh, v.v.
+        StartCoroutine(RunCountdownLoadScene());
+    }
+    
+    IEnumerator<WaitForSeconds> RunCountdownLoadScene()
+    {
+        gameOverTimerPanel.text = "Trờ về trang chủ sau: 3";
+        yield return new WaitForSeconds(1f);
+        gameOverTimerPanel.text = "Trờ về trang chủ sau: 2";
+        yield return new WaitForSeconds(1f);
+        gameOverTimerPanel.text = "Trờ về trang chủ sau: 1";
+        yield return new WaitForSeconds(1f);
+        gameOverTimerPanel.text = "Trờ về trang chủ sau: 0";
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene("HomeScene");
+    }
+
+    void saveMatchDatabase(string resultState,EloCalculator.GameResult result,string otherName)
+    {
+        int randomRankPoint = EloCalculator.CalculateRatingChange(myPlayer.rank,otherPlayer.rank,result);
+        RankDatabaseManager.Instance.SaveMatchHistory(resultState, randomRankPoint, otherName);
     }
 
     void UpdateLivesUI()
@@ -514,6 +573,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     void InitUIPlayer()
     {
         loadingPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
         countdownText.gameObject.SetActive(false);
         loadingStatusText.text = "ĐANG TẢI CÂU HỎI.....";
 
@@ -541,6 +601,16 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         string avatarId = GetSafeString(player, "AvatarID"); 
         string borderId = GetSafeString(player, "BorderID");
         string rankPoint = GetSafeString(player, "Rank");
+        if (player.IsLocal)
+        {
+            myPlayer.name = player.NickName;
+            myPlayer.rank = int.Parse(rankPoint);
+        }
+        else
+        {
+            otherPlayer.name = player.NickName;
+            otherPlayer.rank = int.Parse(rankPoint);
+        }
         playerContainer.GetComponent<FriendItemUI>().SetupUI(nameTxt,avatarId,borderId,rankPoint);
     }
 
@@ -566,4 +636,5 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             answerButtons[i].onClick.RemoveAllListeners(); // Xóa cũ
         }
     }
+    
 }

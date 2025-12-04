@@ -10,11 +10,11 @@ public class MatchResultData
     public string opponentName; // Tên đối thủ (nếu cần)
 
     // Hàm khởi tạo cho tiện
-    public MatchResultData(bool isWin, int pointsChanged, int newTotalRank, string enemyName)
+    public MatchResultData(string matchResult, int pointsChanged, int newTotalRank, string enemyName)
     {
         // Lưu thời gian hiện tại
         this.matchDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        this.result = isWin ? "Win" : "Lose";
+        this.result = matchResult;
         this.rankChange = pointsChanged; // Nếu thua thì truyền số âm vào
         this.currentRank = newTotalRank;
         this.opponentName = enemyName;

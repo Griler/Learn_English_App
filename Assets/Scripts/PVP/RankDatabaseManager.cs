@@ -23,7 +23,7 @@ public class RankDatabaseManager : MonoBehaviour
     /// Hàm này xử lý việc lưu lịch sử đấu + cập nhật tổng điểm rank
     /// </summary>
     /// 
-    public async void SaveMatchHistory(bool isWin, int pointsChanged, string enemyName)
+    public async void SaveMatchHistory(string matchResult, int pointsChanged, string enemyName)
     {
         // 1. Lấy User ID hiện tại
         var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
@@ -50,7 +50,7 @@ public class RankDatabaseManager : MonoBehaviour
         if (newTotalRank < 0) newTotalRank = 0; 
 
         // 4. Tạo Object dữ liệu lịch sử
-        MatchResultData historyData = new MatchResultData(isWin, pointsChanged, newTotalRank, enemyName);
+        MatchResultData historyData = new MatchResultData(matchResult, pointsChanged, newTotalRank, enemyName);
         string jsonHistory = JsonUtility.ToJson(historyData);
 
         // 5. Thực hiện lưu vào Database (2 việc cùng lúc)
