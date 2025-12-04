@@ -6,6 +6,7 @@ using Photon.Realtime;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using ExitGames.Client.Photon;
 using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
@@ -26,6 +27,10 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     public GameObject player1Container;
     public GameObject player2Container;
     
+    public GameObject loadingPanel; // Panel che màn hình lúc tải
+    public TextMeshProUGUI loadingStatusText;  // Text: "Đang tải...", "Đợi người khác..."
+    public TextMeshProUGUI countdownText;
+    
     [Header("Timer Settings")]
     public float timeLimit = 5f; 
     public TextMeshProUGUI timerText;
@@ -38,6 +43,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     private int currentQuestionIndex = 0;
     private int currentTurnActorNumber;
+    private bool isDataLoaded = false;
     
     // Mạng của 2 người chơi (Key: ActorNumber, Value: Lives)
     private Dictionary<int, int> playerLives = new Dictionary<int, int>();
@@ -54,8 +60,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                 OnAnswerSelected(index);
             });
         }
+        
         SetButtonsInteractable(false);
-        statusText.text = "Đang tải câu hỏi...";
         InitUIPlayer();
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
             var dependencyStatus = task.Result;
@@ -72,10 +78,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         });
     }
     
-    void LoadQuestionsFromFirebase()
-{
-    // LƯU Ý: Kiểm tra kỹ đường dẫn này trên Firebase Console của bạn.
-    // Nếu data nằm ngay ngoài cùng thì bỏ .Child("questions") đi, chỉ để .Child("list")
+    void LoadQuestionsFromFirebase() {
     reference.Child("questions").Child("list") 
         .GetValueAsync().ContinueWithOnMainThread(task => {
         
@@ -134,22 +137,14 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             }
             
             Debug.Log($"Đã tải xong kho {rawAllQuestions.Count} câu hỏi! Chờ tín hiệu từ Master...");
+            
+            isDataLoaded = true;
+            loadingStatusText.text = "Đang đợi người chơi khác...";
 
-            // Logic Master Client xử lý Seed
-            if (PhotonNetwork.IsMasterClient)
-            {
-                if (rawAllQuestions.Count > 0)
-                {
-                    int gameSeed = UnityEngine.Random.Range(0, 999999);
-                    int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
-                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.Others, gameSeed, startActor);
-                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.MasterClient, gameSeed, startActor);
-                }
-                else
-                {
-                    Debug.LogError("List câu hỏi rỗng, không thể bắt đầu game!");
-                }
-            }
+            // Báo cho mạng biết mình đã xong (Set Custom Property)
+            Hashtable props = new Hashtable();
+            props.Add("IsLoaded", true);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
     });
 }
@@ -179,8 +174,76 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         // 4. Bắt đầu các logic game như cũ
         InitGameLogic(startTurnActor);
     }
+    
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        // Chỉ Master mới có quyền kiểm tra và ra lệnh Start
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Kiểm tra xem property thay đổi có phải là "IsLoaded" không
+            if (changedProps.ContainsKey("IsLoaded"))
+            {
+                CheckAllPlayersReady();
+            }
+        }
+    }
+    
+    private void CheckAllPlayersReady()
+    {
+        foreach (Player p in PhotonNetwork.PlayerList)
+        {
+            object isLoaded;
+            if (p.CustomProperties.TryGetValue("IsLoaded", out isLoaded))
+            {
+                if (!(bool)isLoaded) return; // Có ông chưa xong -> Dừng, không làm gì cả
+            }
+            else
+            {
+                return; // Chưa có key -> Chưa xong
+            }
+        }
+        Debug.Log("Tất cả đã sẵn sàng! Bắt đầu đếm ngược.");
+        photonView.RPC("RPC_StartCountdown", RpcTarget.All);
+    }
+    
+    [PunRPC]
+    void RPC_StartCountdown()
+    {
+        StartCoroutine(Co_RunCountdownAndStart());
+    }
 
-    // --- HÀM START GAME (Sửa lại chút để nhận tham số) ---
+    IEnumerator<WaitForSeconds> Co_RunCountdownAndStart()
+    {
+        // Tắt loading, hiện số đếm ngược
+        loadingPanel.SetActive(false);
+        countdownText.gameObject.SetActive(true);
+        countdownText.text = "3";
+        yield return new WaitForSeconds(1f);
+        countdownText.text = "2";
+        yield return new WaitForSeconds(1f);
+        countdownText.text = "1";
+        yield return new WaitForSeconds(1f);
+        countdownText.text = "GO!";
+        
+        yield return new WaitForSeconds(0.5f);
+        countdownText.gameObject.SetActive(false);
+        
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (rawAllQuestions.Count > 0)
+            {
+                int gameSeed = UnityEngine.Random.Range(0, 999999);
+                int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
+                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.Others, gameSeed, startActor);
+                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.MasterClient, gameSeed, startActor);
+            }
+            else
+            {
+                Debug.LogError("List câu hỏi rỗng, không thể bắt đầu game!");
+            }
+        }
+    }
+    
     void InitGameLogic(int startActor)
     {
         // Setup mạng sống
@@ -450,6 +513,11 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     void InitUIPlayer()
     {
+        loadingPanel.SetActive(true);
+        countdownText.gameObject.SetActive(false);
+        loadingStatusText.text = "ĐANG TẢI CÂU HỎI.....";
+
+        
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             
