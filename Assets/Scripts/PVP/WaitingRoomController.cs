@@ -45,35 +45,58 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     {
         Player[] players = PhotonNetwork.PlayerList;
 
-        // --- XỬ LÝ PLAYER 1 (Thường là Host) ---
-        if (players.Length > 0)
+        // 1. Tìm ra ai là Local (Mình) và ai là Remote (Địch)
+        Player myPlayer = null;
+        Player otherPlayer = null;
+
+        foreach (Player p in players)
         {
-            Player p1 = players[0];
-            player1Container.SetActive(true);
-            UpdateSinglePlayerUI(p1,player1Container,player1IconReady);
-            player1TextStatus.gameObject.SetActive(false);
-        }
-        else
-        {
-            // Ẩn UI nếu không có người
-            player1Container.SetActive(false);
-            player1TextStatus.gameObject.SetActive(true);
-            player1TextStatus.text = "Waiting...";
+            if (p.IsLocal)
+            {
+                myPlayer = p;
+            }
+            else
+            {
+                otherPlayer = p; // Trong chế độ 1v1, bất kỳ ai không phải mình thì là địch
+            }
         }
 
-        // --- XỬ LÝ PLAYER 2 ---
-        if (players.Length > 1)
+        // --- XỬ LÝ PLAYER 1 (BÊN TRÁI - LUÔN LÀ CỦA MÌNH) ---
+        // Vì mình luôn ở trong phòng, myPlayer sẽ không bao giờ null, nhưng cứ check cho an toàn
+        if (myPlayer != null)
         {
-            Player p2 = players[1];
-            player2Container.SetActive(true);
-            player2TextStatus.gameObject.SetActive(false);
-            UpdateSinglePlayerUI(p2,player2Container, player2IconReady);
+            player1Container.SetActive(true);
+            UpdateSinglePlayerUI(myPlayer, player1Container, player1IconReady);
+        
+            if(player1TextStatus != null) 
+                player1TextStatus.gameObject.SetActive(false);
         }
         else
         {
-            player2Container.SetActive(false);
-            player2TextStatus.gameObject.SetActive(true);
-            player2TextStatus.text = "Waiting...";
+            // Trường hợp cực hiếm (bug) không tìm thấy chính mình
+            player1Container.SetActive(false);
+        }
+
+        // --- XỬ LÝ PLAYER 2 (BÊN PHẢI - LUÔN LÀ ĐỐI THỦ) ---
+        if (otherPlayer != null)
+        {
+            // Có người khác trong phòng -> Hiển thị thông tin họ
+            player2Container.SetActive(true);
+            UpdateSinglePlayerUI(otherPlayer, player2Container, player2IconReady);
+        
+            if(player2TextStatus != null) 
+                player2TextStatus.gameObject.SetActive(false);
+        }
+        else
+        {
+            // Chưa có ai vào -> Hiển thị "Waiting..."
+            player2Container.SetActive(false); // Ẩn info container (avatar, tên)
+        
+            if(player2TextStatus != null)
+            {
+                player2TextStatus.gameObject.SetActive(true);
+                player2TextStatus.text = "Waiting for opponent...";
+            }
         }
     }
 

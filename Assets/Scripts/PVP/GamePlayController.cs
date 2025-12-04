@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -13,30 +14,30 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 {
     [Header("UI References")]
     public TextMeshProUGUI questionText;
-    public Button[] answerButtons; // 4 nút đáp án
-    public TextMeshProUGUI[] answerTexts; // Text bên trong 4 nút
+    public Button[] answerButtons;
+    public TextMeshProUGUI[] answerTexts; 
     
     [Header("UI Info")]
-    public TextMeshProUGUI statusText; // Hiển thị "Lượt của..."
-    public List<Image> myLives; // Mạng của mình
-    public List<Image> enemyLives; // Mạng đối thủ
+    public TextMeshProUGUI statusText; 
+    public List<Image> myLives;
+    public List<Image> enemyLives;
     public Sprite disableHeart;
     public Sprite enableHeart;
-
+    public GameObject player1Container;
+    public GameObject player2Container;
+    
     [Header("Timer Settings")]
-    public float timeLimit = 5f; // Thời gian tối đa (5s)
-    public TextMeshProUGUI timerText; // UI hiển thị số giây đếm ngược
+    public float timeLimit = 5f; 
+    public TextMeshProUGUI timerText;
 
     private float currentTimer;
     private bool isTimerRunning = false;
     
     [Header("Game Data")]
-    // Danh sách câu hỏi (bạn có thể load từ JSON hoặc nhập tay trong Inspector)
     public List<QuestionData> allQuestions; 
 
-    // --- BIẾN LOGIC (Chỉ Master Client quan tâm chính) ---
     private int currentQuestionIndex = 0;
-    private int currentTurnActorNumber; // ID của người đang được chơi
+    private int currentTurnActorNumber;
     
     // Mạng của 2 người chơi (Key: ActorNumber, Value: Lives)
     private Dictionary<int, int> playerLives = new Dictionary<int, int>();
@@ -44,12 +45,18 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     [SerializeField] private List<QuestionData> rawAllQuestions = new List<QuestionData>();
     private void Start()
     {
-        // 1. Tắt UI game hoặc hiện Loading Panel ở đây nếu muốn
-        Debug.LogError(this.gameObject.gameObject);
+        for (var i = 0; i < answerButtons.Length; i++)
+        {
+            int index = i;
+            answerButtons[i].onClick.RemoveAllListeners(); // Xóa cũ
+            answerButtons[i].onClick.AddListener(()=>
+            {
+                OnAnswerSelected(index);
+            });
+        }
         SetButtonsInteractable(false);
         statusText.text = "Đang tải câu hỏi...";
-
-        // 2. Khởi tạo Firebase & Load Data
+        InitUIPlayer();
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
             var dependencyStatus = task.Result;
             if (dependencyStatus == DependencyStatus.Available)
@@ -135,7 +142,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                 {
                     int gameSeed = UnityEngine.Random.Range(0, 999999);
                     int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
-                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, gameSeed, startActor);
+                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.Others, gameSeed, startActor);
+                    photonView.RPC("RPC_SetupAndStartGame", RpcTarget.MasterClient, gameSeed, startActor);
                 }
                 else
                 {
@@ -314,56 +322,51 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     bool CheckGameOverCondition()
     {
-        // Lấy mạng của 2 người
-        int p1Lives = 0;
-        int p2Lives = 0;
-        // Giả sử chỉ có 2 người chơi
-        foreach(var kvp in playerLives)
-        {
-             // Logic tạm: lấy đại 2 giá trị vì loop
-             if(p1Lives == 0) p1Lives = kvp.Value;
-             else p2Lives = kvp.Value;
-        }
-
-        // Logic check:
-        // Cần phải check kỹ ActorNumber để biết ai là ai, nhưng ở đây ta check tổng quát:
-        
-        bool someoneDead = false;
         int deadCount = 0;
-        foreach(var life in playerLives.Values)
+        int survivorActorNumber = -1; // Lưu ID người còn sống
+
+        // 1. Duyệt qua tất cả người chơi để đếm số người chết/sống
+        foreach (var kvp in playerLives)
         {
-            if(life <= 0) deadCount++;
+            if (kvp.Value <= 0)
+            {
+                deadCount++;
+            }
+            else
+            {
+                survivorActorNumber = kvp.Key; // Lưu lại ID người này để tuyên bố thắng
+            }
         }
 
-        // Logic Hòa đặc biệt của bạn: Cả 2 đều hết mạng (0)
-        if (deadCount == 2)
+        // 2. LOGIC HÒA (Ưu tiên kiểm tra trước): Cả 2 đều hết mạng
+        // Trường hợp này xảy ra khi A chết, B trả lời sai và cũng chết theo.
+        if (deadCount >= 2)
         {
-            photonView.RPC("RPC_GameOver", RpcTarget.All, "HÒA! Cả 2 đều hết mạng.");
-            return true;
+            Debug.Log("Game Over: DRAW!");
+            // Gửi RPC thông báo Hòa
+            photonView.RPC("RPC_GameOver", RpcTarget.All, "DRAW");
+            return true; // Game kết thúc
         }
 
-        // Nếu chỉ có 1 người chết, ta phải xem người kia còn cơ hội trả lời không?
-        // Theo luật bạn: "A sai (còn 0 mạng), B trả lời". 
-        // Nghĩa là Game CHƯA DỪNG khi 1 người chết, nó chỉ dừng khi người kia trả lời xong (hoặc người kia thắng).
-        // Tuy nhiên để đơn giản hoá logic cho người mới: Nếu A chết -> Check xem B có chết ko?
-        // Nếu B > 0 mạng -> B Thắng. 
-        // NHƯNG luật của bạn là: A chết, câu hỏi vẫn còn đó cho B. 
-        // => Vậy code ở trên (Switch Turn) vẫn chạy để B có cơ hội trả lời.
-        // => Game chỉ kết thúc khi B trả lời đúng (B thắng) hoặc B trả lời sai (B chết -> Hoà).
-        
-        // Vậy nên ở đây ta CHƯA return true vội nếu chỉ 1 người chết.
-        // Trừ khi người chết là người vừa trả lời xong và người kia vẫn còn sống? 
-        // Để đúng luật "B trả lời sai thì hòa", ta cứ để game tiếp diễn đến khi cả 2 cùng 0, hoặc 1 người 0 và người kia trả lời ĐÚNG câu chốt hạ.
-        
-        // Tạm thời Logic chuẩn game đối kháng: Ai về 0 trước là thua.
-        // Để làm đúng Logic của bạn:
-        if (deadCount == 2) 
+        // 3. LOGIC CÓ NGƯỜI THẮNG: Chỉ có 1 người chết, người kia còn sống
+        if (deadCount == 1 && survivorActorNumber != -1)
         {
-             photonView.RPC("RPC_GameOver", RpcTarget.All, "DRAW");
-             return true;
-        }
+            // --- QUAN TRỌNG: XỬ LÝ LUẬT "VỚT VÁT" CỦA BẠN ---
         
-        return false; // Chưa kết thúc, vẫn đánh tiếp
+            // Nếu bạn muốn "A chết nhưng B vẫn được trả lời nốt câu hỏi để xem có bị Hòa không":
+            // Bạn cần thêm biến kiểm tra xem B đã trả lời chưa.
+            // Ví dụ: if (!isTurnFinished) return false; 
+        
+            // Còn nếu chơi luật chuẩn (Ai về 0 trước là thua ngay lập tức):
+            Debug.Log("Game Over: Winner is " + survivorActorNumber);
+        
+            // Gửi RPC thông báo người thắng (kèm ID người thắng để hiển thị)
+            photonView.RPC("RPC_GameOver", RpcTarget.All, "WINNER_" + survivorActorNumber);
+            return true; // Game kết thúc
+        }
+
+        // 4. Chưa ai chết hoặc cả 2 vẫn sống -> Game tiếp tục
+        return false;
     }
 
     // --- CÁC HÀM ĐỒNG BỘ UI (CLIENT) ---
@@ -442,6 +445,57 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         foreach (Button btn in answerButtons)
         {
             btn.interactable = state;
+        }
+    }
+
+    void InitUIPlayer()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            
+            //Kiểm tra xem player này có phải là TUI không?
+            if (player.IsLocal) 
+            {
+                // Nếu là tui -> Nhét vào bên TRÁI
+                UpdateSinglePlayerUI(player,player1Container);
+            }
+            else 
+            {
+                // Nếu là người khác -> Nhét vào bên PHẢI
+                UpdateSinglePlayerUI(player,player2Container);
+            }
+        }
+    }
+
+    void UpdateSinglePlayerUI(Player player,GameObject playerContainer)
+    {
+        string nameTxt = player.NickName;
+        string avatarId = GetSafeString(player, "AvatarID"); 
+        string borderId = GetSafeString(player, "BorderID");
+        string rankPoint = GetSafeString(player, "Rank");
+        playerContainer.GetComponent<FriendItemUI>().SetupUI(nameTxt,avatarId,borderId,rankPoint);
+    }
+
+    // Hàm tiện ích: Lấy giá trị int từ CustomProperties
+    // Hàm này bất chấp server gửi int hay string, nó đều trả về string an toàn
+    private string GetSafeString(Player player, string key, string defaultValue = "0")
+    {
+        // 1. Kiểm tra có Key đó không
+        if (player.CustomProperties.TryGetValue(key, out object val))
+        {
+            // 2. Dù là số 10 hay chữ "10", lệnh này đều biến nó thành string "10"
+            return val.ToString(); 
+        }
+    
+        // 3. Nếu không tìm thấy, trả về giá trị mặc định
+        return defaultValue;
+    }
+
+    private void OnDestroy()
+    {
+        for (var i = 0; i < answerButtons.Length; i++)
+        {
+            answerButtons[i].onClick.RemoveAllListeners(); // Xóa cũ
         }
     }
 }

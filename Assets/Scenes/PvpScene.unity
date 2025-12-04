@@ -1398,6 +1398,8 @@ MonoBehaviour:
   - {fileID: 1000611670}
   disableHeart: {fileID: 499797316784843579, guid: 699bf61245fe1844ea456df87244f841, type: 3}
   enableHeart: {fileID: -7369104036410410932, guid: 357defd497d85ed4fbb6244f32507c05, type: 3}
+  player1Container: {fileID: 1860737416}
+  player2Container: {fileID: 1597843564}
   timeLimit: 5
   timerText: {fileID: 385723853}
   allQuestions: []
@@ -1429,7 +1431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
+  ObservedComponentsFoldoutOpen: 0
   Group: 0
   prefixField: -1
   Synchronization: 3
@@ -1514,6 +1516,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 714779014}
   m_CullTransparentMesh: 1
+--- !u!1 &717268775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 717268776}
+  - component: {fileID: 717268777}
+  m_Layer: 0
+  m_Name: RankDbManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &717268776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 717268775}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.55783, y: 0.24061, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &717268777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 717268775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c659457861d143648cb46b64de754d7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &764980830
 GameObject:
   m_ObjectHideFlags: 0
@@ -2836,6 +2882,7 @@ GameObject:
   - component: {fileID: 1597843565}
   - component: {fileID: 1597843567}
   - component: {fileID: 1597843566}
+  - component: {fileID: 1597843568}
   m_Layer: 5
   m_Name: BGp1_1
   m_TagString: Untagged
@@ -2907,6 +2954,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1597843564}
   m_CullTransparentMesh: 1
+--- !u!114 &1597843568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1597843564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 405ffaeca52cbf14b9d6059e72e48df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 271977166}
+  avatarImage: {fileID: 1420431812}
+  borderImage: {fileID: 1921859003}
+  rankPoint: {fileID: 1767061100}
+  invitePvpBtn: {fileID: 0}
+  deleteBtn: {fileID: 0}
 --- !u!1 &1621530318
 GameObject:
   m_ObjectHideFlags: 0
@@ -3462,6 +3527,7 @@ GameObject:
   - component: {fileID: 1860737417}
   - component: {fileID: 1860737419}
   - component: {fileID: 1860737418}
+  - component: {fileID: 1860737420}
   m_Layer: 5
   m_Name: BGp1
   m_TagString: Untagged
@@ -3533,6 +3599,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1860737416}
   m_CullTransparentMesh: 1
+--- !u!114 &1860737420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860737416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 405ffaeca52cbf14b9d6059e72e48df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 1822312011}
+  avatarImage: {fileID: 1352004550}
+  borderImage: {fileID: 1311201353}
+  rankPoint: {fileID: 1911299065}
+  invitePvpBtn: {fileID: 0}
+  deleteBtn: {fileID: 0}
 --- !u!1 &1911299063
 GameObject:
   m_ObjectHideFlags: 0
@@ -4527,3 +4611,4 @@ SceneRoots:
   - {fileID: 202554794}
   - {fileID: 251954396}
   - {fileID: 1238549880}
+  - {fileID: 717268776}
