@@ -98,7 +98,7 @@ public class FriendSystem : MonoBehaviour
                 {
                     Debug.Log("Bạn kia đã đồng ý! Vào phòng thôi!");
                     currentInviteRef.ValueChanged -= HandleInviteChanged;
-                    MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode);
+                    MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode, () => {});
                     //HideWaitingUI();
                 }
             }

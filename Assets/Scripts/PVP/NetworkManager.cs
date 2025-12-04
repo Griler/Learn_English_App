@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -31,12 +32,14 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     }
 
+    private Action onJoinRoomCallBack; 
     // Hàm này được gọi từ nút "Đồng Ý"
-    public void AttemptToJoinFriendRoom(string roomCode)
+    public void AttemptToJoinFriendRoom(string roomCode, Action onJoinRoomCB)
     {
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 2; // Giới hạn 2 người
         roomOptions.IsVisible = false;
+        onJoinRoomCallBack = onJoinRoomCB;
         SetMyUserData();
         // TRƯỜNG HỢP 1: Đã kết nối sẵn rồi (đang ở sảnh PvP)
         if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InLobby)
@@ -68,6 +71,7 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.LoadLevel("WaitingRoomScene");
         }
+        onJoinRoomCallBack?.Invoke();
     }
     public override void OnJoinedLobby()
     {
@@ -91,7 +95,29 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("Region hiện tại: " + PhotonNetwork.CloudRegion);
 
         Debug.LogError("Vào phòng thất bại: " + message);
+        switch (returnCode)
+        {
+            case ErrorCode.GameDoesNotExist:
+                Debug.Log("Lỗi: Phòng này không còn tồn tại (Chủ phòng đã out?).");
+                ToastSystem.Instance.ShowToast("Phòng này không còn tồn tại");
+                break;
+            
+            case ErrorCode.GameFull: 
+                Debug.Log("Lỗi: Phòng đã đủ người.");
+                ToastSystem.Instance.ShowToast("Phòng đã đầy");
+                break;
+            
+            case ErrorCode.GameClosed:
+                Debug.Log("Lỗi: Phòng đang chơi, không cho vào.");   
+                ToastSystem.Instance.ShowToast("Phòng đang chơi, không cho vào");
+                break;
+            
+            default:
+                Debug.Log("Lỗi lạ khác");
+                break;
+        }
         // Ở đây bạn nên hiện thông báo UI: "Phòng không tồn tại hoặc đã đầy"
         pendingRoomCode = "";
+        onJoinRoomCallBack?.Invoke();
     }
 }

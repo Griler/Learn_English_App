@@ -3,6 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Database;
+using Firebase.Extensions;
 using TMPro;
 
 public class InvitePopupUI : MonoBehaviour
@@ -53,16 +54,25 @@ public class InvitePopupUI : MonoBehaviour
         //RemoveInviteFromFirebase();
         // 2. Ẩn Popup
         panelObj.SetActive(false);
-        
+        string myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        DatabaseReference inviteRef = FirebaseDatabase.DefaultInstance
+            .GetReference($"users/{myUserId}/invitations/{currentInviteKey}");
         // 3. Gọi NetworkManager để xử lý việc vào phòng (Connect -> Join)
-        MyNetworkManager.Instance.AttemptToJoinFriendRoom(currentRoomCode);
+        inviteRef.Child("status").SetValueAsync("accepted").ContinueWithOnMainThread(task => 
+        {
+            if (task.IsCompleted)
+            {
+                panelObj.SetActive(false);
+                MyNetworkManager.Instance.AttemptToJoinFriendRoom(currentRoomCode, RemoveInviteFromFirebase);
+            }
+        });
     }
 
     // --- CODE CHO NÚT TỪ CHỐI ---
     public void OnDeclineClicked()
     {
         Debug.Log("Bạn đã TỪ CHỐI.");
-
+        ToastSystem.Instance.ShowToast("Bạn đã TỪ CHỐI");
         // 1. Xóa lời mời trên Firebase
         RemoveInviteFromFirebase();
 

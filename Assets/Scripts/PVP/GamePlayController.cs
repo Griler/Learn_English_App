@@ -512,6 +512,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_GameOver(string msg, int survivorActorNumber)
     {
+        loadingPanel.SetActive(false);
         gameOverPanel.SetActive(true);
         if (msg == "DRAW")
         {
