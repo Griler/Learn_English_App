@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Firebase;
@@ -29,21 +30,23 @@ public class FirebaseLogin : MonoBehaviour
 
     private void Start()
     {
-        InitializeFirebase();
         setActiveLoginForm(true);
         setActiveRegisterForm(false);
     }
-
-    private void InitializeFirebase()
+    
+    private void OnEnable()
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-        {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == DependencyStatus.Available)
-            {
-                auth = FirebaseAuth.DefaultInstance;
-            }
-        });
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized += setUserAuth;
+    }
+
+    private void OnDisable()
+    {
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized += setUserAuth;
+    }
+
+    void setUserAuth()
+    {
+        auth = FirebaseAuth.DefaultInstance;
     }
 
     public void OnLoginButtonPressed()

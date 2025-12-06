@@ -20,23 +20,23 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SentenceBuildingScene.unity
     guid: 2fcd3390902721a4e8f2e8756514b11f
-  - enabled: 0
-    path: Assets/Scenes/SpeakingScene.unity
+  - enabled: 1
+    path: Assets/Scenes/speakingScene.unity
     guid: adbb8792e4995094aa226d384f312f24
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/ListenScene.unity
     guid: 51ddb69e4376ef1478695ac88e068863
   - enabled: 1
     path: Assets/Scenes/Test.unity
     guid: 892b87cdbc3d79e43a80b367809e17c8
   - enabled: 0
-    path: Assets/Scenes/PVPScene.unity
+    path: Assets/Scenes/PvpScene.unity
     guid: b42da4f75c282014e9aeb4df34f90d33
   - enabled: 1
     path: Assets/Scenes/WaitingRoomScene.unity
     guid: 27a8bd65add5639478c772a15d48825d
   - enabled: 1
-    path: Assets/Scenes/PVPScene.unity
+    path: Assets/Scenes/PvpScene.unity
     guid: b42da4f75c282014e9aeb4df34f90d33
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
