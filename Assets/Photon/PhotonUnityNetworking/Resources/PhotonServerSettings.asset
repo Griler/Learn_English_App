@@ -43,6 +43,11 @@ MonoBehaviour:
   - RPC_SetupAndStartGame
   - RPC_StartCountdown
   - RPC_SyncLive
+  - RPC_EndGameProcess
+  - RPC_FlipCardVisual
+  - RPC_MatchResult
+  - RPC_RequestFlip
+  - RPC_SetupBoard
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d4cece27218c11d47a100dd7bfcdd1aa
+guid: d2136a4428d57574dade9344ce9dca6e
 DefaultImporter:
   externalObjects: {}
   userData: 
@@ -9,6 +9,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 207873
   packageName: Mini UI
-  packageVersion: 
+  packageVersion: 1.0
   assetPath: Assets/Mini UI/Demo/Scenes/Demo.unity
-  uploadId: 0
+  uploadId: 501689

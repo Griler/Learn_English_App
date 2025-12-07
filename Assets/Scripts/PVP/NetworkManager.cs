@@ -36,6 +36,15 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     // Hàm này được gọi từ nút "Đồng Ý"
     public void AttemptToJoinFriendRoom(string roomCode, Action onJoinRoomCB)
     {
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.RandomMatchmaking)
+        {
+            // Có thể cần gọi hàm hủy bên Lobby, hoặc đơn giản là LeaveRoom nếu đã lỡ vào
+            if (PhotonNetwork.InRoom) PhotonNetwork.LeaveRoom();
+        }
+
+        // --- ĐÁNH DẤU TRẠNG THÁI ---
+        NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.FriendInvite;
+        
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 2; // Giới hạn 2 người
         roomOptions.IsVisible = false;
@@ -65,8 +74,10 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     }
     public override void OnJoinedRoom()
     {
-        // Nếu là Host (người tạo phòng) thì load vào phòng chờ
-        // Client sẽ tự đi theo nhờ PhotonNetwork.AutomaticallySyncScene = true
+        if (NetworkGameState.CurrentJoinType != NetworkGameState.JoinType.FriendInvite)
+        {
+            return;
+        }
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel("WaitingRoomScene");
@@ -80,7 +91,8 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = 2; // Giới hạn 2 người
         roomOptions.IsVisible = false;
         // Kiểm tra xem có phòng nào đang chờ vào không?
-        if (!string.IsNullOrEmpty(pendingRoomCode))
+        if ((!string.IsNullOrEmpty(pendingRoomCode)&& 
+            NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite))
         {
             
             Debug.Log("Giờ mới bắt đầu vào phòng chờ lúc nãy: " + pendingRoomCode);

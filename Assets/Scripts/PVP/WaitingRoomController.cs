@@ -16,19 +16,27 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     public GameObject player2Container;
     public TextMeshProUGUI player2TextStatus;
 
-
-
     [Header("UI References Room")]
     public Button readyButton;
+    public Button outButton;
     public TextMeshProUGUI readyButtonText;
     public TextMeshProUGUI roomName;
     public TextMeshProUGUI statusText;
-
+    
+    [Header("UI Game Mode")]
+    public TMP_Dropdown dropdownModeGame;
+    private const string MODE_KEY = "gm";
+    
     private void Start()
     {
         if (readyButton)
         {
             readyButton.onClick.AddListener(OnClick_ToggleReady);
+        }
+
+        if (outButton)
+        {
+            outButton.onClick.AddListener(onClickOutRoom);    
         }
         UpdatePlayerListUI();
         
@@ -37,6 +45,48 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
                        (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsReady"];
         UpdateReadyButtonUI(isReady);
         UpdateRoomInfo();
+        GetAndShowGameMode();
+    }
+    
+    void GetAndShowGameMode()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            dropdownModeGame.interactable = false;
+        }
+        // 1. Lấy danh sách properties của phòng hiện tại
+        var roomProps = PhotonNetwork.CurrentRoom.CustomProperties;
+
+        // 2. Kiểm tra xem có key "gm" không
+        if (roomProps.ContainsKey(MODE_KEY))
+        {
+            // 3. Lấy giá trị ra (Nhớ ép kiểu về int vì lúc gửi là int)
+            int mode = (int)roomProps[MODE_KEY];
+
+            Debug.Log("WaitingRoom: Phát hiện Mode = " + mode);
+            int index = dropdownModeGame.value;
+            // 4. Cập nhật UI tùy theo mode
+            switch (mode)
+            {
+                case 1:
+                    dropdownModeGame.value = 0;
+                    break;
+                case 2:
+                    dropdownModeGame.value = 1;
+                    break;
+                case 3:
+                    dropdownModeGame.value = 2;
+                    break;
+                default:
+                    dropdownModeGame.value = 0;
+                    break;
+            }
+            dropdownModeGame.RefreshShownValue(); // Cập nhật hiển thị ngay lập tức
+        }
+        else
+        {
+            Debug.LogWarning("Không tìm thấy key 'gm' trong Room Properties!");
+        }
     }
 
     // --- CẬP NHẬT UI ---
@@ -162,6 +212,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     void UpdateReadyButtonUI(bool isReady)
     {
+        outButton.interactable = !isReady;
         readyButtonText.text = isReady ? "CANCEL" : "READY";
         readyButton.image.color = isReady ? Color.gray : Color.green;
     }
@@ -215,9 +266,22 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         // Khoá phòng lại để không ai vào nữa
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
-
-        // Load Scene Game Chính (Tên scene phải chuẩn trong Build Settings)
-        PhotonNetwork.LoadLevel("PVPScene");
+        int mode = dropdownModeGame.value;
+        switch (mode)
+        {
+            case 0:
+                PhotonNetwork.LoadLevel("PVPScene");
+                break;
+            case 1:
+                PhotonNetwork.LoadLevel("PairScene");
+                break;
+            case 2:
+                Debug.Log("sssss");
+                break;
+            default:
+                PhotonNetwork.LoadLevel("PVPScene");
+                break;
+        }
     }
     
     void UpdateRoomInfo()
@@ -225,8 +289,19 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom != null)
         {
             string name = PhotonNetwork.CurrentRoom.Name;
-            roomName.text = name;
-
+            if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.RandomMatchmaking)
+            {
+                string prefix = name.Split("_")[0];
+                int length = name.Split("_")[1].Length;
+                string roomId = name.Split("_")[1].Substring(0, 3) +
+                                "..." + name.Split("_")[1].Substring(length - 3);
+                roomName.text = prefix + "_" + roomId;
+            }
+            else
+            {
+                roomName.text = name;
+            }
+            
             int currentPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
             int maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
             Debug.Log($"Đang ở phòng: {name} | Số người: {currentPlayers}");
@@ -262,5 +337,10 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
         UpdateReadyButtonUI(false);
+    }
+    
+    void onClickOutRoom()
+    {
+        PhotonNetwork.LoadLevel("HomeScene");
     }
 }
