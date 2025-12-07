@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -23,12 +24,14 @@ public class FriendPopupController : MonoBehaviour
         btnTabList.onClick.AddListener(() => SwitchTab(0));
         btnTabAdd.onClick.AddListener(() => SwitchTab(1));
         btnTabRequests.onClick.AddListener(() => SwitchTab(2));
+    }
 
-        // Mặc định mở tab List Friend
+    private void OnEnable()
+    {
         SwitchTab(0);
     }
 
-    void SwitchTab(int index)
+    public void SwitchTab(int index)
     {
         // 1. Tắt tất cả panel trước
         panelListFriend.gameObject.SetActive(false);
@@ -42,26 +45,26 @@ public class FriendPopupController : MonoBehaviour
                 panelListFriend.gameObject.SetActive(true);
                 title.text = "Friends List";
                 panelListFriend.OnShow();
-                btnTabList.GetComponent<Image>().color = Color.white;
-                btnTabAdd.GetComponent<Image>().color = Color.gray2;
-                btnTabRequests.GetComponent<Image>().color = Color.gray2;
+                btnTabList.GetComponentInChildren<Image>().color = Color.limeGreen;
+                btnTabAdd.GetComponentInChildren<Image>().color = Color.gray2;
+                btnTabRequests.GetComponentInChildren<Image>().color = Color.gray2;
                 break;
             case 1:
                 panelFriendAdd.gameObject.SetActive(true);
                 title.text = "Add Friends";
                 panelFriendAdd.OnShow();
-                btnTabList.GetComponent<Image>().color = Color.gray2;
-                btnTabAdd.GetComponent<Image>().color = Color.white;
-                btnTabRequests.GetComponent<Image>().color= Color.gray2;
+                btnTabList.GetComponentInChildren<Image>().color = Color.gray2;
+                btnTabAdd.GetComponentInChildren<Image>().color = Color.limeGreen;
+                btnTabRequests.GetComponentInChildren<Image>().color= Color.gray2;
 
                 break;
             case 2:
                 panelFriendRequests.gameObject.SetActive(true);
                 title.text = "Accept Friends";
                 panelFriendRequests.OnShow();
-                btnTabList.GetComponent<Image>().color = Color.gray2;
-                btnTabAdd.GetComponent<Image>().color = Color.gray2;
-                btnTabRequests.GetComponent<Image>().color = Color.white;
+                btnTabList.GetComponentInChildren<Image>().color = Color.gray2;
+                btnTabAdd.GetComponentInChildren<Image>().color = Color.gray2;
+                btnTabRequests.GetComponentInChildren<Image>().color = Color.limeGreen;
                 break;
         }
     }

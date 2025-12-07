@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Firebase;
@@ -29,39 +30,23 @@ public class FirebaseLogin : MonoBehaviour
 
     private void Start()
     {
-        InitializeFirebase();
         setActiveLoginForm(true);
         setActiveRegisterForm(false);
     }
-
-    private void InitializeFirebase()
+    
+    private void OnEnable()
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-        {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == DependencyStatus.Available)
-            {
-                auth = FirebaseAuth.DefaultInstance;
-#if UNITY_EDITOR
-                if (auth.CurrentUser == null)
-                {
-                    Debug.Log("Hiện chưa có ai đăng nhập.");
-                }
-                else
-                {
-                    loadNextScene();
-                    Debug.Log("User đang đăng nhập là: " + auth.CurrentUser.Email);
-                }
-#else
-                if (auth.CurrentUser != null)
-                {auth.SignOut();
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized += setUserAuth;
+    }
 
-                }
-#endif
-                {
-                }
-            }
-        });
+    private void OnDisable()
+    {
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized += setUserAuth;
+    }
+
+    void setUserAuth()
+    {
+        auth = FirebaseAuth.DefaultInstance;
     }
 
     public void OnLoginButtonPressed()
@@ -163,7 +148,7 @@ public class FirebaseLogin : MonoBehaviour
         // Đăng ký Auth thành công
         FirebaseUser newUser = registerTask.Result.User;
         string name = email.Split("@")[0];
-        UserInfoData userData = new UserInfoData("ava_1", "null", email, name, 0, 0);
+        UserInfoData userData = new UserInfoData("ava_1", "border_0", email, name, 0, 0);
 
         string json = JsonUtility.ToJson(userData);
 
@@ -228,6 +213,6 @@ public class FirebaseLogin : MonoBehaviour
     private void loadNextScene()
     {
         // Ví dụ: load scene có tên "GameScene"
-        SceneManager.LoadSceneAsync("Test");
+        SceneManager.LoadSceneAsync("HomeScene");
     }
 }

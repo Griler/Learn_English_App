@@ -1,754 +1,728 @@
 {
-    "grammarPointID": "present_simple",
-    "rule": "S + V(s/es)",
-    "description": "Thì hiện tại đơn diễn tả thói quen, sự thật hoặc hành động xảy ra thường xuyên.",
-    "examples": [
-        {
-            "sentence": "She likes the park.",
-            "translation": "Cô ấy thích công viên.",
-            "conjugatedVerb": "likes"
+    "daily_missions": {
+        "learn_new": {
+            "description": "Ho\u00e0n th\u00e0nh m\u1ed9t b\u00e0i h\u1ecdc m\u1edbi trong ch\u01b0\u01a1ng tr\u00ecnh.",
+            "reward": 100,
+            "title": "H\u1ecdc ph\u1ea7n m\u1edbi"
         },
-        {
-            "sentence": "He drinks coffee every morning.",
-            "translation": "Anh ấy uống cà phê mỗi sáng.",
-            "conjugatedVerb": "drinks"
+        "login": {
+            "description": "V\u00e0o game \u00edt nh\u1ea5t m\u1ed9t l\u1ea7n trong ng\u00e0y \u0111\u1ec3 nh\u1eadn th\u01b0\u1edfng.",
+            "reward": 50,
+            "title": "\u0110\u0103ng nh\u1eadp h\u00f4m nay"
         },
-        {
-            "sentence": "They work at a big company.",
-            "translation": "Họ làm việc tại một công ty lớn.",
-            "conjugatedVerb": "work"
+        "perfect_score": {
+            "description": "\u0110\u1ea1t \u0111i\u1ec3m tuy\u1ec7t \u0111\u1ed1i trong 1 b\u00e0i h\u1ecdc ho\u1eb7c tr\u1eadn \u0111\u1ea5u.",
+            "reward": 150,
+            "title": "\u0110i\u1ec3m tuy\u1ec7t \u0111\u1ed1i"
         },
-        {
-            "sentence": "It rains a lot in the summer.",
-            "translation": "Trời mưa nhiều vào mùa hè.",
-            "conjugatedVerb": "rains"
+        "practice3": {
+            "description": "Ho\u00e0n th\u00e0nh 1 b\u00e0i luy\u1ec7n t\u1eadp b\u1ea5t k\u1ef3 trong ng\u00e0y.",
+            "reward": 150,
+            "title": "Ch\u0103m ch\u1ec9 h\u1ecdc t\u1eadp"
         },
-        {
-            "sentence": "We play football on weekends.",
-            "translation": "Chúng tôi chơi bóng đá vào cuối tuần.",
-            "conjugatedVerb": "play"
+        "pvp": {
+            "description": "Tham gia m\u1ed9t tr\u1eadn \u0111\u1ea5u PvP \u0111\u1ec3 ki\u1ec3m tra k\u1ef9 n\u0103ng.",
+            "reward": 200,
+            "title": "\u0110\u1ea5u v\u1edbi ng\u01b0\u1eddi kh\u00e1c"
         },
-        {
-            "sentence": "He studies English every day.",
-            "translation": "Anh ấy học tiếng Anh mỗi ngày.",
-            "conjugatedVerb": "studies"
+        "rank_up": {
+            "description": "T\u0103ng level ho\u1eb7c c\u1ea5p \u0111\u1ed9 h\u1ecdc c\u1ee7a b\u1ea1n h\u00f4m nay.",
+            "reward": 300,
+            "title": "Th\u0103ng h\u1ea1ng h\u1ecdc t\u1eadp"
         },
-        {
-            "sentence": "The sun rises in the east.",
-            "translation": "Mặt trời mọc ở hướng đông.",
-            "conjugatedVerb": "rises"
+        "review": {
+            "description": "L\u00e0m l\u1ea1i \u00edt nh\u1ea5t m\u1ed9t b\u00e0i \u00f4n t\u1eadp \u0111\u00e3 h\u1ecdc.",
+            "reward": 75,
+            "title": "\u00d4n t\u1eadp b\u00e0i c\u0169"
         },
-        {
-            "sentence": "I watch TV after dinner.",
-            "translation": "Tôi xem TV sau bữa tối.",
-            "conjugatedVerb": "watch"
+        "share_game": {
+            "description": "Chia s\u1ebb game v\u1edbi b\u1ea1n b\u00e8 tr\u00ean m\u1ea1ng x\u00e3 h\u1ed9i.",
+            "reward": 100,
+            "title": "Chia s\u1ebb game"
         },
-        {
-            "sentence": "My sister cleans the house every Sunday.",
-            "translation": "Em gái tôi dọn dẹp nhà mỗi Chủ nhật.",
-            "conjugatedVerb": "cleans"
-        },
-        {
-            "sentence": "They go to school at 7 a.m.",
-            "translation": "Họ đi học lúc 7 giờ sáng.",
-            "conjugatedVerb": "go"
-        },
-        {
-            "sentence": "She teaches math at a high school.",
-            "translation": "Cô ấy dạy toán tại một trường trung học.",
-            "conjugatedVerb": "teaches"
-        },
-        {
-            "sentence": "We read books in our free time.",
-            "translation": "Chúng tôi đọc sách vào thời gian rảnh.",
-            "conjugatedVerb": "read"
-        },
-        {
-            "sentence": "He drives to work every day.",
-            "translation": "Anh ấy lái xe đi làm mỗi ngày.",
-            "conjugatedVerb": "drives"
-        },
-        {
-            "sentence": "I cook dinner for my family.",
-            "translation": "Tôi nấu bữa tối cho gia đình.",
-            "conjugatedVerb": "cook"
-        },
-        {
-            "sentence": "They live in a small village.",
-            "translation": "Họ sống ở một ngôi làng nhỏ.",
-            "conjugatedVerb": "live"
-        },
-        {
-            "sentence": "He runs every morning.",
-            "translation": "Anh ấy chạy bộ mỗi sáng.",
-            "conjugatedVerb": "runs"
-        },
-        {
-            "sentence": "We visit our grandparents on Sundays.",
-            "translation": "Chúng tôi thăm ông bà vào Chủ nhật.",
-            "conjugatedVerb": "visit"
-        },
-        {
-            "sentence": "She listens to music after work.",
-            "translation": "Cô ấy nghe nhạc sau giờ làm.",
-            "conjugatedVerb": "listens"
-        },
-        {
-            "sentence": "The store opens at 8 a.m.",
-            "translation": "Cửa hàng mở cửa lúc 8 giờ sáng.",
-            "conjugatedVerb": "opens"
-        },
-        {
-            "sentence": "Birds sing in the morning.",
-            "translation": "Chim hót vào buổi sáng.",
-            "conjugatedVerb": "sing"
-        },
-        {
-            "sentence": "The train arrives at 10 p.m.",
-            "translation": "Tàu hỏa đến lúc 10 giờ tối.",
-            "conjugatedVerb": "arrives"
-        },
-        {
-            "sentence": "I write emails every day.",
-            "translation": "Tôi viết email mỗi ngày.",
-            "conjugatedVerb": "write"
-        },
-        {
-            "sentence": "He loves to play guitar.",
-            "translation": "Anh ấy thích chơi guitar.",
-            "conjugatedVerb": "loves"
-        },
-        {
-            "sentence": "We eat breakfast together.",
-            "translation": "Chúng tôi ăn sáng cùng nhau.",
-            "conjugatedVerb": "eat"
-        },
-        {
-            "sentence": "The cat sleeps on the sofa.",
-            "translation": "Con mèo ngủ trên ghế sofa.",
-            "conjugatedVerb": "sleeps"
-        },
-        {
-            "sentence": "You speak English very well.",
-            "translation": "Bạn nói tiếng Anh rất tốt.",
-            "conjugatedVerb": "speak"
-        },
-        {
-            "sentence": "He finishes work at 5 p.m.",
-            "translation": "Anh ấy hoàn thành công việc lúc 5 giờ chiều.",
-            "conjugatedVerb": "finishes"
-        },
-        {
-            "sentence": "They prefer tea over coffee.",
-            "translation": "Họ thích trà hơn cà phê.",
-            "conjugatedVerb": "prefer"
-        },
-        {
-            "sentence": "She has a beautiful voice.",
-            "translation": "Cô ấy có một giọng hát hay.",
-            "conjugatedVerb": "has"
-        },
-        {
-            "sentence": "I brush my teeth twice a day.",
-            "translation": "Tôi đánh răng hai lần một ngày.",
-            "conjugatedVerb": "brush"
-        },
-        {
-            "sentence": "He tries hard in every game.",
-            "translation": "Anh ấy cố gắng hết sức trong mọi trận đấu.",
-            "conjugatedVerb": "tries"
-        },
-        {
-            "sentence": "Water boils at 100 degrees Celsius.",
-            "translation": "Nước sôi ở 100 độ C.",
-            "conjugatedVerb": "boils"
-        },
-        {
-            "sentence": "We usually spend holidays with family.",
-            "translation": "Chúng tôi thường dành kỳ nghỉ với gia đình.",
-            "conjugatedVerb": "spend"
-        },
-        {
-            "sentence": "My father watches the news in the evening.",
-            "translation": "Bố tôi xem tin tức vào buổi tối.",
-            "conjugatedVerb": "watches"
-        },
-        {
-            "sentence": "The baby cries when it is hungry.",
-            "translation": "Em bé khóc khi nó đói.",
-            "conjugatedVerb": "cries"
-        },
-        {
-            "sentence": "I check my phone frequently.",
-            "translation": "Tôi kiểm tra điện thoại thường xuyên.",
-            "conjugatedVerb": "check"
-        },
-        {
-            "sentence": "He helps his mother with housework.",
-            "translation": "Anh ấy giúp mẹ làm việc nhà.",
-            "conjugatedVerb": "helps"
-        },
-        {
-            "sentence": "They discuss their plans often.",
-            "translation": "Họ thường xuyên thảo luận về kế hoạch của mình.",
-            "conjugatedVerb": "discuss"
-        },
-        {
-            "sentence": "She mixes different colors to paint.",
-            "translation": "Cô ấy trộn các màu khác nhau để vẽ.",
-            "conjugatedVerb": "mixes"
-        },
-        {
-            "sentence": "This bag costs a lot of money.",
-            "translation": "Cái túi này tốn rất nhiều tiền.",
-            "conjugatedVerb": "costs"
-        },
-        {
-            "sentence": "We believe in his ability.",
-            "translation": "Chúng tôi tin tưởng vào khả năng của anh ấy.",
-            "conjugatedVerb": "believe"
-        },
-        {
-            "sentence": "The river flows to the sea.",
-            "translation": "Con sông chảy ra biển.",
-            "conjugatedVerb": "flows"
-        },
-        {
-            "sentence": "I forget things easily.",
-            "translation": "Tôi dễ quên mọi thứ.",
-            "conjugatedVerb": "forget"
-        },
-        {
-            "sentence": "He always tells the truth.",
-            "translation": "Anh ấy luôn nói sự thật.",
-            "conjugatedVerb": "tells"
-        },
-        {
-            "sentence": "She carries a small notebook.",
-            "translation": "Cô ấy mang theo một cuốn sổ nhỏ.",
-            "conjugatedVerb": "carries"
-        },
-        {
-            "sentence": "They grow vegetables in their garden.",
-            "translation": "Họ trồng rau trong vườn.",
-            "conjugatedVerb": "grow"
-        },
-        {
-            "sentence": "The shop closes at 9 p.m.",
-            "translation": "Cửa hàng đóng cửa lúc 9 giờ tối.",
-            "conjugatedVerb": "closes"
-        },
-        {
-            "sentence": "I understand the problem now.",
-            "translation": "Bây giờ tôi đã hiểu vấn đề.",
-            "conjugatedVerb": "understand"
-        },
-        {
-            "sentence": "He wishes for a new bike.",
-            "translation": "Anh ấy ước có một chiếc xe đạp mới.",
-            "conjugatedVerb": "wishes"
-        },
-        {
-            "sentence": "We often order pizza on Fridays.",
-            "translation": "Chúng tôi thường đặt pizza vào thứ Sáu.",
-            "conjugatedVerb": "order"
+        "streak_3days": {
+            "description": "\u0110\u0103ng nh\u1eadp li\u00ean t\u1ee5c 3 ng\u00e0y \u0111\u1ec3 duy tr\u00ec phong \u0111\u1ed9.",
+            "reward": 200,
+            "title": "Chu\u1ed7i h\u1ecdc 3 ng\u00e0y"
         }
-    ],
-    "miniExercises": [
-        {
-            "question": "She (watch) ___ TV every night.",
-            "answer": "watches",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (play) ___ football every weekend.",
-            "answer": "play",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (go) ___ to school by bus.",
-            "answer": "goes",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "I (read) ___ books in my free time.",
-            "answer": "read",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "It (rain) ___ a lot in spring.",
-            "answer": "rains",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (study) ___ English every day.",
-            "answer": "studies",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (cook) ___ dinner together.",
-            "answer": "cook",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (have) ___ breakfast at 7 a.m.",
-            "answer": "has",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "You (clean) ___ your room every weekend.",
-            "answer": "clean",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "My father (drive) ___ to work.",
-            "answer": "drives",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (live) ___ in a big city.",
-            "answer": "live",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (teach) ___ math at school.",
-            "answer": "teaches",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (visit) ___ our grandparents on Sundays.",
-            "answer": "visit",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (run) ___ every morning.",
-            "answer": "runs",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (drink) ___ coffee in the morning.",
-            "answer": "drink",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (like) ___ reading books.",
-            "answer": "likes",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "They (work) ___ at a hospital.",
-            "answer": "work",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (fix) ___ his bike after school.",
-            "answer": "fixes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (open) ___ the store at 8 a.m.",
-            "answer": "open",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "It (eat) ___ plants and fruits.",
-            "answer": "eats",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "The sun (rise) ___ in the east.",
-            "answer": "rises",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "My mother (cook) ___ delicious meals.",
-            "answer": "cooks",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (go) ___ to the gym after work.",
-            "answer": "go",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "He (watch) ___ the news every night.",
-            "answer": "watches",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (study) ___ at the library.",
-            "answer": "study",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (wash) ___ her clothes on Sunday.",
-            "answer": "washes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "He (do) ___ his homework after dinner.",
-            "answer": "does",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "They (travel) ___ every summer.",
-            "answer": "travel",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (love) ___ my family.",
-            "answer": "love",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "It (need) ___ water every day.",
-            "answer": "needs",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "You (speak) ___ French fluently.",
-            "answer": "speak",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "The train (arrive) ___ at 3 p.m.",
-            "answer": "arrives",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (write) ___ poems in my notebook.",
-            "answer": "write",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (prefer) ___ tea to coffee.",
-            "answer": "prefers",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (listen) ___ to the radio in the car.",
-            "answer": "listen",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (brush) ___ his teeth before bed.",
-            "answer": "brushes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (know) ___ the answer.",
-            "answer": "know",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "The cat (sleep) ___ under the bed.",
-            "answer": "sleeps",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (help) ___ my parents with chores.",
-            "answer": "help",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "Water (boil) ___ at 100 degrees.",
-            "answer": "boils",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "She (carry) ___ a heavy bag.",
-            "answer": "carries",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "We (eat) ___ lunch at noon.",
-            "answer": "eat",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (try) ___ his best in class.",
-            "answer": "tries",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "They (sell) ___ flowers at the market.",
-            "answer": "sell",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (understand) ___ the lesson.",
-            "answer": "understand",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "The baby (cry) ___ loudly.",
-            "answer": "cries",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (check) ___ our email every hour.",
-            "answer": "check",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (finish) ___ his work early.",
-            "answer": "finishes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (sing) ___ beautifully.",
-            "answer": "sings",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "They (build) ___ new houses in the city.",
-            "answer": "build",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "This bus (stop) ___ at every corner.",
-            "answer": "stops",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (feel) ___ happy today.",
-            "answer": "feel",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (always) (tell) ___ jokes.",
-            "answer": "always tells",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (buy) ___ groceries on Saturday.",
-            "answer": "buys",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (plan) ___ our trips carefully.",
-            "answer": "plan",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "It (look) ___ like rain.",
-            "answer": "looks",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "My brother (play) ___ the piano.",
-            "answer": "plays",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (never) (eat) ___ meat.",
-            "answer": "never eat",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (miss) ___ her bus every morning.",
-            "answer": "misses",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (pay) ___ my bills online.",
-            "answer": "pay",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (wish) ___ for a new car.",
-            "answer": "wishes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "The river (flow) ___ into the ocean.",
-            "answer": "flows",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (enjoy) ___ hiking in the mountains.",
-            "answer": "enjoy",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (mix) ___ the ingredients for the cake.",
-            "answer": "mixes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (discuss) ___ politics often.",
-            "answer": "discuss",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "He (forget) ___ his keys sometimes.",
-            "answer": "forgets",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "I (choose) ___ the blue shirt.",
-            "answer": "choose",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "The earth (revolve) ___ around the sun.",
-            "answer": "revolves",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "She (catch) ___ the 8 a.m. train.",
-            "answer": "catches",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (believe) ___ in honesty.",
-            "answer": "believe",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (fly) ___ a kite on windy days.",
-            "answer": "flies",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "The shops (close) ___ at 6 p.m.",
-            "answer": "close",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (dry) ___ her hair with a towel.",
-            "answer": "dries",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "I (take) ___ my dog for a walk.",
-            "answer": "take",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (seem) ___ very busy.",
-            "answer": "seems",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "They (grow) ___ their own vegetables.",
-            "answer": "grow",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "The movie (start) ___ at 7:30 p.m.",
-            "answer": "starts",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (learn) ___ new things every day.",
-            "answer": "learn",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (ask) ___ too many questions.",
-            "answer": "asks",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (push) ___ the door to open it.",
-            "answer": "pushes",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (always) (remember) ___ your birthday.",
-            "answer": "always remember",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (call) ___ their parents weekly.",
-            "answer": "call",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "The mechanic (repair) ___ cars.",
-            "answer": "repairs",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (sit) ___ at the front desk.",
-            "answer": "sits",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "We (order) ___ food online.",
-            "answer": "order",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (kiss) ___ his children goodnight.",
-            "answer": "kisses",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "Plants (need) ___ sunlight to grow.",
-            "answer": "need",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "She (worry) ___ too much.",
-            "answer": "worries",
-            "difficultyLevel": "hard"
-        },
-        {
-            "question": "I (work) ___ from 9 to 5.",
-            "answer": "work",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (own) ___ three restaurants.",
-            "answer": "owns",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (often) (visit) ___ the museum.",
-            "answer": "often visit",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (begin) ___ her day with yoga.",
-            "answer": "begins",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "We (talk) ___ on the phone for hours.",
-            "answer": "talk",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "The teacher (explain) ___ the grammar rules.",
-            "answer": "explains",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "I (want) ___ a new pair of shoes.",
-            "answer": "want",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "He (show) ___ his paintings at the gallery.",
-            "answer": "shows",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "They (leave) ___ the house at 8 a.m. every day.",
-            "answer": "leave",
-            "difficultyLevel": "easy"
-        },
-        {
-            "question": "This (cost) ___ more than I expected.",
-            "answer": "costs",
-            "difficultyLevel": "medium"
-        },
-        {
-            "question": "She (find) ___ spiders scary.",
-            "answer": "finds",
-            "difficultyLevel": "easy"
-        }
-    ]
-}
+    },
+    "grammar": {
+        "topics": [
+            {
+                "description": "Di\u1ec5n t\u1ea3 h\u00e0nh \u0111\u1ed9ng th\u01b0\u1eddng xuy\u00ean x\u1ea3y ra, th\u00f3i quen, s\u1ef1 th\u1eadt hi\u1ec3n nhi\u00ean ho\u1eb7c m\u1ed9t ch\u00e2n l\u00fd.",
+                "examples": [
+                    {
+                        "conjugatedVerb": "goes",
+                        "sentence": "She goes to school every day.",
+                        "translation": "C\u00f4 \u1ea5y \u0111i h\u1ecdc m\u1ed7i ng\u00e0y."
+                    },
+                    {
+                        "conjugatedVerb": "play",
+                        "sentence": "They play football on Sundays.",
+                        "translation": "H\u1ecd ch\u01a1i b\u00f3ng v\u00e0o Ch\u1ee7 nh\u1eadt."
+                    },
+                    {
+                        "conjugatedVerb": "watches",
+                        "sentence": "He watches TV in the evening.",
+                        "translation": "Anh \u1ea5y xem TV v\u00e0o bu\u1ed5i t\u1ed1i."
+                    },
+                    {
+                        "conjugatedVerb": "like",
+                        "sentence": "I like coffee.",
+                        "translation": "T\u00f4i th\u00edch c\u00e0 ph\u00ea."
+                    },
+                    {
+                        "conjugatedVerb": "rises",
+                        "sentence": "The sun rises in the east.",
+                        "translation": "M\u1eb7t tr\u1eddi m\u1ecdc \u1edf ph\u00eda \u0111\u00f4ng."
+                    },
+                    {
+                        "conjugatedVerb": "live",
+                        "sentence": "We live in a big city.",
+                        "translation": "Ch\u00fang t\u00f4i s\u1ed1ng \u1edf m\u1ed9t th\u00e0nh ph\u1ed1 l\u1edbn."
+                    },
+                    {
+                        "conjugatedVerb": "leaves",
+                        "sentence": "The train leaves at 7 AM.",
+                        "translation": "Chuy\u1ebfn t\u00e0u r\u1eddi \u0111i l\u00fac 7 gi\u1edd s\u00e1ng."
+                    },
+                    {
+                        "conjugatedVerb": "drink",
+                        "sentence": "Cats drink milk.",
+                        "translation": "M\u00e8o u\u1ed1ng s\u1eefa."
+                    },
+                    {
+                        "conjugatedVerb": "cooks",
+                        "sentence": "My mother always cooks dinner.",
+                        "translation": "M\u1eb9 t\u00f4i lu\u00f4n n\u1ea5u b\u1eefa t\u1ed1i."
+                    },
+                    {
+                        "conjugatedVerb": "revolves",
+                        "sentence": "The Earth revolves around the Sun.",
+                        "translation": "Tr\u00e1i \u0111\u1ea5t quay quanh M\u1eb7t tr\u1eddi."
+                    },
+                    {
+                        "conjugatedVerb": "speak",
+                        "sentence": "Do you speak English?",
+                        "translation": "B\u1ea1n c\u00f3 n\u00f3i ti\u1ebfng Anh kh\u00f4ng?"
+                    },
+                    {
+                        "conjugatedVerb": "does not work",
+                        "sentence": "He does not work on weekends.",
+                        "translation": "Anh \u1ea5y kh\u00f4ng l\u00e0m vi\u1ec7c v\u00e0o cu\u1ed1i tu\u1ea7n."
+                    },
+                    {
+                        "conjugatedVerb": "boils",
+                        "sentence": "Water boils at 100 degrees Celsius.",
+                        "translation": "N\u01b0\u1edbc s\u00f4i \u1edf 100 \u0111\u1ed9 C."
+                    },
+                    {
+                        "conjugatedVerb": "read",
+                        "sentence": "I usually read books before bed.",
+                        "translation": "T\u00f4i th\u01b0\u1eddng \u0111\u1ecdc s\u00e1ch tr\u01b0\u1edbc khi ng\u1ee7."
+                    },
+                    {
+                        "conjugatedVerb": "opens",
+                        "sentence": "The store opens at nine.",
+                        "translation": "C\u1eeda h\u00e0ng m\u1edf c\u1eeda l\u00fac ch\u00edn gi\u1edd."
+                    },
+                    {
+                        "conjugatedVerb": "studies",
+                        "sentence": "She studies very hard.",
+                        "translation": "C\u00f4 \u1ea5y h\u1ecdc r\u1ea5t ch\u0103m ch\u1ec9."
+                    },
+                    {
+                        "conjugatedVerb": "fly",
+                        "sentence": "Birds fly.",
+                        "translation": "Chim bay."
+                    },
+                    {
+                        "conjugatedVerb": "drives",
+                        "sentence": "My brother drives a red car.",
+                        "translation": "Anh trai t\u00f4i l\u00e1i m\u1ed9t chi\u1ebfc xe h\u01a1i m\u00e0u \u0111\u1ecf."
+                    },
+                    {
+                        "conjugatedVerb": "visit",
+                        "sentence": "They often visit their grandparents.",
+                        "translation": "H\u1ecd th\u01b0\u1eddng th\u0103m \u00f4ng b\u00e0."
+                    },
+                    {
+                        "conjugatedVerb": "cries",
+                        "sentence": "The baby cries when it is hungry.",
+                        "translation": "Em b\u00e9 kh\u00f3c khi \u0111\u00f3i."
+                    },
+                    {
+                        "conjugatedVerb": "eat",
+                        "sentence": "We seldom eat fast food.",
+                        "translation": "Ch\u00fang t\u00f4i hi\u1ebfm khi \u0103n \u0111\u1ed3 \u0103n nhanh."
+                    },
+                    {
+                        "conjugatedVerb": "teaches",
+                        "sentence": "He teaches mathematics.",
+                        "translation": "Anh \u1ea5y d\u1ea1y to\u00e1n."
+                    },
+                    {
+                        "conjugatedVerb": "strikes",
+                        "sentence": "The clock strikes twelve.",
+                        "translation": "\u0110\u1ed3ng h\u1ed3 \u0111i\u1ec3m m\u01b0\u1eddi hai gi\u1edd."
+                    },
+                    {
+                        "conjugatedVerb": "brush",
+                        "sentence": "I brush my teeth twice a day.",
+                        "translation": "T\u00f4i \u0111\u00e1nh r\u0103ng hai l\u1ea7n m\u1ed9t ng\u00e0y."
+                    },
+                    {
+                        "conjugatedVerb": "forgets",
+                        "sentence": "She never forgets her keys.",
+                        "translation": "C\u00f4 \u1ea5y kh\u00f4ng bao gi\u1edd qu\u00ean ch\u00eca kh\u00f3a."
+                    },
+                    {
+                        "conjugatedVerb": "smells",
+                        "sentence": "It smells good.",
+                        "translation": "N\u00f3 c\u00f3 m\u00f9i th\u01a1m."
+                    },
+                    {
+                        "conjugatedVerb": "play",
+                        "sentence": "Does he play tennis?",
+                        "translation": "Anh \u1ea5y c\u00f3 ch\u01a1i tennis kh\u00f4ng?"
+                    },
+                    {
+                        "conjugatedVerb": "don't like",
+                        "sentence": "They don't like spicy food.",
+                        "translation": "H\u1ecd kh\u00f4ng th\u00edch \u0111\u1ed3 \u0103n cay."
+                    },
+                    {
+                        "conjugatedVerb": "closes",
+                        "sentence": "The library closes at 5 PM.",
+                        "translation": "Th\u01b0 vi\u1ec7n \u0111\u00f3ng c\u1eeda l\u00fac 5 gi\u1edd chi\u1ec1u."
+                    },
+                    {
+                        "conjugatedVerb": "travel",
+                        "sentence": "My parents travel every summer.",
+                        "translation": "B\u1ed1 m\u1eb9 t\u00f4i \u0111i du l\u1ecbch m\u1ed7i m\u00f9a h\u00e8."
+                    },
+                    {
+                        "conjugatedVerb": "finishes",
+                        "sentence": "He finishes work late.",
+                        "translation": "Anh \u1ea5y k\u1ebft th\u00fac c\u00f4ng vi\u1ec7c mu\u1ed9n."
+                    },
+                    {
+                        "conjugatedVerb": "wish",
+                        "sentence": "I wish you good luck.",
+                        "translation": "T\u00f4i ch\u00fac b\u1ea1n may m\u1eafn."
+                    },
+                    {
+                        "conjugatedVerb": "starts",
+                        "sentence": "The news starts at six.",
+                        "translation": "B\u1ea3n tin b\u1eaft \u0111\u1ea7u l\u00fac s\u00e1u gi\u1edd."
+                    },
+                    {
+                        "conjugatedVerb": "has",
+                        "sentence": "She has two brothers.",
+                        "translation": "C\u00f4 \u1ea5y c\u00f3 hai ng\u01b0\u1eddi anh/em trai."
+                    },
+                    {
+                        "conjugatedVerb": "understand",
+                        "sentence": "We understand the lesson.",
+                        "translation": "Ch\u00fang t\u00f4i hi\u1ec3u b\u00e0i h\u1ecdc."
+                    },
+                    {
+                        "conjugatedVerb": "barks",
+                        "sentence": "The dog barks loudly.",
+                        "translation": "Con ch\u00f3 s\u1ee7a to."
+                    },
+                    {
+                        "conjugatedVerb": "need",
+                        "sentence": "They need help.",
+                        "translation": "H\u1ecd c\u1ea7n gi\u00fap \u0111\u1ee1."
+                    },
+                    {
+                        "conjugatedVerb": "fixes",
+                        "sentence": "He fixes computers.",
+                        "translation": "Anh \u1ea5y s\u1eeda m\u00e1y t\u00ednh."
+                    },
+                    {
+                        "conjugatedVerb": "take",
+                        "sentence": "I take a shower every morning.",
+                        "translation": "T\u00f4i t\u1eafm v\u00f2i sen m\u1ed7i s\u00e1ng."
+                    },
+                    {
+                        "conjugatedVerb": "sleeps",
+                        "sentence": "The baby sleeps twelve hours a day.",
+                        "translation": "Em b\u00e9 ng\u1ee7 m\u01b0\u1eddi hai gi\u1edd m\u1ed9t ng\u00e0y."
+                    }
+                ],
+                "grammarPointID": "present_simple",
+                "miniExercises": [
+                    {
+                        "answer": "goes",
+                        "difficultyLevel": "easy",
+                        "question": "She (go) ___ to school every day."
+                    },
+                    {
+                        "answer": "play",
+                        "difficultyLevel": "easy",
+                        "question": "They (play) ___ football on Sundays."
+                    },
+                    {
+                        "answer": "watches",
+                        "difficultyLevel": "medium",
+                        "question": "He (watch) ___ TV in the evening."
+                    },
+                    {
+                        "answer": "like",
+                        "difficultyLevel": "easy",
+                        "question": "I (like) ___ coffee."
+                    },
+                    {
+                        "answer": "rises",
+                        "difficultyLevel": "medium",
+                        "question": "The sun (rise) ___ in the east."
+                    },
+                    {
+                        "answer": "live",
+                        "difficultyLevel": "easy",
+                        "question": "We (live) ___ in a big city."
+                    },
+                    {
+                        "answer": "leaves",
+                        "difficultyLevel": "medium",
+                        "question": "The train (leave) ___ at 7 AM."
+                    },
+                    {
+                        "answer": "drink",
+                        "difficultyLevel": "easy",
+                        "question": "Cats (drink) ___ milk."
+                    },
+                    {
+                        "answer": "cooks",
+                        "difficultyLevel": "medium",
+                        "question": "My mother always (cook) ___ dinner."
+                    },
+                    {
+                        "answer": "revolves",
+                        "difficultyLevel": "hard",
+                        "question": "The Earth (revolve) ___ around the Sun."
+                    },
+                    {
+                        "answer": "speak",
+                        "difficultyLevel": "easy",
+                        "question": "Do you (speak) ___ English?"
+                    },
+                    {
+                        "answer": "does not work",
+                        "difficultyLevel": "medium",
+                        "question": "He (not work) ___ on weekends."
+                    },
+                    {
+                        "answer": "boils",
+                        "difficultyLevel": "hard",
+                        "question": "Water (boil) ___ at 100 degrees Celsius."
+                    },
+                    {
+                        "answer": "read",
+                        "difficultyLevel": "easy",
+                        "question": "I usually (read) ___ books before bed."
+                    },
+                    {
+                        "answer": "opens",
+                        "difficultyLevel": "medium",
+                        "question": "The store (open) ___ at nine."
+                    },
+                    {
+                        "answer": "studies",
+                        "difficultyLevel": "medium",
+                        "question": "She (study) ___ very hard."
+                    },
+                    {
+                        "answer": "fly",
+                        "difficultyLevel": "easy",
+                        "question": "Birds (fly) ___."
+                    },
+                    {
+                        "answer": "drives",
+                        "difficultyLevel": "easy",
+                        "question": "My brother (drive) ___ a red car."
+                    },
+                    {
+                        "answer": "visit",
+                        "difficultyLevel": "easy",
+                        "question": "They often (visit) ___ their grandparents."
+                    },
+                    {
+                        "answer": "cries",
+                        "difficultyLevel": "medium",
+                        "question": "The baby (cry) ___ when it is hungry."
+                    },
+                    {
+                        "answer": "eat",
+                        "difficultyLevel": "easy",
+                        "question": "We seldom (eat) ___ fast food."
+                    },
+                    {
+                        "answer": "teaches",
+                        "difficultyLevel": "medium",
+                        "question": "He (teach) ___ mathematics."
+                    },
+                    {
+                        "answer": "strikes",
+                        "difficultyLevel": "medium",
+                        "question": "The clock (strike) ___ twelve."
+                    },
+                    {
+                        "answer": "brush",
+                        "difficultyLevel": "easy",
+                        "question": "I (brush) ___ my teeth twice a day."
+                    },
+                    {
+                        "answer": "forgets",
+                        "difficultyLevel": "medium",
+                        "question": "She never (forget) ___ her keys."
+                    },
+                    {
+                        "answer": "smells",
+                        "difficultyLevel": "easy",
+                        "question": "It (smell) ___ good."
+                    },
+                    {
+                        "answer": "Does he play",
+                        "difficultyLevel": "hard",
+                        "question": "He (play) ___ tennis? (Question)"
+                    },
+                    {
+                        "answer": "do not like",
+                        "difficultyLevel": "medium",
+                        "question": "They (not like) ___ spicy food."
+                    },
+                    {
+                        "answer": "closes",
+                        "difficultyLevel": "medium",
+                        "question": "The library (close) ___ at 5 PM."
+                    },
+                    {
+                        "answer": "travel",
+                        "difficultyLevel": "easy",
+                        "question": "My parents (travel) ___ every summer."
+                    },
+                    {
+                        "answer": "finishes",
+                        "difficultyLevel": "medium",
+                        "question": "He (finish) ___ work late."
+                    },
+                    {
+                        "answer": "wish",
+                        "difficultyLevel": "easy",
+                        "question": "I (wish) ___ you good luck."
+                    },
+                    {
+                        "answer": "starts",
+                        "difficultyLevel": "medium",
+                        "question": "The news (start) ___ at six."
+                    },
+                    {
+                        "answer": "has",
+                        "difficultyLevel": "easy",
+                        "question": "She (have) ___ two brothers."
+                    },
+                    {
+                        "answer": "understand",
+                        "difficultyLevel": "easy",
+                        "question": "We (understand) ___ the lesson."
+                    },
+                    {
+                        "answer": "barks",
+                        "difficultyLevel": "medium",
+                        "question": "The dog (bark) ___ loudly."
+                    },
+                    {
+                        "answer": "need",
+                        "difficultyLevel": "easy",
+                        "question": "They (need) ___ help."
+                    },
+                    {
+                        "answer": "fixes",
+                        "difficultyLevel": "medium",
+                        "question": "He (fix) ___ computers."
+                    },
+                    {
+                        "answer": "take",
+                        "difficultyLevel": "easy",
+                        "question": "I (take) ___ a shower every morning."
+                    },
+                    {
+                        "answer": "sleeps",
+                        "difficultyLevel": "medium",
+                        "question": "The baby (sleep) ___ twelve hours a day."
+                    },
+                    {
+                        "answer": "does your sister live",
+                        "difficultyLevel": "hard",
+                        "question": "Where (do/live) ___ your sister?"
+                    },
+                    {
+                        "answer": "reads",
+                        "difficultyLevel": "easy",
+                        "question": "My father (read) ___ the newspaper every morning."
+                    },
+                    {
+                        "answer": "do not go",
+                        "difficultyLevel": "medium",
+                        "question": "We (not go) ___ out on Mondays."
+                    },
+                    {
+                        "answer": "opens",
+                        "difficultyLevel": "medium",
+                        "question": "The post office (open) ___ at 8:30 AM."
+                    },
+                    {
+                        "answer": "helps",
+                        "difficultyLevel": "easy",
+                        "question": "She often (help) ___ her mother."
+                    },
+                    {
+                        "answer": "love",
+                        "difficultyLevel": "easy",
+                        "question": "I (love) ___ to travel."
+                    },
+                    {
+                        "answer": "washes",
+                        "difficultyLevel": "medium",
+                        "question": "He (wash) ___ his car every week."
+                    },
+                    {
+                        "answer": "do not like",
+                        "difficultyLevel": "medium",
+                        "question": "They (not like) ___ to wake up early."
+                    },
+                    {
+                        "answer": "rains",
+                        "difficultyLevel": "medium",
+                        "question": "It (rain) ___ a lot in the winter."
+                    },
+                    {
+                        "answer": "go",
+                        "difficultyLevel": "easy",
+                        "question": "The children (go) ___ to bed at nine."
+                    },
+                    {
+                        "answer": "tries",
+                        "difficultyLevel": "medium",
+                        "question": "He always (try) ___ his best."
+                    },
+                    {
+                        "answer": "have",
+                        "difficultyLevel": "easy",
+                        "question": "We (have) ___ lunch at noon."
+                    },
+                    {
+                        "answer": "studies",
+                        "difficultyLevel": "medium",
+                        "question": "She (study) ___ French and German."
+                    },
+                    {
+                        "answer": "closes",
+                        "difficultyLevel": "medium",
+                        "question": "The museum (close) ___ on Tuesdays."
+                    },
+                    {
+                        "answer": "does your class finish",
+                        "difficultyLevel": "hard",
+                        "question": "What time (do/finish) ___ your class?"
+                    },
+                    {
+                        "answer": "take",
+                        "difficultyLevel": "easy",
+                        "question": "I (take) ___ the bus to work."
+                    },
+                    {
+                        "answer": "controls",
+                        "difficultyLevel": "hard",
+                        "question": "The government (control) ___ the economy."
+                    },
+                    {
+                        "answer": "do not want",
+                        "difficultyLevel": "easy",
+                        "question": "They (not want) ___ any trouble."
+                    },
+                    {
+                        "answer": "gets up",
+                        "difficultyLevel": "easy",
+                        "question": "He (get up) ___ at six every morning."
+                    },
+                    {
+                        "answer": "does",
+                        "difficultyLevel": "medium",
+                        "question": "She (do) ___ her homework after dinner."
+                    },
+                    {
+                        "answer": "believe",
+                        "difficultyLevel": "easy",
+                        "question": "We (believe) ___ in honesty."
+                    },
+                    {
+                        "answer": "chases",
+                        "difficultyLevel": "medium",
+                        "question": "The cat (chase) ___ mice."
+                    },
+                    {
+                        "answer": "live",
+                        "difficultyLevel": "easy",
+                        "question": "My grandparents (live) ___ near the sea."
+                    },
+                    {
+                        "answer": "arrives",
+                        "difficultyLevel": "medium",
+                        "question": "The plane (arrive) ___ on time."
+                    },
+                    {
+                        "answer": "listen",
+                        "difficultyLevel": "easy",
+                        "question": "I (listen) ___ to music when I work."
+                    },
+                    {
+                        "answer": "forgets",
+                        "difficultyLevel": "medium",
+                        "question": "He never (forget) ___ a birthday."
+                    },
+                    {
+                        "answer": "does not enjoy",
+                        "difficultyLevel": "medium",
+                        "question": "She (not enjoy) ___ cooking."
+                    },
+                    {
+                        "answer": "sell",
+                        "difficultyLevel": "easy",
+                        "question": "They (sell) ___ fresh fruit at the market."
+                    },
+                    {
+                        "answer": "makes",
+                        "difficultyLevel": "easy",
+                        "question": "It (make) ___ sense."
+                    },
+                    {
+                        "answer": "works",
+                        "difficultyLevel": "easy",
+                        "question": "My uncle (work) ___ in a bank."
+                    },
+                    {
+                        "answer": "study",
+                        "difficultyLevel": "easy",
+                        "question": "We (study) ___ Spanish twice a week."
+                    },
+                    {
+                        "answer": "starts",
+                        "difficultyLevel": "medium",
+                        "question": "The concert (start) ___ at eight."
+                    },
+                    {
+                        "answer": "goes",
+                        "difficultyLevel": "medium",
+                        "question": "He often (go) ___ fishing."
+                    },
+                    {
+                        "answer": "do not drink",
+                        "difficultyLevel": "easy",
+                        "question": "I (not drink) ___ tea."
+                    },
+                    {
+                        "answer": "has",
+                        "difficultyLevel": "easy",
+                        "question": "She (have) ___ a great sense of humor."
+                    },
+                    {
+                        "answer": "finish",
+                        "difficultyLevel": "easy",
+                        "question": "They (finish) ___ their meal quickly."
+                    },
+                    {
+                        "answer": "explains",
+                        "difficultyLevel": "medium",
+                        "question": "The teacher (explain) ___ the rules clearly."
+                    },
+                    {
+                        "answer": "do you eat",
+                        "difficultyLevel": "hard",
+                        "question": "What (do/eat) ___ you for breakfast?"
+                    },
+                    {
+                        "answer": "does not smoke",
+                        "difficultyLevel": "medium",
+                        "question": "He (not smoke) ___."
+                    },
+                    {
+                        "answer": "sing",
+                        "difficultyLevel": "easy",
+                        "question": "We (sing) ___ in the church choir."
+                    },
+                    {
+                        "answer": "needs",
+                        "difficultyLevel": "easy",
+                        "question": "The car (need) ___ petrol."
+                    },
+                    {
+                        "answer": "is",
+                        "difficultyLevel": "medium",
+                        "question": "She (be) ___ a kind person."
+                    },
+                    {
+                        "answer": "come",
+                        "difficultyLevel": "easy",
+                        "question": "I (come) ___ from Vietnam."
+                    },
+                    {
+                        "answer": "walk",
+                        "difficultyLevel": "easy",
+                        "question": "They (walk) ___ to school."
+                    },
+                    {
+                        "answer": "misses",
+                        "difficultyLevel": "medium",
+                        "question": "He (miss) ___ his family."
+                    },
+                    {
+                        "answer": "enjoy",
+                        "difficultyLevel": "easy",
+                        "question": "We (enjoy) ___ reading novels."
+                    },
+                    {
+                        "answer": "stops",
+                        "difficultyLevel": "easy",
+                        "question": "The bus (stop) ___ here."
+                    },
+                    {
+                        "answer": "costs",
+                        "difficultyLevel": "medium",
+                        "question": "It (cost) ___ a lot of money."
+                    },
+                    {
+                        "answer": "know",
+                        "difficultyLevel": "easy",
+                        "question": "I (know) ___ the answer."
+                    },
+                    {
+                        "answer": "wears",
+                        "difficultyLevel": "easy",
+                        "question": "She always (wear) ___ nice clothes."
+                    },
+                    {
+                        "answer": "speak",
+                        "difficultyLevel": "easy",
+                        "question": "They (speak) ___ French fluently."
+                    }
+                ],
+                "rule": "S + V(s/es)"
+            },
+            {
+                "description": "Di\u1ec5n t\u1ea3 h\u00e0nh \u0111\u1ed9ng \u0111ang x\u1ea3y ra t\u1ea1i th\u1eddi \u0111i\u1ec3m n\u00f3i, h\u00e0nh \u0111\u1ed9ng t\u1ea1m th\u1eddi, ho\u1eb7c k\u1ebf ho\u1ea1ch trong t\u01b0\u01a1ng lai g\u1ea7n.",
+                "examples": [
+                    {
+                        "conjugatedVerb": "is studying",
+                        "sentence": "She is studying now.",
+                        "translation": "C\u00f4 \u1ea5y \u0111ang h\u1ecdc."
+                    },
+                    {
+                        "conjugatedVerb": "are playing",
+                        "sentence": "They are playing football.",
+                        "translation": "H\u1ecd \u0111ang ch\u01a1i b\u00f3ng \u0111\u00e1."
+                    },
+                    <messagetruncated>,

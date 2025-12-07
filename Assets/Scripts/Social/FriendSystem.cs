@@ -1,18 +1,17 @@
 using UnityEngine;
 using Firebase.Database;
 using System.Collections.Generic;
+using Firebase.Extensions;
 
 public class FriendSystem : MonoBehaviour
 {
     public static FriendSystem Instance;
 
     [Header("User Info (Giả lập)")]
-    public string myUserId = "UserA"; // ID của chính mình (thực tế lấy từ Auth)
-    public string myUserName = "Player A";
+    public string myUserId = ""; // ID của chính mình (thực tế lấy từ Auth)
+    public string myUserName = "";
 
     [Header("References")]
-    public InvitePopupUI invitePopup; // Kéo cái UI Popup vào đây
-
     private DatabaseReference myInvitesRef;
 
     void Awake()
@@ -22,22 +21,47 @@ public class FriendSystem : MonoBehaviour
         
         DontDestroyOnLoad(gameObject);
     }
-
-    void Start()
+    
+    private void Start()
     {
-        // Bắt đầu lắng nghe hộp thư ngay khi mở app
-        // (Dù chưa kết nối Photon vẫn nhận được thông báo)
+        // TRƯỜNG HỢP 1: Firebase đã xong rồi (Load scene lại hoặc vào game muộn)
+        if (FirebaseDatabaseManager.Instance.IsReady)
+        {
+            ListenForInvites();
+        }
+        // TRƯỜNG HỢP 2: Firebase chưa xong (Mới bật game)
+        else
+        {
+            Debug.Log("⏳ Đang chờ Firebase init...");
+            // Đăng ký: "Khi nào xong thì gọi hàm ListenToUserInfo của tao nhé"
+            FirebaseDatabaseManager.Instance.OnFirebaseInitialized += OnFirebaseReady;
+        }
+    }
+
+    // Hàm trung gian để gọi khi sự kiện xảy ra
+    private void OnFirebaseReady()
+    {
+        // Huỷ đăng ký ngay để tránh gọi lại 2 lần (Memory Leak)
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= OnFirebaseReady;
+        
+        // Giờ thì an toàn 100% để gọi
         ListenForInvites();
     }
+    
+
 
     // =========================================================
     // PHẦN 1: GỬI LỜI MỜI (Sender Logic)
     // =========================================================
     
-    public void SendInvite(string friendId)
+    DatabaseReference currentInviteRef;
+    private string roomCode = "";
+    public void SendInvite(string friendId, string friendName)
     {
+        myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        
         // 1. Tạo một mã phòng ngẫu nhiên (Ví dụ: Room_4821)
-        string roomCode = "Room_" + Random.Range(1000, 9999);
+        roomCode = "Room_" + Random.Range(1000, 9999);
         Debug.Log($"Đang gửi lời mời tới {friendId} vào phòng {roomCode}");
 
         // 2. Gửi dữ liệu lên Firebase của BẠN BÈ
@@ -45,23 +69,59 @@ public class FriendSystem : MonoBehaviour
             .GetReference($"users/{friendId}/invitations");
 
         Dictionary<string, object> inviteData = new Dictionary<string, object>();
-        inviteData["senderName"] = myUserName;
+        inviteData["senderName"] = friendName;
         inviteData["roomCode"] = roomCode;
+        inviteData["roomStatus"] = "waiting";
 
-        friendRef.Push().SetValueAsync(inviteData);
+        currentInviteRef = friendRef.Push();
+        currentInviteRef.SetValueAsync(inviteData).ContinueWithOnMainThread((task =>
+        {
+            if (task.IsCompleted)
+            {
+                currentInviteRef.ValueChanged += HandleInviteChanged;
+                Debug.Log("✅ Gửi lời mời thành công!");
+                ToastSystem.Instance.ShowToast("✅ Gửi lời mời thành công!");
 
-        // 3. QUAN TRỌNG: Chính mình (người mời) cũng phải vào phòng đó!
-        // Gọi hàm xử lý kết nối thông minh bên NetworkManager
-        MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode);
+            }
+        }));
     }
 
+    void HandleInviteChanged(object sender, ValueChangedEventArgs args)
+    {
+        if (args.DatabaseError != null) return;
+        
+        if (args.Snapshot.Value != null)
+        {
+            var data = args.Snapshot.Value as Dictionary<string, object>;
+            if (data != null && data.ContainsKey("status"))
+            {
+                string status = data["status"].ToString();
+                if (status == "accepted")
+                {
+                    Debug.Log("Bạn kia đã đồng ý! Vào phòng thôi!");
+                    ToastSystem.Instance.ShowToast("Chuẩn bị vào phòng!");
+                    currentInviteRef.ValueChanged -= HandleInviteChanged;
+                    MyNetworkManager.Instance.AttemptToJoinFriendRoom(roomCode, () => {});
+                    //HideWaitingUI();
+                }
+            }
+        }
+        else 
+        {
+            Debug.Log("Lời mời đã bị hủy hoặc từ chối.");
+            ToastSystem.Instance.ShowToast("Lời mời đã bị hủy hoặc từ chối");
+            currentInviteRef.ValueChanged -= HandleInviteChanged;
+            //HideWaitingUI();
+        }
+    }
+    
     // =========================================================
     // PHẦN 2: NHẬN LỜI MỜI (Receiver Logic)
     // =========================================================
 
     void ListenForInvites()
     {
-        // Trỏ vào node invitations của chính mình
+        myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         myInvitesRef = FirebaseDatabase.DefaultInstance
             .GetReference($"users/{myUserId}/invitations");
 
@@ -83,7 +143,7 @@ public class FriendSystem : MonoBehaviour
         Debug.Log($"Có thư mời từ {senderName}!");
 
         // Hiện Popup lên màn hình để người chơi quyết định
-        invitePopup.ShowPopup(senderName, roomCode, inviteKey);
+        GameEvents.showInvitePopup?.Invoke(senderName, roomCode, inviteKey);
     }
 
     // Gọi hàm này khi muốn hủy lắng nghe (VD: lúc thoát app)
@@ -92,6 +152,10 @@ public class FriendSystem : MonoBehaviour
         if (myInvitesRef != null)
         {
             myInvitesRef.ChildAdded -= OnNewInviteReceived;
+        }
+        if (FirebaseDatabaseManager.Instance != null)
+        {
+            FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= OnFirebaseReady;
         }
     }
 }

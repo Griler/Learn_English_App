@@ -1,6 +1,9 @@
+using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Database;
+using Firebase.Extensions;
 using TMPro;
 
 public class InvitePopupUI : MonoBehaviour
@@ -15,8 +18,22 @@ public class InvitePopupUI : MonoBehaviour
     private string currentRoomCode;
     private string currentInviteKey;
     private string currentSenderId; // ID người gửi (để xóa trong db của mình)
-
+    private Vector3 oldPosition;
     // Hàm hiển thị Popup (Gọi từ FriendSystem)
+    private void Start()
+    {
+        oldPosition = panelObj.transform.position;
+        btnAccept.onClick.AddListener(OnAcceptClicked);
+        btnDecline.onClick.AddListener(OnDeclineClicked);
+        
+    }
+
+    private void OnEnable()
+    {
+        GameEvents.showInvitePopup += ShowPopup;
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized += RemoveInviteFromFirebase;
+    }
+
     public void ShowPopup(string senderName, string roomCode, string inviteKey)
     {
         currentRoomCode = roomCode;
@@ -24,6 +41,8 @@ public class InvitePopupUI : MonoBehaviour
 
         txtMessage.text = $"{senderName} mời bạn solo!";
         panelObj.SetActive(true);
+        Vector3 targetPoint = Vector3.zero;
+        panelObj.GetComponent<RectTransform>().DOAnchorPos(targetPoint, .5f).SetEase(Ease.OutQuad);
     }
 
     // --- CODE CHO NÚT ĐỒNG Ý ---
@@ -32,13 +51,21 @@ public class InvitePopupUI : MonoBehaviour
         Debug.Log("Bạn đã ĐỒNG Ý!");
 
         // 1. Xóa lời mời trên Firebase ngay lập tức (để không bấm được lần 2)
-        RemoveInviteFromFirebase();
-
+        //RemoveInviteFromFirebase();
         // 2. Ẩn Popup
         panelObj.SetActive(false);
-
+        string myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        DatabaseReference inviteRef = FirebaseDatabase.DefaultInstance
+            .GetReference($"users/{myUserId}/invitations/{currentInviteKey}");
         // 3. Gọi NetworkManager để xử lý việc vào phòng (Connect -> Join)
-        MyNetworkManager.Instance.AttemptToJoinFriendRoom(currentRoomCode);
+        inviteRef.Child("status").SetValueAsync("accepted").ContinueWithOnMainThread(task => 
+        {
+            if (task.IsCompleted)
+            {
+                panelObj.SetActive(false);
+                MyNetworkManager.Instance.AttemptToJoinFriendRoom(currentRoomCode, RemoveInviteFromFirebase);
+            }
+        });
     }
 
     // --- CODE CHO NÚT TỪ CHỐI ---
@@ -49,6 +76,7 @@ public class InvitePopupUI : MonoBehaviour
         // 1. Xóa lời mời trên Firebase
         RemoveInviteFromFirebase();
 
+        panelObj.GetComponent<RectTransform>().position = oldPosition;
         // 2. Ẩn Popup
         panelObj.SetActive(false);
     }
@@ -63,5 +91,11 @@ public class InvitePopupUI : MonoBehaviour
         FirebaseDatabase.DefaultInstance
             .GetReference($"users/{myUserId}/invitations/{currentInviteKey}")
             .RemoveValueAsync();
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.showInvitePopup -= ShowPopup;
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= RemoveInviteFromFirebase;
     }
 }

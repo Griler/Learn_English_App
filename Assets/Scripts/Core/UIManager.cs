@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     public GameObject viewChoose;
     public GameObject viewListen;
     public GameObject viewSpeaking;
+    public GameObject viewFriend;
 
     private void Start()
     {
@@ -98,5 +99,11 @@ public class UIManager : MonoBehaviour
     {
         currentView = viewSpeaking;
         viewSpeaking.SetActive(true);
+    }  
+    public void openViewFriend()
+    {
+        currentView = viewFriend;
+        viewFriend.SetActive(true);
     }
+    
 }

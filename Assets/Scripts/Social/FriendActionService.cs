@@ -2,6 +2,7 @@ using UnityEngine;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
+using System.Collections.Generic;
 
 // Service này chuyên xử lý các hành động liên quan đến bạn bè
 public class FriendActionService : MonoBehaviour
@@ -43,15 +44,31 @@ public class FriendActionService : MonoBehaviour
     }
 
     // 2. Xóa bạn bè
-    public void RemoveFriend(string friendIdToRemove)
+    public void RemoveFriend(string friendIdToRemove, Action action)
     {
-        string MyCurrentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        dbRef.Child("users")
-            .Child(MyCurrentUserId)
-            .Child("friend")
-            .Child("userId")
-            .Child(friendIdToRemove).RemoveValueAsync();
-        Debug.Log($"Đã gửi lệnh xóa bạn: {friendIdToRemove}");
+        if (FirebaseDatabaseManager.Instance == null || FirebaseDatabaseManager.Instance.currentUser == null) return;
+        if (dbRef == null) dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+        string myId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        
+        Dictionary<string, object> updates = new Dictionary<string, object>();
+        
+        string pathRemoveFromMe = $"users/{myId}/friend/userId/{friendIdToRemove}";
+        string pathRemoveFromFriend = $"users/{friendIdToRemove}/friend/userId/{myId}";
+        updates[pathRemoveFromMe] = null;
+        updates[pathRemoveFromFriend] = null;
+        // 3. Gửi lệnh cập nhật 1 lần duy nhất (Atomic Update)
+        dbRef.UpdateChildrenAsync(updates).ContinueWith(task => 
+        {
+            if (task.IsCompleted)
+            {
+                Debug.Log($"✅ Đã xóa kết bạn 2 chiều thành công với: {friendIdToRemove}");
+                action?.Invoke();
+            }
+            else if (task.IsFaulted)
+            {
+                Debug.LogError("❌ Lỗi khi xóa bạn: " + task.Exception);
+            }
+        });
     }
 
     // 3. Mời PvP (Giả lập)

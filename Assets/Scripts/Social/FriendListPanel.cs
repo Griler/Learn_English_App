@@ -9,29 +9,53 @@ public class FriendListPanel : MonoBehaviour
 {
     public Transform contentContainer;
     public GameObject friendItemPrefab;
-    
+    public UserProfileSO UserProfileSo;
     public TextMeshProUGUI resultText; 
     
     private DatabaseReference _dbRef;
 
-    public async void OnShow()
+    public void OnShow()
     {
-        await FirebaseDatabaseManager.Instance.InitializeFirebase();
+        if (FirebaseDatabase.DefaultInstance == null) 
+        {
+            Debug.LogError("Firebase chưa được khởi tạo!");
+            return;
+        }
+
         _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         LoadFriendList();
+    }
+
+    private void OnEnable()
+    {
+        UserProfileSo.OnFriendListChanged += LoadFriendList;
+    }
+
+    private void OnDisable()
+    {
+        UserProfileSo.OnFriendListChanged -= LoadFriendList;
+    }
+
+    private void ClearCurrentList()
+    {
+        foreach (Transform child in contentContainer)
+        {
+            // FIX QUAN TRỌNG: Tắt đi trước để Layout Group không tính toán lại -> Tránh lỗi MissingReference
+            child.gameObject.SetActive(false); 
+            Destroy(child.gameObject);
+        }
     }
     
      public void LoadFriendList()
     {
         // Xóa sạch danh sách cũ trên UI để tránh trùng lặp
-        foreach (Transform child in contentContainer)
-        {
-            Destroy(child.gameObject);
-        }
-
+        ClearCurrentList();
+        
         string currentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         string pathListID = $"users/{currentUserId}/friend/userId";
 
+        Debug.LogError(pathListID);
+        
         _dbRef.Child(pathListID).GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted || task.IsCanceled)
@@ -59,6 +83,7 @@ public class FriendListPanel : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log(snapshot.ToString());
                     Debug.Log("User này chưa có bạn bè nào.");
                     resultText.gameObject.SetActive(true);
                     string text = "You Has No Friends";  
@@ -89,7 +114,7 @@ public class FriendListPanel : MonoBehaviour
                 FriendItemUI itemScript = newItem.GetComponent<FriendItemUI>();
                 if (itemScript != null)
                 {
-                    itemScript.SetupUI(info, friendId);
+                    itemScript.SetupUI(info, friendId, LoadFriendList);
                 }
             },
             (error) => {

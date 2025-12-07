@@ -28,7 +28,7 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: 
+  DevRegion: asia
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
@@ -36,6 +36,18 @@ MonoBehaviour:
   RpcList:
   - ClickRpc
   - DestroyRpc
+  - RPC_GameOver
+  - RPC_SubmitAnswer
+  - RPC_SyncLives
+  - RPC_SyncState
+  - RPC_SetupAndStartGame
+  - RPC_StartCountdown
+  - RPC_SyncLive
+  - RPC_EndGameProcess
+  - RPC_FlipCardVisual
+  - RPC_MatchResult
+  - RPC_RequestFlip
+  - RPC_SetupBoard
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1

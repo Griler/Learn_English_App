@@ -25,5 +25,7 @@ public static class GameEvents
     }
     
     public static event Action updateUserInfo;
-
+    
+    public static  Action<string,string,string> showInvitePopup;
+    
 }

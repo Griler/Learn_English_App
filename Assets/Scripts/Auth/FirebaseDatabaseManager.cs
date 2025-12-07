@@ -13,15 +13,13 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
 {
     public DatabaseReference dbReference;
     public FirebaseUser currentUser;
+    
     public static FirebaseDatabaseManager Instance;
     
-    
-    private DatabaseReference dbRef;
-    public static bool IsReady { get; private set; } = false;
-
+    public bool IsReady { get; private set; } = false;
+    public event Action OnFirebaseInitialized; // Sự kiện bắn ra khi xong
     private async void Awake()
     {
-        // Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -33,6 +31,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             return;
         }
 
+        // Bắt đầu khởi tạo
         await InitializeFirebase();
     }
 
@@ -41,22 +40,23 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync();
         if (dependencyStatus == DependencyStatus.Available)
         {
-            dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+            // Init các biến quan trọng
+            dbReference = FirebaseDatabase.DefaultInstance.RootReference;
+            currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
+            
+            // 2. Đánh dấu đã xong
             IsReady = true;
             Debug.Log("✅ Firebase initialized successfully!");
+
+            // 3. Báo tin cho tất cả các script đang chờ
+            OnFirebaseInitialized?.Invoke();
         }
         else
         {
-            Debug.LogError("❌ Firebase dependencies could not be resolved: " + dependencyStatus);
+            Debug.LogError("❌ Firebase Error: " + dependencyStatus);
         }
     }
-    
-    void Start()
-    {
-        dbReference = FirebaseDatabase.DefaultInstance.RootReference;
-        currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
-    }
-    
+
     public async Task CompleteMissionById(string missionId)
     {
         if (currentUser == null)

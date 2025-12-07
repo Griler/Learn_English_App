@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -5,26 +6,55 @@ using Photon.Realtime;
 public class MyNetworkManager : MonoBehaviourPunCallbacks
 {
     public static MyNetworkManager Instance;
-    
+    public UserProfileSO userProfileSo;
     // Biến tạm lưu mã phòng khi đang chờ kết nối
     private string pendingRoomCode = ""; 
 
     void Awake() 
     { 
         Instance = this; 
+        PhotonNetwork.AutomaticallySyncScene = true; // CỰC KỲ QUAN TRỌNG
         DontDestroyOnLoad(gameObject);
     }
-
-    // Hàm này được gọi từ nút "Đồng Ý"
-    public void AttemptToJoinFriendRoom(string roomCode)
+    
+    public void SetMyUserData()
     {
+        PhotonNetwork.NickName = userProfileSo.userInfo.name; // Set tên hiển thị của Photon
+
+        // Tạo bảng chứa thông tin mở rộng
+        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
+        props["AvatarID"] = userProfileSo.userInfo.avatar;
+        props["BorderID"] = userProfileSo.userInfo.border;
+        props["Rank"] = userProfileSo.userInfo.rankPoint.ToString();
+        props["IsReady"] = false; // Mặc định vào phòng là chưa Ready
+    
+        // Đẩy lên mạng
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+    }
+
+    private Action onJoinRoomCallBack; 
+    // Hàm này được gọi từ nút "Đồng Ý"
+    public void AttemptToJoinFriendRoom(string roomCode, Action onJoinRoomCB)
+    {
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.RandomMatchmaking)
+        {
+            // Có thể cần gọi hàm hủy bên Lobby, hoặc đơn giản là LeaveRoom nếu đã lỡ vào
+            if (PhotonNetwork.InRoom) PhotonNetwork.LeaveRoom();
+        }
+
+        // --- ĐÁNH DẤU TRẠNG THÁI ---
+        NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.FriendInvite;
+        
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 2; // Giới hạn 2 người
         roomOptions.IsVisible = false;
+        onJoinRoomCallBack = onJoinRoomCB;
+        SetMyUserData();
         // TRƯỜNG HỢP 1: Đã kết nối sẵn rồi (đang ở sảnh PvP)
         if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InLobby)
         {
             Debug.Log("Đã có mạng, vào phòng luôn: " + roomCode);
+            pendingRoomCode = roomCode;
             PhotonNetwork.JoinOrCreateRoom(roomCode,roomOptions, TypedLobby.Default);
         }
         // TRƯỜNG HỢP 2: Chưa kết nối (Đang ở menu học bài)
@@ -42,25 +72,64 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
     }
-
+    public override void OnJoinedRoom()
+    {
+        if (NetworkGameState.CurrentJoinType != NetworkGameState.JoinType.FriendInvite)
+        {
+            return;
+        }
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel("WaitingRoomScene");
+        }
+        onJoinRoomCallBack?.Invoke();
+    }
     public override void OnJoinedLobby()
     {
         Debug.Log("Đã vào Lobby.");
-        
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 2; // Giới hạn 2 người
+        roomOptions.IsVisible = false;
         // Kiểm tra xem có phòng nào đang chờ vào không?
-        if (!string.IsNullOrEmpty(pendingRoomCode))
+        if ((!string.IsNullOrEmpty(pendingRoomCode)&& 
+            NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite))
         {
+            
             Debug.Log("Giờ mới bắt đầu vào phòng chờ lúc nãy: " + pendingRoomCode);
-            PhotonNetwork.JoinRoom(pendingRoomCode);
+            PhotonNetwork.JoinOrCreateRoom(pendingRoomCode,roomOptions, TypedLobby.Default);
             pendingRoomCode = ""; // Reset biến tạm
         }
     }
-    
+
     // Xử lý lỗi nếu phòng đã đầy hoặc không tồn tại
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        Debug.Log("Region hiện tại: " + PhotonNetwork.CloudRegion);
+
         Debug.LogError("Vào phòng thất bại: " + message);
+        switch (returnCode)
+        {
+            case ErrorCode.GameDoesNotExist:
+                Debug.Log("Lỗi: Phòng này không còn tồn tại (Chủ phòng đã out?).");
+                ToastSystem.Instance.ShowToast("Phòng này không còn tồn tại");
+                break;
+            
+            case ErrorCode.GameFull: 
+                Debug.Log("Lỗi: Phòng đã đủ người.");
+                ToastSystem.Instance.ShowToast("Phòng đã đầy");
+                break;
+            
+            case ErrorCode.GameClosed:
+                Debug.Log("Lỗi: Phòng đang chơi, không cho vào.");   
+                ToastSystem.Instance.ShowToast("Phòng đang chơi, không cho vào");
+                break;
+            
+            default:
+                Debug.Log("Lỗi lạ khác");
+                break;
+        }
         // Ở đây bạn nên hiện thông báo UI: "Phòng không tồn tại hoặc đã đầy"
         pendingRoomCode = "";
+        onJoinRoomCallBack?.Invoke();
     }
 }

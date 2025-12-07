@@ -1,27 +1,47 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Firebase;
+using Firebase.Auth;
 using Firebase.Database;
 using UnityEngine;
 
 public partial class FirebaseDatabaseManager : MonoBehaviour
 {
     public UserProfileSO userProfileSO;
-    
+    // 1. Biến cờ và Sự kiện
+    // Hàm lắng nghe data
     public void ListenToUserInfo()
     {
-        // Chỉ trỏ vào node "userInfo"
-        dbRef.Child("users").Child(currentUser.UserId).Child("userInfo").ValueChanged += (sender, args) => 
+        // 4. KIỂM TRA AN TOÀN TUYỆT ĐỐI
+        // Nếu hàm này bị gọi sớm quá khi chưa init xong -> return luôn để tránh lỗi
+        if (!IsReady || dbReference == null || currentUser == null) 
         {
-            if (args.DatabaseError != null || !args.Snapshot.Exists) return;
+            Debug.LogWarning("⚠️ Gọi ListenToUserInfo quá sớm! Đang chờ Init...");
+            return; 
+        }
 
-            string json = args.Snapshot.GetRawJsonValue();
-            UserInfoData uInfo = JsonUtility.FromJson<UserInfoData>(json);
+        Debug.Log("🎧 Bắt đầu lắng nghe UserInfo...");
+        dbReference.Child("users").Child(currentUser.UserId).Child("userInfo").ValueChanged += HandleUserInfoChanged;
+    }
+    
+    // Tách logic xử lý ra hàm riêng cho gọn
+    private void HandleUserInfoChanged(object sender, ValueChangedEventArgs args)
+    {
+        if (args.DatabaseError != null || !args.Snapshot.Exists) return;
 
-            // Đẩy về SO
-            UnityMainThreadDispatcher.Instance().Enqueue(() => {
-                userProfileSO.UpdateUserInfo(uInfo);
-            });
-        };
+        string json = args.Snapshot.GetRawJsonValue();
+        
+        // Deserialize an toàn (tránh lỗi nếu json rỗng)
+        if (string.IsNullOrEmpty(json)) return;
+        
+        UserInfoData uInfo = JsonUtility.FromJson<UserInfoData>(json);
+
+        UnityMainThreadDispatcher.Instance().Enqueue(() => {
+             // Giả sử bạn có biến userProfileSO ở đây hoặc truyền vào
+             userProfileSO.UpdateUserInfo(uInfo); 
+             Debug.Log("Updated User Info from Firebase");
+        });
     }
     
     public async Task AddCoins(int amount)
@@ -34,12 +54,15 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
 
 
     // --- LUỒNG 2: FRIEND LIST ---
-    void ListenToFriends()
+    public void ListenToFriends()
     {
         // Chỉ trỏ vào node "friend"
-        dbRef.Child("users").Child(currentUser.UserId).Child("friend").ValueChanged += (sender, args) => 
+        dbReference.Child("users").Child(currentUser.UserId).Child("friend").ValueChanged += (sender, args) => 
         {
-            if (args.DatabaseError != null || !args.Snapshot.Exists) return;
+            if (args.DatabaseError != null || !args.Snapshot.Exists)
+            {
+                return;
+            }
 
             List<FriendData> fList = new List<FriendData>();
             
@@ -56,7 +79,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
 
             // Đẩy về SO
             UnityMainThreadDispatcher.Instance().Enqueue(() => {
-                userProfileSO.UpdateFriendList(fList);
+                userProfileSO.UpdateFriendList();
             });
         };
     }
