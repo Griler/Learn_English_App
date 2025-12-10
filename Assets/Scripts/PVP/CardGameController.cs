@@ -231,6 +231,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
             CardDataModel data = rawCardData[dataIndex]; 
 
             GameObject cardObj = Instantiate(cardPrefab, gridContainer);
+            cardObj.SetActive(true);
             CardController controller = cardObj.GetComponent<CardController>();
             
             // Gán dữ liệu vào thẻ (ID, Index trên bàn, Ảnh, Chữ, Controller này)

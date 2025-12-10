@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wild_animal_0
+      name: monkey
       rect:
         serializedVersion: 2
         x: 37
@@ -135,7 +135,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_animal_1
+      name: lion
       rect:
         serializedVersion: 2
         x: 40
@@ -157,7 +157,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_animal_2
+      name: tiger
       rect:
         serializedVersion: 2
         x: 971
@@ -179,7 +179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_animal_3
+      name: elephant
       rect:
         serializedVersion: 2
         x: 1926
@@ -201,7 +201,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_animal_4
+      name: bear
       rect:
         serializedVersion: 2
         x: 956
@@ -223,7 +223,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_animal_5
+      name: zebra
       rect:
         serializedVersion: 2
         x: 1928
@@ -258,12 +258,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wild_animal_0: 4048704911278251998
-      wild_animal_1: -84930043
-      wild_animal_2: -1090325908
-      wild_animal_3: 508944645
-      wild_animal_4: 1254710823
-      wild_animal_5: 1028045588
+      bear: 1254710823
+      elephant: 508944645
+      lion: -84930043
+      monkey: 4048704911278251998
+      tiger: -1090325908
+      zebra: 1028045588
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
