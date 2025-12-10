@@ -336,6 +336,7 @@ MonoBehaviour:
   player2Container: {fileID: 675456069}
   player2TextStatus: {fileID: 1482156870}
   readyButton: {fileID: 251021562}
+  outButton: {fileID: 2128717482}
   readyButtonText: {fileID: 649586747}
   roomName: {fileID: 1093730202}
   statusText: {fileID: 384663908}

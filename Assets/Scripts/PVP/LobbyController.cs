@@ -113,6 +113,8 @@ public class LobbyController : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Đã kết nối tới Server!");
+        MyNetworkManager.Instance.SetMyUserData();
+
     }
     // Thêm hàm này (hoặc sửa hàm cũ) để bật nút đúng thời điểm
     public override void OnJoinedLobby()
@@ -178,7 +180,6 @@ public class LobbyController : MonoBehaviourPunCallbacks
         
         // 2. Bắt buộc phải khai báo key này cho Lobby biết để còn lọc được
         options.CustomRoomPropertiesForLobby = new string[] { MODE_KEY };
-        MyNetworkManager.Instance.SetMyUserData();
         string roomName = "Match_" + System.Guid.NewGuid().ToString();
         PhotonNetwork.CreateRoom(roomName, options);
     }
