@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: farm_animal_0
+      name: cow
       rect:
         serializedVersion: 2
         x: 28
@@ -121,7 +121,7 @@ TextureImporter:
         width: 892
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -135,7 +135,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: farm_animal_1
+      name: pig
       rect:
         serializedVersion: 2
         x: 962
@@ -143,7 +143,7 @@ TextureImporter:
         width: 892
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -157,7 +157,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: farm_animal_2
+      name: chicken
       rect:
         serializedVersion: 2
         x: 1893
@@ -165,7 +165,7 @@ TextureImporter:
         width: 892
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -179,7 +179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: farm_animal_3
+      name: duck
       rect:
         serializedVersion: 2
         x: 31
@@ -187,7 +187,7 @@ TextureImporter:
         width: 892
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -201,7 +201,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: farm_animal_4
+      name: sheet
       rect:
         serializedVersion: 2
         x: 968
@@ -209,7 +209,7 @@ TextureImporter:
         width: 883
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -223,7 +223,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: farm_animal_5
+      name: horse
       rect:
         serializedVersion: 2
         x: 1902
@@ -231,7 +231,7 @@ TextureImporter:
         width: 883
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -260,12 +260,12 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      farm_animal_0: -3034158958266695850
-      farm_animal_1: -894327120
-      farm_animal_2: -1101939598
-      farm_animal_3: -1943957103
-      farm_animal_4: -1690478151
-      farm_animal_5: -913303933
+      chicken: -1101939598
+      cow: -3034158958266695850
+      duck: -1943957103
+      horse: -913303933
+      pig: -894327120
+      sheet: -1690478151
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

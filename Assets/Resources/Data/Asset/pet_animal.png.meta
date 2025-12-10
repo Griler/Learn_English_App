@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pet_animal_0
+      name: dog
       rect:
         serializedVersion: 2
         x: 11
@@ -135,7 +135,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pet_animal_1
+      name: cat
       rect:
         serializedVersion: 2
         x: 959
@@ -157,7 +157,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pet_animal_2
+      name: hamster
       rect:
         serializedVersion: 2
         x: 1916
@@ -179,7 +179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pet_animal_3
+      name: parrot
       rect:
         serializedVersion: 2
         x: 463
@@ -201,7 +201,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pet_animal_4
+      name: rabbit
       rect:
         serializedVersion: 2
         x: 1462
@@ -236,11 +236,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      pet_animal_0: -1196753429089245107
-      pet_animal_1: 1615871026
-      pet_animal_2: -1044727194
-      pet_animal_3: 405643504
-      pet_animal_4: -1464744938
+      cat: 1615871026
+      dog: -1196753429089245107
+      hamster: -1044727194
+      parrot: 405643504
+      rabbit: -1464744938
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

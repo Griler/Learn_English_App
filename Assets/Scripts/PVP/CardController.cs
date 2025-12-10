@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening; // Dùng để làm hiệu ứng lật
 
-public class CardController : MonoBehaviour
+public class CardController : BaseCode
 {
     [Header("UI References")]
     public Image cardBackground;      // Ảnh nền thẻ (Mặt sau/Mặt úp)
@@ -32,7 +32,7 @@ public class CardController : MonoBehaviour
         
         // 2. Load ảnh từ thư mục Resources
         // Lưu ý: Ảnh phải nằm trong thư mục: Assets/Resources/IconCards/ (hoặc đường dẫn tương ứng)
-        Sprite loadedSprite = Resources.Load<Sprite>(spriteName); 
+        Sprite loadedSprite = assetManager.getSpriteAnimal(spriteName);
         if (loadedSprite != null)
         {
             this.iconImage.sprite = loadedSprite;

@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sea_animal_0
+      name: dolphin
       rect:
         serializedVersion: 2
         x: 0
@@ -157,7 +157,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sea_animal_2
+      name: turtle
       rect:
         serializedVersion: 2
         x: 0
@@ -179,7 +179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sea_animal_3
+      name: octopus
       rect:
         serializedVersion: 2
         x: 2057
@@ -201,7 +201,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sea_animal_4
+      name: starfish
       rect:
         serializedVersion: 2
         x: 2057
@@ -236,12 +236,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sea_animal_0: 7053781530408400371
+      dolphin: 7053781530408400371
+      octopus: 1165191424
       sea_animal_1: -267779209
-      sea_animal_2: 668223982
-      sea_animal_3: 1165191424
-      sea_animal_4: 1499972612
       sea_animal_5: 905120705
+      starfish: 1499972612
+      turtle: 668223982
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

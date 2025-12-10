@@ -87,7 +87,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        InitUIPlayer();
+        //InitUIPlayer();
         
         // Khởi tạo Firebase
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
@@ -106,7 +106,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     
     // 1. LOAD DATA TỪ FIREBASE (Giữ nguyên format logic)
     void LoadCardsFromFirebase() {
-        reference.Child("cards").Child("list").GetValueAsync().ContinueWithOnMainThread(task => {
+        reference.Child("card_data").Child("list").GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsFaulted) { Debug.LogError("Lỗi kết nối Firebase"); return; }
 
             if (task.IsCompleted)
@@ -119,19 +119,23 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
                 foreach (DataSnapshot child in snapshot.Children)
                 {
-                    try 
+                    if (rawCardData.Count < 11)
                     {
-                        CardDataModel card = new CardDataModel();
-                        if (child.Child("id").Value != null)
-                            card.id = int.Parse(child.Child("id").Value.ToString());
-                        if (child.Child("englishWord").Value != null)
-                            card.englishWord = child.Child("englishWord").Value.ToString();
-                        if (child.Child("spriteName").Value != null)
-                            card.spriteName = child.Child("spriteName").Value.ToString();
+                        try 
+                        {
+                            CardDataModel card = new CardDataModel();
+                            if (child.Child("id").Value != null)
+                                card.id = int.Parse(child.Child("id").Value.ToString());
+                            if (child.Child("englishWord").Value != null)
+                                card.englishWord = child.Child("englishWord").Value.ToString();
+                            if (child.Child("spriteName").Value != null)
+                                card.spriteName = child.Child("spriteName").Value.ToString();
 
-                        rawCardData.Add(card);
+                            rawCardData.Add(card);
+                        }
+                        catch (System.Exception ex) { Debug.LogWarning("Parse lỗi: " + ex.Message); }
+
                     }
-                    catch (System.Exception ex) { Debug.LogWarning("Parse lỗi: " + ex.Message); }
                 }
                 
                 Debug.Log($"Đã tải {rawCardData.Count} loại thẻ.");
