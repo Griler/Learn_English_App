@@ -238,44 +238,33 @@ public class CardGameController : MonoBehaviourPunCallbacks
         totalPairsFound = 0;
 
         // B. Nhân đôi thẻ (Tạo cặp)
-        List<CardDataModel> deckImage = new List<CardDataModel>();
-        List<CardDataModel> deckWord = new List<CardDataModel>();
+        List<CardDataModel> deck = new List<CardDataModel>();
         foreach (var item in selectedWords)
         {
-            deckImage.Add(item);
-            deckWord.Add(item);
+            deck.Add(item);
+            deck.Add(item);
         }
 
         // C. Trộn lại lần nữa để rải ra bàn
-        deckImage = deckImage.OrderBy(x => rnd.Next()).ToList();
-        deckWord = deckWord.OrderBy(x => rnd.Next()).ToList();
+        deck = deck.OrderBy(x => rnd.Next()).ToList();
 
         // D. Spawn thẻ lên bàn
         foreach (Transform child in gridContainer) Destroy(child.gameObject);
         activeCards.Clear();
         playerScores.Clear();
 
-        for (int i = 0; i < deckWord.Count; i++)
+        for (int i = 0; i < deck.Count; i++)
         {
-            CardDataModel data = deckWord[i];
+            CardDataModel data = deck[i];
             GameObject cardObj = Instantiate(cardPrefab, gridContainer);
             CardController controller = cardObj.GetComponent<CardController>();
             cardObj.SetActive(true);
             // Init thẻ
             controller.Init(data.id, i, data.englishWord, data.spriteName, this, true);
+            if (i % 2 == 0)
+                controller.Init(data.id, i, data.englishWord, data.spriteName, this, false);
             activeCards.Add(controller);
         }  
-        for (int i = 0; i < deckImage.Count; i++)
-        {
-            CardDataModel data = deckImage[i];
-            GameObject cardObj = Instantiate(cardPrefab, gridContainer);
-            CardController controller = cardObj.GetComponent<CardController>();
-            cardObj.SetActive(true);
-            // Init thẻ
-            controller.Init(data.id, i, data.englishWord, data.spriteName, this, false);
-            activeCards.Add(controller);
-        }
-        
 
         // Init điểm
         foreach (Player p in PhotonNetwork.PlayerList)
