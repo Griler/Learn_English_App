@@ -427,50 +427,43 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     bool CheckGameOverCondition()
     {
-        int deadCount = 0;
-        int survivorActorNumber = -1; // Lưu ID người còn sống
+        int survivorActorNumber = -1; // ID người còn sống (người thắng)
+        bool isAnyoneDead = false;    // Cờ đánh dấu có ai chết chưa
 
-        // 1. Duyệt qua tất cả người chơi để đếm số người chết/sống
+        // 1. Duyệt danh sách để xem tình trạng hiện tại
         foreach (var kvp in playerLives)
         {
-            if (kvp.Value <= 0)
+            if (kvp.Value > 0)
             {
-                deadCount++;
+                survivorActorNumber = kvp.Key; // Tìm thấy người còn sống
             }
             else
             {
-                survivorActorNumber = kvp.Key; // Lưu lại ID người này để tuyên bố thắng
+                isAnyoneDead = true; // Tìm thấy người đã chết (máu <= 0)
             }
         }
 
-        // 2. LOGIC HÒA (Ưu tiên kiểm tra trước): Cả 2 đều hết mạng
-        // Trường hợp này xảy ra khi A chết, B trả lời sai và cũng chết theo.
-        if (deadCount >= 2)
+        // 2. XỬ LÝ KẾT THÚC NGAY LẬP TỨC
+        if (isAnyoneDead)
         {
-            Debug.Log("Game Over: DRAW!");
-            // Gửi RPC thông báo Hòa
-            photonView.RPC("RPC_GameOver", RpcTarget.All, "DRAW", survivorActorNumber);
+            // Trường hợp A: Có người sống, có người chết -> Người sống thắng
+            if (survivorActorNumber != -1)
+            {
+                Debug.Log("Game Over: Winner is " + survivorActorNumber);
+                // Gửi RPC báo người thắng (survivorActorNumber)
+                photonView.RPC("RPC_GameOver", RpcTarget.All, "WINNER", survivorActorNumber);
+            }
+            // Trường hợp B: Cả 2 cùng chết (hiếm, nhưng đề phòng lỗi logic) -> Hòa
+            else
+            {
+                Debug.Log("Game Over: DRAW (Both died)");
+                photonView.RPC("RPC_GameOver", RpcTarget.All, "DRAW", -1);
+            }
+
             return true; // Game kết thúc
         }
 
-        // 3. LOGIC CÓ NGƯỜI THẮNG: Chỉ có 1 người chết, người kia còn sống
-        if (deadCount == 1 && survivorActorNumber != -1)
-        {
-            // --- QUAN TRỌNG: XỬ LÝ LUẬT "VỚT VÁT" CỦA BẠN ---
-        
-            // Nếu bạn muốn "A chết nhưng B vẫn được trả lời nốt câu hỏi để xem có bị Hòa không":
-            // Bạn cần thêm biến kiểm tra xem B đã trả lời chưa.
-            // Ví dụ: if (!isTurnFinished) return false; 
-        
-            // Còn nếu chơi luật chuẩn (Ai về 0 trước là thua ngay lập tức):
-            Debug.Log("Game Over: Winner is " + survivorActorNumber);
-        
-            // Gửi RPC thông báo người thắng (kèm ID người thắng để hiển thị)
-            photonView.RPC("RPC_GameOver", RpcTarget.All, "WINNER_" + survivorActorNumber, survivorActorNumber);
-            return true; // Game kết thúc
-        }
-
-        // 4. Chưa ai chết hoặc cả 2 vẫn sống -> Game tiếp tục
+        // 3. Chưa ai chết -> Game tiếp tục
         return false;
     }
 
@@ -549,7 +542,14 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
         gameOverTimerPanel.text = "Trờ về trang chủ sau: 0";
         yield return new WaitForSeconds(0.5f);
-        PhotonNetwork.LoadLevel("HomeScene");
+        PhotonNetwork.LeaveRoom();
+    }
+
+// Thêm hàm Callback
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Đã thoát phòng ques Game, về Home.");
+        SceneManager.LoadScene("HomeScene");
     }
 
     void saveMatchDatabase(string resultState,EloCalculator.GameResult result,string otherName)

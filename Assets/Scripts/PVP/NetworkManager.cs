@@ -9,12 +9,24 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     public UserProfileSO userProfileSo;
     // Biến tạm lưu mã phòng khi đang chờ kết nối
     private string pendingRoomCode = ""; 
+    private void Awake()
+    {
+        // 1. Kiểm tra Singleton: Nếu đã có Instance rồi mà không phải là "tôi" -> Tự hủy
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return; // Dừng code tại đây
+        }
 
-    void Awake() 
-    { 
-        Instance = this; 
-        PhotonNetwork.AutomaticallySyncScene = true; // CỰC KỲ QUAN TRỌNG
-        DontDestroyOnLoad(gameObject);
+        // 2. Gán Instance
+        Instance = this;
+    
+        // 3. Giữ Object này tồn tại khi chuyển Scene (Quan trọng cho Network Manager)
+        DontDestroyOnLoad(this.gameObject);
+
+        // 4. Thiết lập Photon (Yêu cầu của bạn)
+        // Giúp tất cả client tự động load scene theo Master Client
+        PhotonNetwork.AutomaticallySyncScene = true; 
     }
     
     public void SetMyUserData()

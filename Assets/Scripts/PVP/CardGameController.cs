@@ -505,8 +505,17 @@ public class CardGameController : MonoBehaviourPunCallbacks
             gameOverTimerPanel.text = "Trở về trang chủ sau: " + i;
             yield return new WaitForSeconds(1f);
         }
-        PhotonNetwork.LoadLevel("HomeScene");
+        PhotonNetwork.LeaveRoom();
     }
+
+// Thêm hàm Callback
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Đã thoát phòng Card Game, về Home.");
+        SceneManager.LoadScene("HomeScene"); 
+    }
+    
+    
 
     void UpdateTurnUI()
     {

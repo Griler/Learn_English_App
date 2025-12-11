@@ -68,7 +68,8 @@ public class FriendItemUI : BaseCode
 
     void OnInviteClicked()
     {
-        FriendSystem.Instance.SendInvite(currentFriendId, currentFriendName);
+        string userName = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.name;
+        FriendSystem.Instance.SendInvite(currentFriendId, userName);
     }
 
     void OnDeleteClicked()
