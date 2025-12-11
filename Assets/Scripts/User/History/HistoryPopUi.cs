@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System; // Để dùng Math
+using System;
+using TMPro; // Để dùng Math
 
 public class HistoryPopupUI : MonoBehaviour
 {
@@ -16,7 +17,8 @@ public class HistoryPopupUI : MonoBehaviour
     [Header("Pagination UI")]
     public Button nextButton;      // Kéo nút Next vào đây
     public Button prevButton;      // Kéo nút Prev vào đây
-    public Text pageNumberText;    // Kéo Text hiển thị số trang vào đây
+    public TextMeshProUGUI pageNumberText;    // Kéo Text hiển thị số trang vào đây
+    public TextMeshProUGUI statusText;    // Kéo Text hiển thị số trang vào đây
 
     [Header("Manager")]
     public HistoryManager historyManager;
@@ -24,13 +26,18 @@ public class HistoryPopupUI : MonoBehaviour
     // --- CÁC BIẾN QUẢN LÝ PHÂN TRANG ---
     private List<MatchHistoryData> fullHistoryList = new List<MatchHistoryData>(); // Lưu toàn bộ list tải về
     private int currentPage = 0;        // Trang hiện tại (bắt đầu từ 0)
-    private const int ITEMS_PER_PAGE = 4; // Số item mỗi trang
+    private const int ITEMS_PER_PAGE = 3; // Số item mỗi trang
 
     private void Start()
     {
         // Gán sự kiện cho nút bấm (hoặc gán trong Inspector cũng được)
         nextButton.onClick.AddListener(NextPage);
         prevButton.onClick.AddListener(PrevPage);
+    }
+
+    private void OnEnable()
+    {
+        OpenHistoryPopup();
     }
 
     public void OpenHistoryPopup()
@@ -46,18 +53,31 @@ public class HistoryPopupUI : MonoBehaviour
 
     void RefreshHistory()
     {
+        statusText.gameObject.SetActive(false);
         // Tải dữ liệu từ Firebase
         historyManager.LoadHistory((dataList) =>
         {
+            if (dataList.Count == 0)
+            {
+                statusText.gameObject.SetActive(true);
+                statusText.text = "Chưa có lịch sử thi đấu".ToUpper();
+            }
             // 1. Lưu toàn bộ dữ liệu vào biến list
             fullHistoryList = dataList;
-
+            
             // 2. Reset về trang đầu tiên
             currentPage = 0;
 
             // 3. Hiển thị trang đầu
             RenderCurrentPage();
-        });
+        },onErrorLoadHistory);
+    }
+
+    void onErrorLoadHistory()
+    {
+        statusText.gameObject.SetActive(true);
+        statusText.text = "Tải lịch sử đấu lỗi".ToUpper();
+        
     }
 
     // --- HÀM XỬ LÝ HIỂN THỊ TRANG ---

@@ -60,6 +60,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     private int currentQuestionIndex = 0;
     private int currentTurnActorNumber;
     private bool isDataLoaded = false;
+    private string matchId = "";
 
     [NotNull] private userDataPVP myPlayer = new userDataPVP();
     [NotNull] private userDataPVP otherPlayer = new userDataPVP();
@@ -79,7 +80,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                 OnAnswerSelected(index);
             });
         }
-        
+
+        matchId = PhotonNetwork.CurrentRoom.Name;
         SetButtonsInteractable(false);
         InitUIPlayer();
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
@@ -345,6 +347,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                 Debug.LogError("vào game over");
                 return;
             }
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= allQuestions.Count) currentQuestionIndex = 0;
             SwitchTurn();
         }
 
@@ -545,13 +549,13 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
         gameOverTimerPanel.text = "Trờ về trang chủ sau: 0";
         yield return new WaitForSeconds(0.5f);
-        SceneManager.LoadScene("HomeScene");
+        PhotonNetwork.LoadLevel("HomeScene");
     }
 
     void saveMatchDatabase(string resultState,EloCalculator.GameResult result,string otherName)
     {
         int randomRankPoint = EloCalculator.CalculateRatingChange(myPlayer.rank,otherPlayer.rank,result);
-        RankDatabaseManager.Instance.SaveMatchHistory(resultState, randomRankPoint, otherName);
+        RankDatabaseManager.Instance.SaveMatchHistory(matchId,resultState, randomRankPoint, otherName, "Đáp Nhanh");
     }
 
     void UpdateLivesUI()

@@ -35,36 +35,64 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     private Action onJoinRoomCallBack; 
     // Hàm này được gọi từ nút "Đồng Ý"
     public void AttemptToJoinFriendRoom(string roomCode, Action onJoinRoomCB)
+{
+    // --- 1. SET UP DỮ LIỆU ---
+    if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.RandomMatchmaking)
     {
-        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.RandomMatchmaking)
+        if (PhotonNetwork.InRoom) PhotonNetwork.LeaveRoom();
+    }
+
+    NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.FriendInvite;
+    onJoinRoomCallBack = onJoinRoomCB;
+    SetMyUserData();
+    
+    // Lưu mã phòng ngay lập tức để dù đi đường nào cũng có dữ liệu
+    pendingRoomCode = roomCode; 
+
+    // --- 2. XỬ LÝ LOGIC MẠNG (Sửa lại đoạn này) ---
+
+    // TRƯỜNG HỢP A: Đã có kết nối mạng (Bất kể đang ở trạng thái nào)
+    if (PhotonNetwork.IsConnected)
+    {
+        Debug.Log("Đã có kết nối mạng. Trạng thái hiện tại: " + PhotonNetwork.NetworkClientState);
+
+        // Nếu đang kẹt trong phòng nào đó -> Rời ngay
+        if (PhotonNetwork.InRoom)
         {
-            // Có thể cần gọi hàm hủy bên Lobby, hoặc đơn giản là LeaveRoom nếu đã lỡ vào
-            if (PhotonNetwork.InRoom) PhotonNetwork.LeaveRoom();
+            Debug.Log("Đang kẹt trong phòng, tiến hành rời phòng...");
+            PhotonNetwork.LeaveRoom();
+            return; // Đợi callback OnConnectedToMaster xử lý tiếp
         }
 
-        // --- ĐÁNH DẤU TRẠNG THÁI ---
-        NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.FriendInvite;
-        
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 2; // Giới hạn 2 người
-        roomOptions.IsVisible = false;
-        onJoinRoomCallBack = onJoinRoomCB;
-        SetMyUserData();
-        // TRƯỜNG HỢP 1: Đã kết nối sẵn rồi (đang ở sảnh PvP)
-        if (PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InLobby)
+        // Nếu đã ở trong Lobby -> Vào phòng luôn
+        if (PhotonNetwork.InLobby)
         {
-            Debug.Log("Đã có mạng, vào phòng luôn: " + roomCode);
-            pendingRoomCode = roomCode;
-            PhotonNetwork.JoinOrCreateRoom(roomCode,roomOptions, TypedLobby.Default);
+            Debug.Log("Đang ở Lobby, vào phòng: " + roomCode);
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.MaxPlayers = 2;
+            roomOptions.IsVisible = false;
+            PhotonNetwork.JoinOrCreateRoom(roomCode, roomOptions, TypedLobby.Default);
         }
-        // TRƯỜNG HỢP 2: Chưa kết nối (Đang ở menu học bài)
+        // Nếu đã kết nối Master nhưng chưa vào Lobby -> Vào Lobby
+        else if (PhotonNetwork.NetworkClientState == ClientState.ConnectedToMasterServer)
+        {
+            Debug.Log("Đang ở Master, vào Lobby...");
+            PhotonNetwork.JoinLobby();
+        }
+        // Các trạng thái lấp lửng khác (Disconnecting, Authenticating...) -> Đợi nó tự ổn định
         else
         {
-            Debug.Log("Chưa có mạng, đang kết nối để vào phòng: " + roomCode);
-            pendingRoomCode = roomCode; // Lưu lại mã phòng để dùng sau
-            PhotonNetwork.ConnectUsingSettings(); // Bắt đầu kết nối
+             Debug.Log("Mạng đang bận xử lý (State: " + PhotonNetwork.NetworkClientState + "), chờ một chút...");
+             // Thường thì nó sẽ tự nhảy về OnConnectedToMaster, lúc đó pendingRoomCode đã lưu rồi nên sẽ tự chạy tiếp.
         }
     }
+    // TRƯỜNG HỢP B: Chưa có kết nối mạng (Disconnected)
+    else
+    {
+        Debug.Log("Chưa có mạng (Disconnected), bắt đầu kết nối...");
+        PhotonNetwork.ConnectUsingSettings();
+    }
+}
 
     // --- CÁC CALLBACK CỦA PHOTON ---
 

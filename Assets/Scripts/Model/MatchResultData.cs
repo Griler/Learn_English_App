@@ -8,9 +8,10 @@ public class MatchResultData
     public int rankChange;     // Ví dụ: +25 hoặc -15
     public int currentRank;    // Điểm rank sau khi cộng trừ
     public string opponentName; // Tên đối thủ (nếu cần)
-
+    public string mode;
+    public string matchId;
     // Hàm khởi tạo cho tiện
-    public MatchResultData(string matchResult, int pointsChanged, int newTotalRank, string enemyName)
+    public MatchResultData(string matchid, string matchResult, int pointsChanged, int newTotalRank, string enemyName, string mode)
     {
         // Lưu thời gian hiện tại
         this.matchDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -18,5 +19,7 @@ public class MatchResultData
         this.rankChange = pointsChanged; // Nếu thua thì truyền số âm vào
         this.currentRank = newTotalRank;
         this.opponentName = enemyName;
+        this.mode = mode;
+        this.matchId = matchId;
     }
 }

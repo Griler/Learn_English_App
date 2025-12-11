@@ -112,8 +112,9 @@ public class LobbyController : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Đã kết nối tới Server!");
+        Debug.Log("Đã kết nối tới Server!, lb ");
         MyNetworkManager.Instance.SetMyUserData();
+        SetModeButtonsInteractable(true);
 
     }
     // Thêm hàm này (hoặc sửa hàm cũ) để bật nút đúng thời điểm

@@ -3,6 +3,17 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
+public class DeckItem
+{
+    public CardDataModel data;
+    public bool  isTypeWorld;
+
+    public DeckItem(CardDataModel d, bool t)
+    {
+        data = d;
+        isTypeWorld = t;
+    }
+}
 public class CardController : BaseCode
 {
     [Header("UI References")]
@@ -43,11 +54,9 @@ public class CardController : BaseCode
         this.indexInGrid = index;
         this.gameManager = manager;
         this.wordLabel.text = text;
-        if (!isWord)
-        {
-            this.iconImage.sprite = assetManager.getSpriteAnimal(spriteName);
-            this.iconImage.gameObject.SetActive(false);
-        }
+        this.iconImage.sprite = assetManager.getSpriteAnimal(spriteName);
+        this.iconImage.gameObject.SetActive(!isWord);
+        this.wordLabel.gameObject.SetActive(isWord);
         // Load ảnh từ Resources
 
         cardButton.onClick.RemoveAllListeners();
@@ -113,8 +122,8 @@ public class CardController : BaseCode
         isFaceUp = false;
         isLocked = false;
         cardButton.interactable = true;
-        cardBackground.gameObject.SetActive(true);
-        frontContent.SetActive(false);
+        cardBackground.gameObject.SetActive(false);
+        frontContent.SetActive(true);
         transform.localScale = Vector3.one;
     }
 }

@@ -67,6 +67,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     // List quản lý các thẻ đang hiện trên bàn
     private List<CardController> activeCards = new List<CardController>();
 
+    private string matchId = "";
     // State Game
     private int currentTurnActorNumber;
     private bool isProcessingMatch = false; // Cờ chặn click khi đang so sánh
@@ -81,7 +82,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     private Dictionary<int, int> playerScores = new Dictionary<int, int>();
     private int totalPairsFound = 0;
     private int targetPairsToWin = 0; // Sẽ được set khi Start Game
-
+    
     // User Info
     [NotNull] private UserDataPVP myPlayer = new UserDataPVP();
     [NotNull] private UserDataPVP otherPlayer = new UserDataPVP();
@@ -91,7 +92,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     private void Start()
     {
         InitUIPlayer();
-
+        matchId = PhotonNetwork.CurrentRoom.Name;
         // Fix lỗi dependencies Firebase trước khi chạy
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
@@ -157,6 +158,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
                 Hashtable props = new Hashtable();
                 props.Add("IsLoaded", true);
                 PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                RPC_SetupBoard(1, 1);
             }
         });
     }
@@ -238,11 +240,11 @@ public class CardGameController : MonoBehaviourPunCallbacks
         totalPairsFound = 0;
 
         // B. Nhân đôi thẻ (Tạo cặp)
-        List<CardDataModel> deck = new List<CardDataModel>();
+        List<DeckItem> deck = new List<DeckItem>();
         foreach (var item in selectedWords)
         {
-            deck.Add(item);
-            deck.Add(item);
+            deck.Add(new DeckItem(item, true));
+            deck.Add(new DeckItem(item, false));
         }
 
         // C. Trộn lại lần nữa để rải ra bàn
@@ -255,17 +257,14 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < deck.Count; i++)
         {
-            CardDataModel data = deck[i];
+            CardDataModel data = deck[i].data;
             GameObject cardObj = Instantiate(cardPrefab, gridContainer);
             CardController controller = cardObj.GetComponent<CardController>();
             cardObj.SetActive(true);
             // Init thẻ
-            controller.Init(data.id, i, data.englishWord, data.spriteName, this, true);
-            if (i % 2 == 0)
-                controller.Init(data.id, i, data.englishWord, data.spriteName, this, false);
+            controller.Init(data.id, i, data.englishWord, data.spriteName, this, deck[i].isTypeWorld);
             activeCards.Add(controller);
         }  
-
         // Init điểm
         foreach (Player p in PhotonNetwork.PlayerList)
         {
@@ -496,7 +495,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     {
         // Giả định bạn có sẵn script RankDatabaseManager và EloCalculator
         int randomRankPoint = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
-        RankDatabaseManager.Instance.SaveMatchHistory(resultState, randomRankPoint, otherName);
+        RankDatabaseManager.Instance.SaveMatchHistory(matchId, resultState, randomRankPoint, otherName, "Lật thẻ");
     }
 
     IEnumerator<WaitForSeconds> RunCountdownLoadScene()
@@ -506,8 +505,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
             gameOverTimerPanel.text = "Trở về trang chủ sau: " + i;
             yield return new WaitForSeconds(1f);
         }
-
-        SceneManager.LoadScene("HomeScene");
+        PhotonNetwork.LoadLevel("HomeScene");
     }
 
     void UpdateTurnUI()
