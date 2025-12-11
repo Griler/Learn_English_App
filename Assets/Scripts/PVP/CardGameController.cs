@@ -308,6 +308,9 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
             // Đồng bộ kết quả đúng
             photonView.RPC("RPC_MatchResult", RpcTarget.All, true, playerID, firstCardIndex, secondCardIndex, playerScores[playerID]);
+
+            currentTimer = turnTimeLimit;
+            isTimerRunning = true;
         }
         else
         {
@@ -326,12 +329,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
         if (totalPairsFound >= MAX_PAIRS)
         {
             CheckGameOver();
-        }
-        else
-        {
-            // Reset Timer cho lượt mới (hoặc tiếp tục nếu trả lời đúng được đi tiếp - tùy luật)
-            currentTimer = turnTimeLimit;
-            isTimerRunning = true;
         }
     }
 
@@ -379,6 +376,9 @@ public class CardGameController : MonoBehaviourPunCallbacks
                 break;
             }
         }
+        
+        currentTimer = turnTimeLimit;
+        isTimerRunning = true;
     }
 
     // 6. GAME OVER & DATABASE SAVE (Giữ format)
