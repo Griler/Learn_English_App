@@ -26,7 +26,10 @@ public class CardDataModel
 }
 
 [System.Serializable]
-public class UserDataPVP
+public class 
+    
+    
+    UserDataPVP
 {
     public string name;
     public int rank;
@@ -87,7 +90,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        //InitUIPlayer();
+        InitUIPlayer();
         
         // Khởi tạo Firebase
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
@@ -346,7 +349,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     {
         currentTurnActorNumber = nextTurnActor;
         UpdateTurnUI();
-
+        if(idx1 == -1 && idx2 == -1 ) return;
         if (isMatch)
         {
             // Ẩn/Khóa thẻ
@@ -356,7 +359,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
             // Cập nhật điểm UI
             // Logic hiển thị điểm tùy thuộc vào ai vừa ghi điểm...
             // Ở đây code tắt update text
-            UpdateScoreUI();
+            UpdateScoreUI( nextTurnActor, newScore);
         }
         else
         {
@@ -444,11 +447,17 @@ public class CardGameController : MonoBehaviourPunCallbacks
         statusText.color = isMyTurn ? Color.green : Color.red;
     }
     
-    void UpdateScoreUI()
+    void UpdateScoreUI(int playerId, int newScore)
     {
-        // Cần logic mapping ActorNumber vào UI Text cụ thể
-        // Code demo:
-        p1ScoreText.text = "Scores update..."; 
+        if(newScore == 0) return;
+        if (PhotonNetwork.LocalPlayer.ActorNumber == playerId)
+        {
+            p1ScoreText.text = newScore.ToString();
+        }
+        else
+        {
+            p2ScoreText.text = newScore.ToString();
+        }
     }
 
     void Update()
