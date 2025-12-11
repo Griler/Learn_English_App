@@ -353,7 +353,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
     {
         currentTurnActorNumber = nextTurnActor;
         UpdateTurnUI();
-        if(idx1 == -1 && idx2 == -1 ) return;
         if (isMatch)
         {
             // Ẩn/Khóa thẻ
@@ -471,25 +470,31 @@ public class CardGameController : MonoBehaviourPunCallbacks
         if (isTimerRunning)
         {
             currentTimer -= Time.deltaTime;
-            if(timerText != null) timerText.text = Mathf.CeilToInt(currentTimer).ToString();
+            if (timerText != null) timerText.text = Mathf.CeilToInt(currentTimer).ToString();
 
             if (PhotonNetwork.IsMasterClient && currentTimer <= 0)
             {
                 // Hết giờ -> Đổi lượt
                 isTimerRunning = false;
                 // Nếu đang lật dở 1 thẻ -> úp lại
-                if(firstCardIndex != -1)
-                {
-                    photonView.RPC("RPC_FlipCardVisual", RpcTarget.All, firstCardIndex); // Toggle lại cho đóng
-                    activeCards[firstCardIndex].FlipClose();
-                }
-                
-                SwitchTurn();
-                photonView.RPC("RPC_MatchResult", RpcTarget.All, false, currentTurnActorNumber, -1, -1, 0);
+                photonView.RPC("RPC_HandleTimeOut", RpcTarget.All);
+
             }
         }
     }
     
+    [PunRPC]
+    void RPC_HandleTimeOut()
+    {
+        if (firstCardIndex != -1)
+        {
+            activeCards[firstCardIndex].FlipClose();
+
+        }
+        SwitchTurn();
+        UpdateTurnUI();
+    }
+
     // Giữ nguyên logic Save Database và Load Scene của bạn
     void saveMatchDatabase(string resultState, EloCalculator.GameResult result, string otherName)
     {
