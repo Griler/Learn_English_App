@@ -308,9 +308,9 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
             // Đồng bộ kết quả đúng
             photonView.RPC("RPC_MatchResult", RpcTarget.All, true, playerID, firstCardIndex, secondCardIndex, playerScores[playerID]);
+            photonView.RPC("RPC_ResetCurrentTime", RpcTarget.All);
 
-            currentTimer = turnTimeLimit;
-            isTimerRunning = true;
+
         }
         else
         {
@@ -330,6 +330,13 @@ public class CardGameController : MonoBehaviourPunCallbacks
         {
             CheckGameOver();
         }
+    }
+
+    [PunRPC]
+    void RPC_ResetCurrentTime()
+    {
+        currentTimer = turnTimeLimit;
+        isTimerRunning = true;
     }
 
     [PunRPC]
@@ -376,9 +383,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
                 break;
             }
         }
-        
-        currentTimer = turnTimeLimit;
-        isTimerRunning = true;
+        photonView.RPC("RPC_ResetCurrentTime", RpcTarget.All);
+
     }
 
     // 6. GAME OVER & DATABASE SAVE (Giữ format)
