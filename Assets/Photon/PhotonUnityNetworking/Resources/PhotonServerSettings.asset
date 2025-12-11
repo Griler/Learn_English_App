@@ -48,6 +48,12 @@ MonoBehaviour:
   - RPC_MatchResult
   - RPC_RequestFlip
   - RPC_SetupBoard
+  - RPC_ResetCurrentTime
+  - RPC_HandleTimeOut
+  - RPC_ResetTimer
+  - RPC_SetBusyState
+  - RPC_TimeoutTurnSwitch
+  - RPC_SyncScore
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
