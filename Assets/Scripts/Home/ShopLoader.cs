@@ -8,39 +8,149 @@ using Newtonsoft.Json;
 
 public class ShopLoader : MonoBehaviour
 {
-    private DatabaseReference dbRef;
+    public GameObject shopItemPrefab;
+    public Transform contanierAvatar;
+    public Transform contanierBorder;
 
-    private void OnEnable()
+    private DatabaseReference dbRef;
+    private string userId;
+
+    private List<ShopItem> shopAvatars;
+    private List<ShopItem> shopBorders;
+
+    private Dictionary<string, bool> userAvatars;
+    private Dictionary<string, bool> userBorders;
+
+    public void LoadShopAvatars()
     {
-        LoadShopData();
+        dbRef = FirebaseDatabaseManager.Instance.dbReference;
+        userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+
+        dbRef.Child("shop").Child("avatars").GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+        {
+            string json = task.Result.GetRawJsonValue();
+            shopAvatars = JsonConvert.DeserializeObject<List<ShopItem>>(json);
+
+            Debug.Log("Đã load shop avatars");
+
+            LoadUserAvatars();
+        });
     }
 
-    public void LoadShopData()
+    // ===============================
+    //      LOAD USER AVATARS
+    // ===============================
+    void LoadUserAvatars()
     {
-        FirebaseDatabase.DefaultInstance
-            .GetReference("shop")
-            .GetValueAsync()
-            .ContinueWithOnMainThread(task =>
+        dbRef = FirebaseDatabaseManager.Instance.dbReference;
+        userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        dbRef.Child("users").Child(userId).Child("items").Child("avatars")
+          .GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            userAvatars = new Dictionary<string, bool>();
+
+            foreach (var child in task.Result.Children)
+                userAvatars[child.Key] = true;
+
+            Debug.Log("Đã load user avatars");
+
+            CheckAvatarShop();
+        });
+    }
+
+    // ===============================
+    //      KIỂM TRA AVATAR SHOP
+    // ===============================
+    void CheckAvatarShop()
+    {
+        Debug.Log("=== KIỂM TRA AVATAR SHOP ===");
+        foreach (GameObject child in contanierAvatar)
+        {
+            Destroy(child);
+        }
+        foreach (var item in shopAvatars)
+        {
+            if (userAvatars.ContainsKey(item.Id))
             {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("Load shop failed: " + task.Exception);
-                    return;
-                }
+                Debug.Log($"{item.Id} → Đã có");
+                GameObject shopItem = Instantiate(shopItemPrefab, contanierAvatar);
+                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, true, "avatar");
+            }
+            else
+            {
+                Debug.Log($"{item.Id} → ko có");
+                GameObject shopItem = Instantiate(shopItemPrefab, contanierAvatar);
+                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, false, "avatar");
+            }
+        }
+    }
 
-                if (task.IsCompleted)
-                {
-                    string json = task.Result.GetRawJsonValue();
+    // ===============================
+    //      LOAD SHOP BORDERS
+    // ===============================
+    public void LoadShopBorders()
+    {
+        foreach (GameObject child in contanierBorder)
+        {
+            Destroy(child);
+        }
+        dbRef = FirebaseDatabaseManager.Instance.dbReference;
+        userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        dbRef.Child("shop").Child("borders").GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+        {
+            string json = task.Result.GetRawJsonValue();
+            shopBorders = JsonConvert.DeserializeObject<List<ShopItem>>(json);
 
-                    ShopData shop = JsonConvert.DeserializeObject<ShopData>(json);
+            Debug.Log("Đã load shop borders");
 
-                    Debug.Log("=== BORDERS ===");
-                    foreach (var b in shop.Borders)
-                        Debug.Log($"{b.Id} - {b.Name}");
+            LoadUserBorders();
+        });
+    }
 
-                    Debug.Log("=== AVATARS ===");
-                    foreach (var a in shop.Avatars)
-                        Debug.Log($"{a.Id} - {a.Name}");
-                }
-            });
-    }}
+    // ===============================
+    //      LOAD USER BORDERS
+    // ===============================
+    void LoadUserBorders()
+    {
+        dbRef = FirebaseDatabaseManager.Instance.dbReference;
+        userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        dbRef.Child("users").Child(userId).Child("items").Child("borders")
+          .GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            userBorders = new Dictionary<string, bool>();
+
+            foreach (var child in task.Result.Children)
+                userBorders[child.Key] = true;
+
+            Debug.Log("Đã load user borders");
+
+            CheckBorderShop();
+        });
+    }
+
+    // ===============================
+    //      KIỂM TRA BORDER SHOP
+    // ===============================
+    void CheckBorderShop()
+    {
+        Debug.Log("=== KIỂM TRA BORDER SHOP ===");
+
+        foreach (var item in shopBorders)
+        {
+            if (userBorders.ContainsKey(item.Id))
+            {
+                Debug.Log($"{item.Id} → Đã có");
+                GameObject shopItem = Instantiate(shopItemPrefab, contanierBorder);
+                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, true, "border");
+            }
+            else
+            {
+                Debug.Log($"{item.Id} → ko có");
+                GameObject shopItem = Instantiate(shopItemPrefab, contanierBorder);
+                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, false, "border");
+            }
+        }
+    }
+}

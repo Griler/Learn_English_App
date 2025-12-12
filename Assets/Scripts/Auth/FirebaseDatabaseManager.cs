@@ -12,6 +12,7 @@ using UnityEditor;
 public partial class FirebaseDatabaseManager : MonoBehaviour
 {
     public DatabaseReference dbReference;
+    public FirebaseAuth fireAuthReference;
     public FirebaseUser currentUser;
     
     public static FirebaseDatabaseManager Instance;
@@ -43,7 +44,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             // Init các biến quan trọng
             dbReference = FirebaseDatabase.DefaultInstance.RootReference;
             currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
-            
+            fireAuthReference = FirebaseAuth.DefaultInstance;
             // 2. Đánh dấu đã xong
             IsReady = true;
             Debug.Log("✅ Firebase initialized successfully!");

@@ -1,34 +1,21 @@
 fileFormatVersion: 2
-guid: e3f57c00a6e5afd4a998f9ee794182ea
+guid: b93330fc8ea08407dbc514b5101afa14
+labels:
+- gvh
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6940941437266220718
-    second: ava_0
+      213: 5525803934109436435
+    second: firebase_lockup_dark_0
   - first:
-      213: -5712582845341235583
-    second: ava_1
+      213: 1843393993662081536
+    second: firebase_lockup_dark_1
   - first:
-      213: -5614580156055946410
-    second: ava_2
+      213: 5209510287715356367
+    second: firebase_lockup_dark_2
   - first:
-      213: -1880488874526940737
-    second: ava_3
-  - first:
-      213: 6762730737927079351
-    second: ava_4
-  - first:
-      213: 172781698833093235
-    second: ava_5
-  - first:
-      213: 4700505528596735937
-    second: ava_6
-  - first:
-      213: 3728227252042842732
-    second: ava_7
-  - first:
-      213: 1393887766715110863
-    second: ava_8
+      213: -115800891291795872
+    second: firebase_lockup_dark_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -137,13 +124,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ava_0
+      name: firebase_lockup_dark_0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 329
-        width: 141
-        height: 141
+        x: 5
+        y: 0
+        width: 24
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,20 +139,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 25925f89982dcaf90800000000000000
-      internalID: -6940941437266220718
+      spriteID: 31a8c0fa6699fac40800000000000000
+      internalID: 5525803934109436435
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ava_1
+      name: firebase_lockup_dark_1
       rect:
         serializedVersion: 2
-        x: 180
-        y: 328
-        width: 141
-        height: 141
+        x: 34
+        y: 7
+        width: 15
+        height: 17
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,20 +161,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 18602713b24d8b0b0800000000000000
-      internalID: -5712582845341235583
+      spriteID: 00a215d021d059910800000000000000
+      internalID: 1843393993662081536
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ava_2
+      name: firebase_lockup_dark_2
       rect:
         serializedVersion: 2
-        x: 334
-        y: 329
-        width: 141
-        height: 141
+        x: 48
+        y: 7
+        width: 49
+        height: 17
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -196,20 +183,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 65bf35b68110512b0800000000000000
-      internalID: -5614580156055946410
+      spriteID: fce44096106eb4840800000000000000
+      internalID: 5209510287715356367
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ava_3
+      name: firebase_lockup_dark_3
       rect:
         serializedVersion: 2
-        x: 25
-        y: 181
-        width: 141
-        height: 140
+        x: 96
+        y: 7
+        width: 12
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -218,118 +205,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fb16fb5f45927e5e0800000000000000
-      internalID: -1880488874526940737
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ava_4
-      rect:
-        serializedVersion: 2
-        x: 180
-        y: 180
-        width: 141
-        height: 141
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7b542c196cb0add50800000000000000
-      internalID: 6762730737927079351
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ava_5
-      rect:
-        serializedVersion: 2
-        x: 334
-        y: 181
-        width: 141
-        height: 141
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 37292a62a08d56200800000000000000
-      internalID: 172781698833093235
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ava_6
-      rect:
-        serializedVersion: 2
-        x: 25
-        y: 34
-        width: 141
-        height: 141
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1c7a4c8bfdc8b3140800000000000000
-      internalID: 4700505528596735937
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ava_7
-      rect:
-        serializedVersion: 2
-        x: 180
-        y: 32
-        width: 141
-        height: 141
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c62c1f7cee25db330800000000000000
-      internalID: 3728227252042842732
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ava_8
-      rect:
-        serializedVersion: 2
-        x: 334
-        y: 34
-        width: 141
-        height: 141
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fc511d7e985185310800000000000000
-      internalID: 1393887766715110863
+      spriteID: 06ef0e1f3b7946ef0800000000000000
+      internalID: -115800891291795872
       vertices: []
       indices: 
       edges: []
@@ -348,15 +225,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ava_0: -6940941437266220718
-      ava_1: -5712582845341235583
-      ava_2: -5614580156055946410
-      ava_3: -1880488874526940737
-      ava_4: 6762730737927079351
-      ava_5: 172781698833093235
-      ava_6: 4700505528596735937
-      ava_7: 3728227252042842732
-      ava_8: 1393887766715110863
+      firebase_lockup_dark_0: 5525803934109436435
+      firebase_lockup_dark_1: 1843393993662081536
+      firebase_lockup_dark_2: 5209510287715356367
+      firebase_lockup_dark_3: -115800891291795872
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
