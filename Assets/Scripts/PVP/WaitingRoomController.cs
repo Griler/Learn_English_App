@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro; // Nếu dùng TextMeshPro
+using TMPro;
+using UnityEngine.SceneManagement; // Nếu dùng TextMeshPro
 
 public class WaitingRoomController : MonoBehaviourPunCallbacks
 {
@@ -341,6 +342,12 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     
     void onClickOutRoom()
     {
-        PhotonNetwork.LoadLevel("HomeScene");
+        PhotonNetwork.LeaveRoom();
+    }
+    
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene("HomeScene");
+
     }
 }

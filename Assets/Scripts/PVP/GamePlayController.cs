@@ -61,7 +61,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     private int currentTurnActorNumber;
     private bool isDataLoaded = false;
     private string matchId = "";
-
+    private bool isGameStarted = false; // Cờ chặn gọi setup 2 lần
     [NotNull] private userDataPVP myPlayer = new userDataPVP();
     [NotNull] private userDataPVP otherPlayer = new userDataPVP();
     
@@ -71,6 +71,10 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     [SerializeField] private List<QuestionData> rawAllQuestions = new List<QuestionData>();
     private void Start()
     {
+        Hashtable resetProps = new Hashtable();
+        resetProps.Add("IsLoaded", false); 
+        PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
+        
         for (var i = 0; i < answerButtons.Length; i++)
         {
             int index = i;
@@ -79,6 +83,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             {
                 OnAnswerSelected(index);
             });
+            answerButtons[i].gameObject.SetActive(false);
         }
 
         matchId = PhotonNetwork.CurrentRoom.Name;
@@ -174,6 +179,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     [PunRPC] 
     void RPC_SetupAndStartGame(int seed, int startTurnActor, PhotonMessageInfo info)
     {
+        if (isGameStarted) return; 
+        isGameStarted = true;
         Debug.Log("Nhận được Seed: " + seed + ". Bắt đầu trộn câu hỏi...");
 
         // 1. Tạo bộ random với Seed được đồng bộ
@@ -192,6 +199,10 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
         Debug.Log($"Đã chốt {allQuestions.Count} câu hỏi cho ván này.");
 
+        for (var i = 0; i < answerButtons.Length; i++)
+        {
+            answerButtons[i].gameObject.SetActive(true);
+        }
         // 4. Bắt đầu các logic game như cũ
         InitGameLogic(startTurnActor);
     }
@@ -248,15 +259,16 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(0.5f);
         countdownText.gameObject.SetActive(false);
         loadingPanel.SetActive(false);
-
+        
+        Debug.LogError(PhotonNetwork.LocalPlayer.IsMasterClient);
         if (PhotonNetwork.IsMasterClient)
         {
             if (rawAllQuestions.Count > 0)
             {
                 int gameSeed = UnityEngine.Random.Range(0, 999999);
                 int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
-                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.Others, gameSeed, startActor);
-                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.MasterClient, gameSeed, startActor);
+                Debug.LogError("tao seed sau count down");
+                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, gameSeed, startActor);
             }
             else
             {
@@ -282,7 +294,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         RPC_SyncState(0, currentTurnActorNumber);
     }
 
-    // --- PHẦN LOGIC NGƯỜI CHƠI ---
+    // --- PHẦN LOGIC NGƯỜI CHƠI ---x
     
     // Khi người chơi bấm nút chọn đáp án
     void OnAnswerSelected(int index)
@@ -528,6 +540,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             saveMatchDatabase("LOSE",EloCalculator.GameResult.Loss,otherPlayer.name);
         }
         isTimerRunning = false;
+        isGameStarted = false;
         SetButtonsInteractable(false);
         StartCoroutine(RunCountdownLoadScene());
     }

@@ -232,7 +232,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dateText: {fileID: 3057834091272541441}
   opponentText: {fileID: 4658919989380135847}
-  resultText: {fileID: 0}
   rankChangeText: {fileID: 5338069229594460089}
   modeText: {fileID: 3044383062596813751}
   matchId: {fileID: 5044802951444308221}
@@ -328,7 +327,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7845776973904745750
 RectTransform:
   m_ObjectHideFlags: 0
@@ -617,8 +616,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 757, y: -123}
-  m_SizeDelta: {x: 1040.7, y: 100}
+  m_AnchoredPosition: {x: 442.32, y: -123}
+  m_SizeDelta: {x: 411.35, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4487005838606371961
 CanvasRenderer:
@@ -753,7 +752,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -53.000004, y: -60}
+  m_AnchoredPosition: {x: -53.000004, y: -7}
   m_SizeDelta: {x: 1040.7, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8847328840069565076

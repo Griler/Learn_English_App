@@ -88,9 +88,14 @@ public class CardGameController : MonoBehaviourPunCallbacks
     [NotNull] private UserDataPVP otherPlayer = new UserDataPVP();
 
     DatabaseReference reference;
+    private bool isGameStarted = false; // Cờ chặn gọi setup 2 lần
 
     private void Start()
     {
+        Hashtable resetProps = new Hashtable();
+        resetProps.Add("IsLoaded", false); 
+        PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
+        
         InitUIPlayer();
         matchId = PhotonNetwork.CurrentRoom.Name;
         // Fix lỗi dependencies Firebase trước khi chạy
@@ -225,6 +230,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_SetupBoard(int seed, int startTurnActor)
     {
+        if (isGameStarted) return; 
+        isGameStarted = true;
         Debug.Log($"Setup Board với Seed: {seed}");
         System.Random rnd = new System.Random(seed);
 
@@ -488,6 +495,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
             saveMatchDatabase("DRAW", EloCalculator.GameResult.Draw, otherPlayer.name);
         }
 
+        isGameStarted = false;
         StartCoroutine(RunCountdownLoadScene());
     }
 

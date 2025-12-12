@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,7 @@ public class ReviewManager : MonoBehaviour
     public GameObject historyView;
     public GameObject rankingView;
 
+    public Text nameTitle;
     void Start()
     {
         if (gameButton)
@@ -33,6 +35,7 @@ public class ReviewManager : MonoBehaviour
         gameView.SetActive(true);
         historyView.SetActive(false);
         rankingView.SetActive(false);
+        nameTitle.text = "Thi Đấu".ToUpper();
     }
 
     void openHistoryView()
@@ -40,6 +43,8 @@ public class ReviewManager : MonoBehaviour
         gameView.SetActive(false);
         historyView.SetActive(true);
         rankingView.SetActive(false);
+        nameTitle.text = "Lịch Sử".ToUpper();
+
     }
 
     void openRankingView()
@@ -47,6 +52,7 @@ public class ReviewManager : MonoBehaviour
         gameView.SetActive(false);
         historyView.SetActive(false);
         rankingView.SetActive(true);
+        nameTitle.text = "Xếp Hạng".ToUpper();
     }
 
 }

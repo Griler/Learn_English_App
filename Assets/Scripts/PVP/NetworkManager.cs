@@ -118,6 +118,7 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         {
             return;
         }
+        pendingRoomCode = "";
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel("WaitingRoomScene");
@@ -137,7 +138,6 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
             
             Debug.Log("Giờ mới bắt đầu vào phòng chờ lúc nãy: " + pendingRoomCode);
             PhotonNetwork.JoinOrCreateRoom(pendingRoomCode,roomOptions, TypedLobby.Default);
-            pendingRoomCode = ""; // Reset biến tạm
         }
     }
 

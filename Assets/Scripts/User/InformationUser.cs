@@ -9,12 +9,18 @@ public class InformationUser : BaseCode
     public Image avatarBorder;
     public TextMeshProUGUI usernameText;
     public TextMeshProUGUI coinText;
-
+    public Button click;
     public UserProfileSO userProfileSO;
-    
+    public GameObject shopPanel;
     private void OnEnable()
     {
         userProfileSO.OnUserInfoChanged += updateInformation;
+        click.onClick.AddListener(openShopPanel);
+    }
+
+    void openShopPanel()
+    {
+        shopPanel.SetActive(true);
     }
 
     private void Start()
