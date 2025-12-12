@@ -12,6 +12,7 @@ public class InformationUser : BaseCode
     public Button click;
     public UserProfileSO userProfileSO;
     public GameObject shopPanel;
+    public TextMeshProUGUI rank;
     private void OnEnable()
     {
         userProfileSO.OnUserInfoChanged += updateInformation;
@@ -64,6 +65,7 @@ public class InformationUser : BaseCode
         int coin = userInfo.coin;
         usernameText.text = username;
         coinText.text = coin.ToString();
+        rank.text = "Rank: " + userInfo.rankPoint.ToString();
         avatar.sprite = assetManager.getSpriteAvatar(userInfo.avatar);
         avatarBorder.sprite = assetManager.getSpriteBorder(userInfo.border);
     }

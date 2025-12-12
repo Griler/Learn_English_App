@@ -19,21 +19,19 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
     
     public bool IsReady { get; private set; } = false;
     public event Action OnFirebaseInitialized; // Sự kiện bắn ra khi xong
-    private async void Awake()
+    private void Awake()
     {
-        if (Instance == null)
+        // Phải kiểm tra xem đã có thằng nào nắm giữ Instance chưa
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
+            Destroy(gameObject); // Hủy cái mới ngay, KHÔNG ĐƯỢC ĐỤNG VÀO Instance cũ
+            return; 
         }
 
-        // Bắt đầu khởi tạo
-        await InitializeFirebase();
+        Instance = this; // Chỉ gán khi chưa có ai, hoặc là chính mình
+        DontDestroyOnLoad(gameObject);
+    
+        _ = InitializeFirebase();
     }
 
     public async Task InitializeFirebase()

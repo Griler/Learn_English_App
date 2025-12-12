@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GrammarManager : MonoBehaviour
@@ -120,5 +121,10 @@ public class GrammarManager : MonoBehaviour
     {
         int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
         StartCoroutine(ApiController.Instance.GetGrammarExercisesByCategoryId(grammarCategoryId, cb));
+    }
+
+    void onClickHomeBtn()
+    {
+        SceneManager.LoadScene("HomeScene");
     }
 }

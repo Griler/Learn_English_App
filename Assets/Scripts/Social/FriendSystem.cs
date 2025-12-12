@@ -1,6 +1,7 @@
 using UnityEngine;
 using Firebase.Database;
 using System.Collections.Generic;
+using Firebase.Auth;
 using Firebase.Extensions;
 
 public class FriendSystem : MonoBehaviour
@@ -58,7 +59,7 @@ public class FriendSystem : MonoBehaviour
     private string roomCode = "";
     public void SendInvite(string friendId, string friendName)
     {
-        myUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        myUserId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
         
         // 1. Tạo một mã phòng ngẫu nhiên (Ví dụ: Room_4821)
         roomCode = "Room_" + Random.Range(1000, 9999);

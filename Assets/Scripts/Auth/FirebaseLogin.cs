@@ -32,6 +32,10 @@ public class FirebaseLogin : MonoBehaviour
     {
         setActiveLoginForm(true);
         setActiveRegisterForm(false);
+        if (FirebaseDatabaseManager.Instance.IsReady)
+        {
+            setUserAuth();
+        }
     }
     
     private void OnEnable()
