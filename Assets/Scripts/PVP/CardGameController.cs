@@ -89,6 +89,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
     DatabaseReference reference;
     private bool isGameStarted = false; // Cờ chặn gọi setup 2 lần
+    private bool canClick = true; // Cờ chặn gọi setup 2 lần
 
     private void Start()
     {
@@ -292,6 +293,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     // Được gọi từ CardController khi người chơi click
     public void OnCardClicked(int cardIndex)
     {
+        if(!canClick) return;
         if (PhotonNetwork.LocalPlayer.ActorNumber != currentTurnActorNumber) return;
         if (isProcessingMatch) return; // Đang bận so sánh thẻ
 
@@ -405,11 +407,16 @@ public class CardGameController : MonoBehaviourPunCallbacks
             currentTimer -= Time.deltaTime;
             if (timerText != null)
             {
-                timerText.color = (currentTimer <= 5) ? Color.red : Color.white;
+                timerText.color = (currentTimer <= 5) ? Color.red : Color.saddleBrown;
                 timerText.text = Mathf.CeilToInt(currentTimer).ToString();
             }
 
-            // Logic Timeout (Chỉ Master check)
+            if (currentTimer < 1)
+            {
+                canClick = false;
+            }
+
+        // Logic Timeout (Chỉ Master check)
             if (PhotonNetwork.IsMasterClient && currentTimer <= 0)
             {
                 HandleTurnTimeout();
@@ -438,6 +445,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
         firstCardIndex = -1;
         secondCardIndex = -1;
         isProcessingMatch = false;
+        canClick = true;
 
         currentTurnActorNumber = nextTurnActor;
         UpdateTurnUI();
@@ -455,6 +463,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
                 break;
             }
         }
+        canClick = true;
     }
 
     void CheckGameOver()
