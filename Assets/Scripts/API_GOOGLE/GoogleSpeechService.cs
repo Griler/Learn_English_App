@@ -128,10 +128,7 @@ public class GoogleSpeechService : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        // Nếu bạn dùng DotEnv, hãy gán ở đây
+        Instance = this;
         apiKey = DotEnv.API_KEY; 
     }
 

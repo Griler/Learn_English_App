@@ -15,6 +15,7 @@ public class RankItem : BaseCode
         string username = userInfo.name;
         name.text = username;
         avatar.sprite = assetManager.getSpriteAvatar(userInfo.avatar);
+        border.gameObject.SetActive(false);
         border.sprite = assetManager.getSpriteBorder(userInfo.border);
         rankText.text = "Rank Point: " + userInfo.rankPoint.ToString();
         gameObject.SetActive(true);

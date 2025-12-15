@@ -21,31 +21,30 @@ public class SubTopicSelectManager : MonoBehaviour
             return;
         }
         
-        int parentCategoryId = PlayerPrefs.GetInt("SelectedMainCategoryId");
+        string parentCategoryId = PlayerPrefs.GetString("SelectedMainCategoryId");
         LoadSubTopics(parentCategoryId);
     }
 
-    void LoadSubTopics(int parentCategoryId)
+    void LoadSubTopics(string parentCategoryId)
     {
-        StartCoroutine(ApiController.Instance.GetCategoriesByParent(parentCategoryId,Populate));
-
+        FirebaseDatabaseManager.Instance.LoadSubTopics(parentCategoryId, Populate);
     }
 
-    void Populate(List<Category> subTopics)
+    void Populate(List<string> subTopics)
     {
         foreach (Transform c in contentParent) Destroy(c.gameObject);
-        foreach (Category sub in subTopics)
+        foreach (string sub in subTopics)
         {
             GameObject lessonItem = Instantiate(subTopicButtonPrefab, contentParent);
-            lessonItem.GetComponent<LessonItem>().setData(topicName:sub.name);
-            lessonItem.GetComponentInChildren<TMP_Text>().text = sub.name;
-            lessonItem.GetComponentInChildren<Button>().onClick.AddListener(() => OnSubTopicSelected(sub.id));
+            lessonItem.GetComponent<LessonItem>().setData(topicName:sub);
+            lessonItem.GetComponentInChildren<TMP_Text>().text = sub;
+            lessonItem.GetComponentInChildren<Button>().onClick.AddListener(() => OnSubTopicSelected(sub));
         }
     }
 
-    void OnSubTopicSelected(int categoryId)
+    void OnSubTopicSelected(string categoryId)
     {
-        PlayerPrefs.SetInt("SelectedSubCategory", categoryId);
+        PlayerPrefs.SetString("SelectedSubCategory", categoryId);
         SceneManager.LoadScene("FlashCardScene");
     }
 }

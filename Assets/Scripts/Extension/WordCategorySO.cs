@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 [System.Serializable]
 public class WordData
 {
+    [JsonProperty("id")]
     public int id;
     public string name;
+    [JsonProperty("name_en")]
     public string nameEn;
+    [JsonProperty("name_vi")]
     public string nameVi;
     public string image;
 }

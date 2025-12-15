@@ -21,7 +21,15 @@ public class AssetManager : MonoBehaviour
     }
     public Sprite getSpriteAnimal(string name)
     {
-        return assetAnimal.GetSprite(name);
+        Sprite sprite = assetAnimal.GetSprite(name);
+        if (sprite is not null)
+        {
+            return sprite;
+        }else
+        {
+            Debug.Log("k tìm thấy "+ name);
+            return null;
+        }
     }
     
     public Sprite getSpriteAvatar(string name)

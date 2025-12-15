@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bdf977f5c6524f546b2ca2efbd5db66e
+guid: 57ee8afdd65e02d478f8d813fd0a538a
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Cherry Bomb One
+  - Nunito Sans
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

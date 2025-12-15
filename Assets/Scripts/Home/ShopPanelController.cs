@@ -10,6 +10,7 @@ public class ShopPanelController : MonoBehaviour
     public GameObject shopAvatar;
     public GameObject shopBorder;
     public GameObject settingView;
+    public Button overlay;
 
     public ShopLoader ShopLoader;
     public Text nameTitle;
@@ -20,12 +21,19 @@ public class ShopPanelController : MonoBehaviour
         if (borderShopButton)
             borderShopButton.onClick.AddListener(openshopBorder);
         if (settingButton)
-            settingButton.onClick.AddListener(opensettingView);
+            settingButton.onClick.AddListener(opensettingView);  
+        if (overlay)
+            overlay.onClick.AddListener((closePane));
     }
 
     private void OnEnable()
     {
         openshopAvatar();
+    }
+
+    void closePane()
+    {
+        gameObject.SetActive(false);
     }
 
     void openshopAvatar()

@@ -21,19 +21,19 @@ public class TopicSelectManager : MonoBehaviour
 
     void LoadMainTopics()
     {
-        StartCoroutine(ApiController.Instance.GetCategoriesByParent(null,Populate));
+        FirebaseDatabaseManager.Instance.LoadMainTopics(Populate);
     }
 
-    void Populate(List<Category> topics)
+    void Populate(List<string> topics)
     {
         foreach (Transform c in contentParent) Destroy(c.gameObject);
-        foreach (Category topic in topics)
+        foreach (string topic in topics)
         {
             try
             {
                 GameObject topicChild = Instantiate(topicButtonPrefab, contentParent);
-                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = topic.name;
-                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.id));
+                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = topic;
+                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic));
             }
             catch (Exception e)
             {
@@ -43,9 +43,9 @@ public class TopicSelectManager : MonoBehaviour
         }
     }
 
-    void OnTopicSelected(int parentCategoryId)
+    void OnTopicSelected(string parentCategoryId)
     {
-        PlayerPrefs.SetInt("SelectedMainCategoryId", parentCategoryId);
+        PlayerPrefs.SetString("SelectedMainCategoryId", parentCategoryId);
         viewSubTopic.SetActive(true);
         gameObject.SetActive(false);
     }

@@ -28,21 +28,21 @@ public class LessonItem : BaseCode
         switch (name)
         {
             case "Pet":
-                name = "animal_asset_1";
+                name = "dog";
                 break;
 
             case "Sea Animal":
-                name = "animal_asset_22";
+                name = "dolphin";
                 break;
 
             case "Wild Animal":
-                name = "animal_asset_8";
+                name = "tiger";
                 break;
             case "Farm Animal":
-                name = "animal_asset_7";
+                name = "cow";
                 break;
             default:
-                name = "animal_asset_0";
+                name = "dog";
                 break;
         }
         lessonImage.sprite = assetManager.getSpriteAnimal(name);

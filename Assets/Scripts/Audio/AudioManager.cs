@@ -24,29 +24,20 @@ public class AudioManager : MonoBehaviour
 
     public void playVoiceWord(string word)
     {
-        StartCoroutine(LoadWordAudio(word));
+       LoadWordAudio(word);
     }
 
-    IEnumerator LoadWordAudio(string word)
+    void LoadWordAudio(string word)
     {
-        word = word.ToLower();
-        string url = $"https://api.dictionaryapi.dev/media/pronunciations/en/{word}-us.mp3";
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+        GoogleSpeechService.Instance.TextToSpeech(word,
+        (clip =>
         {
-            yield return www.SendWebRequest();
-
-            if (www.result == UnityWebRequest.Result.Success)
-            {
-                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-                GetComponent<AudioSource>().clip = clip;
-                GetComponent<AudioSource>().Play();
-            }
-
-            else
-            {
-                Debug.Log(www.error);
-            }
-        }
+            GetComponent<AudioSource>().clip = clip;
+            GetComponent<AudioSource>().Play();
+        }),
+        s => {
+            Debug.LogError(s);
+        });
     }
     
     public void SpeakToText(string text, string languageCode = "EN")

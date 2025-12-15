@@ -69,9 +69,7 @@ public class QuizManager : BaseCode
 
         Shuffle(options);
         
-        string nameSprite = config.formatSpriteName(currentVocabulary.nameEn);
-        if(nameSprite != "")
-            questionImage.sprite = assetManager.getSpriteAnimal(nameSprite);
+        questionImage.sprite = assetManager.getSpriteAnimal(currentVocabulary.nameEn.ToLower());
         
         if (showEnglish)
         {

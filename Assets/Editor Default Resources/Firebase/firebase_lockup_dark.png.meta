@@ -1,10 +1,21 @@
 fileFormatVersion: 2
-guid: aad57477980840f45a9c8b92a537208b
+guid: b93330fc8ea08407dbc514b5101afa14
+labels:
+- gvh
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3034158958266695850
-    second: farm_animal_0
+      213: 5525803934109436435
+    second: firebase_lockup_dark_0
+  - first:
+      213: 1843393993662081536
+    second: firebase_lockup_dark_1
+  - first:
+      213: 5209510287715356367
+    second: firebase_lockup_dark_2
+  - first:
+      213: -115800891291795872
+    second: firebase_lockup_dark_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +62,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 450
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,133 +124,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cow
+      name: firebase_lockup_dark_0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 796
-        width: 885
-        height: 710
+        x: 5
+        y: 0
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 65fb17cc08084e5d0800000000000000
-      internalID: -3034158958266695850
+      spriteID: 31a8c0fa6699fac40800000000000000
+      internalID: 5525803934109436435
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pig
+      name: firebase_lockup_dark_1
       rect:
         serializedVersion: 2
-        x: 962
-        y: 790
-        width: 892
-        height: 716
+        x: 34
+        y: 7
+        width: 15
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e820b233f236f5e48b7653239677ccac
-      internalID: -894327120
+      spriteID: 00a215d021d059910800000000000000
+      internalID: 1843393993662081536
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: chicken
+      name: firebase_lockup_dark_2
       rect:
         serializedVersion: 2
-        x: 1893
-        y: 790
-        width: 892
-        height: 716
+        x: 48
+        y: 7
+        width: 49
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 7626bdd34a4eed54f8bc98d3e9772674
-      internalID: -1101939598
+      spriteID: fce44096106eb4840800000000000000
+      internalID: 5209510287715356367
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: duck
+      name: firebase_lockup_dark_3
       rect:
         serializedVersion: 2
-        x: 31
-        y: 31
-        width: 892
-        height: 716
+        x: 96
+        y: 7
+        width: 12
+        height: 13
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e1d4ab40fb2a93943a2e6069f93ba172
-      internalID: -1943957103
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: sheep
-      rect:
-        serializedVersion: 2
-        x: 963
-        y: 28
-        width: 883
-        height: 716
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c2ea001215ef4f14b8e860603293d386
-      internalID: -1690478151
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: horse
-      rect:
-        serializedVersion: 2
-        x: 1902
-        y: 31
-        width: 883
-        height: 716
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ced5d475fa44227479e547603239829c
-      internalID: -913303933
+      spriteID: 06ef0e1f3b7946ef0800000000000000
+      internalID: -115800891291795872
       vertices: []
       indices: 
       edges: []
@@ -248,7 +215,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6220fb3af1ee3c34fb6403f707ef1532
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -256,16 +223,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      chicken: -1101939598
-      cow: -3034158958266695850
-      duck: -1943957103
-      horse: -913303933
-      pig: -894327120
-      sheep: -1690478151
+      firebase_lockup_dark_0: 5525803934109436435
+      firebase_lockup_dark_1: 1843393993662081536
+      firebase_lockup_dark_2: 5209510287715356367
+      firebase_lockup_dark_3: -115800891291795872
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

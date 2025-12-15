@@ -18,10 +18,7 @@ public class CardItem : BaseCode
     
     public void setUpCard(WordData word = null)
     {
-        string nameSprite = config.formatSpriteName(word.nameEn);
-        if(nameSprite != "")
-            petImage.sprite = assetManager.getSpriteAnimal(nameSprite);
-        petImage.SetNativeSize();
+        petImage.sprite = assetManager.getSpriteAnimal(word.nameEn.ToLower());
         nameEN.text = word.nameEn;
         nameVI.text = word.nameVi;
         wordToVoice = word.nameEn;

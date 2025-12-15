@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
     [FormerlySerializedAs("currentAnimalData")] [SerializeField] private WordData currentWordData;
     [SerializeField] private Button backButton;
     private string topic = "";
-    private int catogeryId;
+    private string subCategrgy = "";
     private void Start()
     {
         backButton.onClick.AddListener(onClickBackButton);
@@ -65,8 +65,9 @@ public class GameController : MonoBehaviour
     
     private void setUpData()
     {
-         catogeryId = PlayerPrefs.GetInt("SelectedSubCategory");
-         StartCoroutine(ApiController.Instance.GetVocabulariesByCategoryId(catogeryId, OnWordsLoaded));
+         subCategrgy = PlayerPrefs.GetString("SelectedSubCategory");
+         string mainCategory =  PlayerPrefs.GetString("SelectedMainCategoryId");
+         FirebaseDatabaseManager.Instance.LoadWords(mainCategory,subCategrgy, OnWordsLoaded);
     }
 
     void OnWordsLoaded(List<WordData> words)
@@ -95,7 +96,7 @@ public class GameController : MonoBehaviour
     async void ShowFinishPanel()
     {
         string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        ApiController.Instance.SaveUserCategoryHistory(userId, catogeryId, ApiController.CategoryType.Vocabulary);
+        //ApiController.Instance.SaveUserCategoryHistory(userId, catogeryId, ApiController.CategoryType.Vocabulary);
         await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_NEW);
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học.\n Sẽ Trở Về Trang Chủ",Color.black);
     }

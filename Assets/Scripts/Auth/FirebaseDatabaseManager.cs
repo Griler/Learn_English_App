@@ -91,4 +91,75 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         Debug.Log($"✅ Mission {missionId} set isCompleted = true thành công!");
     }
     
+    public void LoadMainTopics(Action<List<string>> onComplete)
+    {
+        FirebaseDatabase.DefaultInstance
+            .GetReference("vocab_topics")
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    List<string> mainTopics = new List<string>();
+                    foreach (var child in snapshot.Children)
+                    {
+                        mainTopics.Add(child.Key);
+                    }
+
+                    onComplete?.Invoke(mainTopics);
+                }
+                else
+                {
+                    Debug.LogError("Error loading topics!");
+                }
+            });
+    }
+    
+    public void LoadWords(string mainTopic, string category, Action<List<WordData>> onComplete)
+    {
+        FirebaseDatabase.DefaultInstance
+            .GetReference("vocab_topics")
+            .Child(mainTopic)
+            .Child(category)
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("❌ Firebase load failed: " + task.Exception);
+                    onComplete?.Invoke(null);
+                    return;
+                }
+
+                if (task.IsCompleted)
+                {
+                    string data = task.Result.GetRawJsonValue();
+                    List<WordData> vocabularies = JsonConvert.DeserializeObject<List<WordData>>(data);
+                    onComplete?.Invoke(vocabularies);
+                }
+            });
+    }
+    
+    public void LoadSubTopics(string mainTopic,Action<List<string>> onComplete )
+    {
+        string path = "vocab_topics/" +  mainTopic;
+        FirebaseDatabase.DefaultInstance
+            .GetReference("vocab_topics")
+            .Child(mainTopic)
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    List<string> subTopics = new List<string>();
+                    foreach (var child in snapshot.Children)
+                    {
+                        subTopics.Add(child.Key);
+                    }
+                    onComplete?.Invoke(subTopics);
+                }
+            });
+    }
 }
