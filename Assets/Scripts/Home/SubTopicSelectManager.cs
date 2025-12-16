@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Firebase.Database;
 using UnityEngine.UI;
@@ -46,5 +47,10 @@ public class SubTopicSelectManager : MonoBehaviour
     {
         PlayerPrefs.SetString("SelectedSubCategory", categoryId);
         SceneManager.LoadScene("FlashCardScene");
+    }
+
+    private void OnDisable()
+    {
+        gameObject.SetActive(false);
     }
 }
