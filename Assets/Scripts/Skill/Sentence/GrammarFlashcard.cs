@@ -39,6 +39,13 @@ public class GrammarFlashcardExercise : GrammarFlashcard
         easeFactor = 2.5f;
         nextReviewDate = DateTime.UtcNow;
     }
+    
+    public GrammarFlashcardExercise()
+    {
+        interval = 0;
+        easeFactor = 2.5f;
+        nextReviewDate = DateTime.UtcNow;
+    }
 }
 
 

@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FlashCardScene.unity
     guid: 26c5f98a0cd2f5b43b09b97a84595b85
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/SentenceBuildingScene.unity
     guid: 2fcd3390902721a4e8f2e8756514b11f
   - enabled: 1

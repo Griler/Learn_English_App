@@ -1551,8 +1551,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Next
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fd0019c749c2d4e43b3af5780f4e2f3c, type: 2}
-  m_sharedMaterial: {fileID: -1251424641121798657, guid: fd0019c749c2d4e43b3af5780f4e2f3c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8325,7 +8325,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   listExercise: []
   listExample: []
-  loaded: []
+  loaded:
+    grammarPointID: 
+    rule: 
+    description: 
+    examples: []
+    miniExercises: []
+  exampleController: {fileID: 1611622690}
 --- !u!4 &1286649344
 Transform:
   m_ObjectHideFlags: 0
@@ -10282,6 +10288,7 @@ MonoBehaviour:
   ruleText: {fileID: 685517784}
   exampleText: {fileID: 139207566}
   translationText: {fileID: 350541397}
+  listCardExample: []
 --- !u!4 &1611622693
 Transform:
   m_ObjectHideFlags: 0
@@ -11520,7 +11527,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1903208531
 RectTransform:
   m_ObjectHideFlags: 0

@@ -1,34 +1,42 @@
-using Firebase;
-using Firebase.Auth;
-using Firebase.Extensions;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
 
-public class SignOut : MonoBehaviour
+namespace test
 {
-    public Button singOut;
 
-    void Start()
+
+    [Serializable]
+    public class Example
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-        {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == DependencyStatus.Available)
-            {
-                singOut.onClick.AddListener((() =>
-                {
-                    FirebaseAuth.DefaultInstance.SignOut();
-                    SceneManager.LoadScene("LoginScene");
-                }));
-            }
-
-        });
+        public string conjugatedVerb;
+        public string sentence;
+        public string translation;
     }
 
-    // Update is called once per frame
-    void Update()
+    [Serializable]
+    public class MiniExercise
     {
-        
+        public string question;
+        public string answer;
+        public string difficultyLevel;
+    }
+
+    [Serializable]
+    public class GrammarTopic
+    {
+        // ID này chính là Key (ví dụ: "present_simple"), ta lưu lại vào đây để dễ dùng
+        public string grammarPointID;
+        public string description;
+        public string rule;
+
+        public List<Example> examples;
+        public List<MiniExercise> miniExercises;
+
+        // Constructor để khởi tạo List, tránh lỗi Null khi không có dữ liệu
+        public GrammarTopic()
+        {
+            examples = new List<Example>();
+            miniExercises = new List<MiniExercise>();
+        }
     }
 }

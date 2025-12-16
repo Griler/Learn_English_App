@@ -12,33 +12,36 @@ public class FlashcardUIExampleController : FlashcardUIController
     [SerializeField] private TextMeshProUGUI ruleText;
     [SerializeField] private TextMeshProUGUI exampleText;
     [SerializeField] private TextMeshProUGUI translationText;
-    [SerializeField] public List<GrammarExample> listCardExample = new List<GrammarExample>();
+    [SerializeField] public List<GrammarFlashcardExmpale> listCardExample;
 
-    private GrammarExample currentGrammarFlashcardExmpale;
+    private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
     private int cardExampleIndexCurrent = 0;
-    private int grammaId;
+    private string grammaId = "";
 
     protected override void Start()
     {
         base.Start();
         nextButton.onClick.AddListener(OnSubmitAnswer);
-        GrammarManager.GetCardsToLearn(
-            (list) =>
-            {
-                listCardExample.AddRange(list);
-                if (listCardExample.Count > 0)
-                {
-                    ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
-                }
-            });
+       
+    }
+
+    public void initUI()
+    {
+        listCardExample = GrammarManager.GetCardsToLearn();
+        listCard.AddRange(listCardExample);
+        if (listCardExample.Count > 0)
+        {
+            ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
+        }
+        ShowCardLearn(listCardExample[cardExampleIndexCurrent]);
     }
     
-    void ShowCardLearn(GrammarExample card)
+    void ShowCardLearn(GrammarFlashcardExmpale card)
     {
         StartCoroutine(setTypeInputField(TypeInputField.Default));
         currentGrammarFlashcardExmpale = card;
-        grammaId = card.category.id;
-        ruleText.text = card.category.rule;
+        grammaId = card.grammarPointID;
+        ruleText.text = card.ruleText;
         exampleText.text = card.sentence;
         translationText.text = card.translation;
         resultText.text = "";
@@ -98,10 +101,6 @@ public class FlashcardUIExampleController : FlashcardUIController
     {
         setActiveFlashCard(false);
         //FirebaseDatabaseManager.Instance.SaveLearnedGrammar(grammarId:grammaId);
-        string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
-        ApiController.Instance.SaveUserCategoryHistory(userId, grammarCategoryId, ApiController.CategoryType.Grammar);
-
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài luyện tập nhanh không ?",Color.black);
         UpdateMissionState();
     }
@@ -119,19 +118,10 @@ public class FlashcardUIExampleController : FlashcardUIController
         if (userAnswer == correctAnswer)
         {
             HandleAnswer(TypeInputField.Correct);
-           
         }
         else
         {
             HandleAnswer(TypeInputField.Wrong);
         }
-        
     }
-    
-    protected override void updateProgressBar()
-    {
-        float incrementValue = (progressBar.maxValue / listCardExample.Count);
-        progressBar.value = progressBar.value + incrementValue;
-    }
-
 }

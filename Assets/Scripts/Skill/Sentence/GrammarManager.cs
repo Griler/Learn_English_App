@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GrammarManager : MonoBehaviour
@@ -9,8 +8,8 @@ public class GrammarManager : MonoBehaviour
     // Giả sử bạn có một danh sách tất cả các thẻ
     public List<GrammarFlashcardExercise> listExercise = new List<GrammarFlashcardExercise>();
     public List<GrammarFlashcardExmpale> listExample;
-    [SerializeField] private GrammarData[] loaded;
-
+    [SerializeField] private GrammarData loaded;
+    [SerializeField] FlashcardUIExampleController exampleController;
     private string pathLoad = $"{GlobalData.pathData}/{GlobalData.pathGramaData}";
 
     // Dictionary để theo dõi điểm yếu
@@ -21,8 +20,8 @@ public class GrammarManager : MonoBehaviour
     private int totalFlashcardsExercise = 0;
 
     void Awake()
-    {
-        InitializeExmampleData();
+    { 
+        LoadData();
     }
 
     private void OnEnable()
@@ -79,18 +78,19 @@ public class GrammarManager : MonoBehaviour
     }
 
     // Tạo dữ liệu mẫu để thử nghiệm
-    private void InitializeExmampleData()
+    private void LoadData()
     {
-        loaded = Resources.LoadAll<GrammarData>(pathLoad);
-        listExercise.AddRange(FromGrammarData(loaded[0]));
-        listExample.AddRange(loaded[0].examples);
-        totalFlashcards = Random.Range(10, 12);
-        totalFlashcardsExample = listExample.Count;
+        string grammarCategoryId = PlayerPrefs.GetString("SelectedGrammarTopic");
+        grammarCategoryId = "past_simple";
+        FirebaseDatabaseManager.Instance.FetchGrammarData(grammarCategoryId, onConnectData);
     }
 
-    private void InitializeExerciseData()
+    private void onConnectData(GrammarData grammar)
     {
-        Debug.LogError("ds");
+        loaded = grammar;
+        listExample.AddRange(grammar.examples);
+        listExercise.AddRange(grammar.miniExercises);
+        exampleController.initUI();
     }
     
     public List<GrammarFlashcardExercise> FromGrammarData(GrammarData grammarData)
@@ -111,20 +111,49 @@ public class GrammarManager : MonoBehaviour
         return flashcards;
     }
 
-    public void GetCardsToLearn(Action<List<GrammarExample>> cb)  
+    public List<GrammarFlashcardExmpale> GetCardsToLearn()
     {
-        int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
-        StartCoroutine(ApiController.Instance.GetGrammarExamByCategoryId(grammarCategoryId, cb , 1));
+        int randomCardToLearn = 5;
+
+        List<GrammarFlashcardExmpale> shuffledList = new List<GrammarFlashcardExmpale>(listExample);
+        int count = shuffledList.Count;
+
+        if (count < randomCardToLearn)
+        {
+            randomCardToLearn = count; // Giới hạn số lượng bằng kích thước của danh sách
+        }
+
+        for (int i = count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            GrammarFlashcardExmpale temp = shuffledList[i];
+            shuffledList[i] = shuffledList[j];
+            shuffledList[j] = temp;
+        }
+
+        return shuffledList.GetRange(0, randomCardToLearn);
     }
 
-    public void GetCardsToWrite(Action<List<GrammarExercise>> cb)
+    public List<GrammarFlashcardExercise> GetCardsToWrite()
     {
-        int grammarCategoryId = PlayerPrefs.GetInt("SelectedGrammarTopic");
-        StartCoroutine(ApiController.Instance.GetGrammarExercisesByCategoryId(grammarCategoryId, cb));
-    }
+        int randomCardToLearn = 5;
 
-    void onClickHomeBtn()
-    {
-        SceneManager.LoadScene("HomeScene");
+        List<GrammarFlashcardExercise> shuffledList = new List<GrammarFlashcardExercise>(listExercise);
+        int count = shuffledList.Count;
+
+        if (count < randomCardToLearn)
+        {
+            randomCardToLearn = count;
+        }
+
+        for (int i = count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            GrammarFlashcardExercise temp = shuffledList[i];
+            shuffledList[i] = shuffledList[j];
+            shuffledList[j] = temp;
+        }
+
+        return shuffledList.GetRange(0, randomCardToLearn);
     }
 }
