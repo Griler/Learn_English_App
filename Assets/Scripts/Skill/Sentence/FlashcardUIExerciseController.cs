@@ -70,7 +70,7 @@ public class FlashcardUIExerciseController : FlashcardUIController
     
     private async void UpdateMissionState()
     {
-        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.PRACTICE3);
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_GRAMMAR);
     }
     
     public override void OnSubmitAnswer()

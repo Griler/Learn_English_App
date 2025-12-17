@@ -106,7 +106,7 @@ public class FlashcardUIExampleController : FlashcardUIController
     
     private async void UpdateMissionState()
     {
-        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_NEW);
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_GRAMMAR);
     }
 
 

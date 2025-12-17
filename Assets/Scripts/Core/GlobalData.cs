@@ -15,13 +15,14 @@ public static class GlobalData
     
     public static class MissionKeys
     {
-        public const string LEARN_NEW = "learn_new";
-        public const string PRACTICE3 = "practice3";
+        public const string LEARN_GRAMMAR = "learn_grammar";
+        public const string LEARN_VOCA = "learn_vocabulary";
+        public const string P2P = "pvp";
         public const string LOGIN = "login";
-        public const string PERFECT_SCORE = "perfect_score";
-        public const string STREAK_3DAYS = "streak_3days";
+        //public const string PERFECT_SCORE = "perfect_score";
         public const string LEARN_LISTEN = "learn_listen";
         public const string LEARN_SPEAKING = "learn_speaking";
+        public const string WIN_P2P = "win_p2p";
     }
     
     public static class USER

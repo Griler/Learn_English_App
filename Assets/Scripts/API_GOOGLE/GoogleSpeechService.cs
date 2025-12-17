@@ -260,6 +260,10 @@ public class GoogleSpeechService : MonoBehaviour
             else
             {
                 onError?.Invoke("No speech detected");
+                if(ToastSystem.Instance != null)
+                {
+                    ToastSystem.Instance.ShowToast("Vui Lòng Phát Âm");
+                }
             }
         }
         catch (Exception e)

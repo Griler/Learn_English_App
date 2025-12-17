@@ -100,9 +100,9 @@ public class MissionItem : MonoBehaviour
     {
         switch (missionKey)
         {
-            case GlobalData.MissionKeys.LEARN_NEW:
+            case GlobalData.MissionKeys.LEARN_GRAMMAR:
                 break;
-            case GlobalData.MissionKeys.PRACTICE3:
+            case GlobalData.MissionKeys.LEARN_VOCA:
                 break;
             case GlobalData.MissionKeys.LOGIN:
                 break;
@@ -110,9 +110,9 @@ public class MissionItem : MonoBehaviour
                 break;
             case GlobalData.MissionKeys.LEARN_SPEAKING:
                 break;
-            case GlobalData.MissionKeys.PERFECT_SCORE:
-                break;
-            case GlobalData.MissionKeys.STREAK_3DAYS:
+            case GlobalData.MissionKeys.P2P:
+                break;    
+            case GlobalData.MissionKeys.WIN_P2P:
                 break;
             default:
                 break;

@@ -97,7 +97,7 @@ public class GameController : MonoBehaviour
     {
         string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         //ApiController.Instance.SaveUserCategoryHistory(userId, catogeryId, ApiController.CategoryType.Vocabulary);
-        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_NEW);
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_VOCA);
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học.\n Sẽ Trở Về Trang Chủ",Color.black);
     }
 }

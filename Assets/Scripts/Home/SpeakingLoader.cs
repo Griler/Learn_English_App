@@ -16,36 +16,58 @@ public class SpeakingLoader : MonoBehaviour
     [SerializeField]private Transform container;
     Dictionary<string, int> topicIndexDict = new Dictionary<string, int>();
 
-    void Start()
+    void OnEnable()
     {
-        LoadData();
+        LoadTopicsFromFirebase();
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void LoadData()
+    public void LoadTopicsFromFirebase()
     {
-        StartCoroutine(ApiController.Instance.GetSpeakingCategories(LoadItem));
+        FirebaseDatabase.DefaultInstance
+            .GetReference("speaking")
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    int index = 0;
+                    foreach (var child in snapshot.Children)
+                    {
+                       key.Add(child.Key);
+                       string keyDic = child.Key;  // ví dụ: "greetings"
+                       topicIndexDict[keyDic] = index; 
+                       index++;
+                    }
+                    string json = snapshot.GetRawJsonValue();
+                    //Debug.Log("Loaded JSON:\n" + json);
+                    data = JsonUtility.FromJson<EnglishData>(json);
+                    Debug.Log("First greeting: " + data.greetings[0].en);
+                    LoadItem();
+                }
+            });
     }
 
-    void LoadItem(List<SpeakingCategory> categories)
+    void LoadItem()
     {
 
         foreach (Transform c in container) Destroy(c.gameObject);
-        for (int i = 0; i < categories.Count; i++)
+        for (int i = 0; i < key.Count; i++)
         {
             GameObject go = Instantiate(item, container);
             go.GetComponent<SpeakingItem>().setImage(sprite[i]);
-            string[] parts = categories[i].name.Split('_');
+            string[] parts = key[i].Split('_');
             go.GetComponent<SpeakingItem>().setName(parts[0]);
-            int categoryId = categories[i].id;
-            go.GetComponent<SpeakingItem>().setOnClickButton(() => OnTopicClicked(categoryId));
+            string currentKey = key[i];
+            go.GetComponent<SpeakingItem>().setOnClickButton(() => OnTopicClicked(currentKey));
             //go.GetComponent<SpeakingItem>().on
         }
     }
 
-    public void OnTopicClicked(int categoryId)
+    public void OnTopicClicked(string topicKey)
     {
-        PlayerPrefs.SetInt("SelectedSpeakingTopic", categoryId);
+        PlayerPrefs.SetString("CurrentSpeakingTopic", topicKey);
         SceneManager.LoadScene("SpeakingScene");
     }
 }

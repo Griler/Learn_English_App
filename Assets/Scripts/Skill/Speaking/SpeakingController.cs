@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Firebase.Database;
+using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -32,9 +34,11 @@ public class SpeakingController : MonoBehaviour
     private string micDeviceName;
     private bool isRecording = false;
 
-    private List<SpeakingQuestion> listSentences = new List<SpeakingQuestion>();
+    private List<SentenceItem> listSentences = new List<SentenceItem>();
     private int currentQuestionIndex = 0;
-
+    public GameObject panelNotice;
+    public Button confirmButton;
+    public Button cancelNotice;
     void Start()
     {
         // Setup AudioSource
@@ -47,19 +51,17 @@ public class SpeakingController : MonoBehaviour
         if (replayButton) replayButton.onClick.AddListener(OnReplayClicked);
         if (nextButton) nextButton.onClick.AddListener(OnClickNextBtn);
         if (prevButton) prevButton.onClick.AddListener(OnClickPrevBtn);
-
-        // Fetch questions from API
-        int currentTopicId = PlayerPrefs.GetInt("SelectedSpeakingTopic");
-        if (currentTopicId > 0)
+        if (confirmButton) confirmButton.onClick.AddListener(()=>
         {
-            UpdateStatus("Loading questions...");
-            StartCoroutine(ApiController.Instance.GetSpeakingQuestionsByCategoryId(currentTopicId, OnQuestionsLoaded));
-        }
-        else
-        {
-            UpdateStatus("No topic selected!");
-            Debug.LogError("SelectedSpeakingTopic not found in PlayerPrefs.");
-        }
+            UpdateMissionState();
+            OnClickHomeButton();
+        });
+        if (cancelNotice) cancelNotice.onClick.AddListener((() => {panelNotice.SetActive(false);}));
+        string currentTopic = PlayerPrefs.GetString("CurrentSpeakingTopic");
+        
+        panelNotice.SetActive(false);
+        GetSentencesByTopic(currentTopic, initProp);
+        UpdateStatus("Ready");
     }
 
     void Update()
@@ -80,7 +82,7 @@ public class SpeakingController : MonoBehaviour
     // ## Question Navigation
     // ##################################################################
 
-    private void OnQuestionsLoaded(List<SpeakingQuestion> questions)
+    private void OnQuestionsLoaded(List<SentenceItem> questions)
     {
         if (questions == null || questions.Count == 0)
         {
@@ -101,12 +103,12 @@ public class SpeakingController : MonoBehaviour
         // Clamp index to be safe
         currentQuestionIndex = Mathf.Clamp(index, 0, listSentences.Count - 1);
 
-        SpeakingQuestion currentQuestion = listSentences[currentQuestionIndex];
+        SentenceItem currentQuestion = listSentences[currentQuestionIndex];
         if (referenceTextInputEN) referenceTextInputEN.text = currentQuestion.en;
         if (referenceTextInputVI) referenceTextInputVI.text = currentQuestion.vn;
 
         // Reset UI for new question
-        if (transcriptText) transcriptText.text = "Your transcript will appear here.";
+        if (transcriptText) transcriptText.text = "Câu bạn nói sẽ hiện tại đây";
         if (scoreText)
         {
             scoreText.text = "Score: ";
@@ -116,11 +118,16 @@ public class SpeakingController : MonoBehaviour
 
         // Update button states
         if (prevButton) prevButton.interactable = (currentQuestionIndex > 0);
-        if (nextButton) nextButton.interactable = (currentQuestionIndex < listSentences.Count - 1);
+        //if (nextButton) nextButton.interactable = (currentQuestionIndex < listSentences.Count - 1);
     }
 
     public void OnClickNextBtn()
     {
+        if (currentQuestionIndex == listSentences.Count-1)
+        {
+            panelNotice.SetActive(true);
+            return;
+        }
         if (currentQuestionIndex < listSentences.Count - 1)
         {
             DisplayQuestion(currentQuestionIndex + 1);
@@ -150,6 +157,7 @@ public class SpeakingController : MonoBehaviour
         if (Microphone.devices.Length == 0)
         {
             UpdateStatus("No microphone found!");
+            ToastSystem.Instance.ShowToast("Không thì thấy micro");
             return;
         }
 
@@ -159,7 +167,7 @@ public class SpeakingController : MonoBehaviour
         isRecording = true;
 
         UpdateStatus("Recording...");
-        if (recordButton) recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Stop";
+        if (recordButton) recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Dừng";
     }
 
     private void StopRecording()
@@ -181,17 +189,7 @@ public class SpeakingController : MonoBehaviour
         if (clip == null || clip.length < minValidLength)
         {
             UpdateStatus("Recording too short.");
-            return false;
-        }
-
-        float[] samples = new float[128];
-        clip.GetData(samples, 0);
-        float maxAmp = 0;
-        foreach (var s in samples) if (Mathf.Abs(s) > maxAmp) maxAmp = Mathf.Abs(s);
-
-        if (maxAmp < silenceThreshold)
-        {
-            UpdateStatus("Too quiet. Speak louder.");
+            ToastSystem.Instance.ShowToast("ghi âm ngắn quá");
             return false;
         }
         return true;
@@ -246,6 +244,7 @@ public class SpeakingController : MonoBehaviour
         else
         {
             UpdateStatus("No recording found at this question.");
+            ToastSystem.Instance.ShowToast("không tìm thấy ghi âm");
         }
     }
     
@@ -325,5 +324,47 @@ public class SpeakingController : MonoBehaviour
     public void OnClickHomeButton()
     {
         SceneManager.LoadScene("HomeScene");
+    }
+    
+    void initProp(List<SentenceItem> listItem)
+    {
+        listSentences.AddRange(listItem);
+        DisplayQuestion(0);
+    }
+    
+    public void GetSentencesByTopic(string topic, System.Action<List<SentenceItem>> callback)
+    {
+        FirebaseDatabase.DefaultInstance
+            .GetReference("speaking") // root json
+            .Child(topic)                     // load đúng topic
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
+            {
+                if (!task.IsCompleted)
+                {
+                    Debug.LogError("Cannot load topic: " + topic);
+                    return;
+                }
+
+                DataSnapshot snapshot = task.Result;
+
+                List<SentenceItem> list = new List<SentenceItem>();
+
+                foreach (var child in snapshot.Children)
+                {
+                    SentenceItem item = new SentenceItem();
+                    item.vn = child.Child("vn").Value.ToString();
+                    item.en = child.Child("en").Value.ToString();
+
+                    list.Add(item);
+                }
+
+                callback?.Invoke(list);
+            });
+    }
+
+    private async void UpdateMissionState()
+    {
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_SPEAKING);
     }
 }

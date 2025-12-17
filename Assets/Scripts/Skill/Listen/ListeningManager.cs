@@ -233,6 +233,8 @@ public class ListeningGameManager : MonoBehaviour
                 }
             }
         }
+
+        UpdateMissionState();
     }
 
     public void onHomeButton()
@@ -249,5 +251,10 @@ public class ListeningGameManager : MonoBehaviour
     {
         float incrementValue = (progressBar.maxValue / questions.Count);
         progressBar.value = progressBar.value + incrementValue;
+    }
+    
+    private async void UpdateMissionState()
+    { 
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_LISTEN);
     }
 }

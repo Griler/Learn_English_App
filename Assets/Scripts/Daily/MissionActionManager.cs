@@ -19,7 +19,7 @@ public class MissionActionManager : MonoBehaviour
     {
         switch (missionId)
         {
-            case GlobalData.MissionKeys.LEARN_NEW:
+            /*case GlobalData.MissionKeys.LEARN_VOCA:
                 OpenLessonSelectView();
                 break;
 
@@ -37,14 +37,13 @@ public class MissionActionManager : MonoBehaviour
 
             default:
                 Debug.Log($"❓Không có hành động cho mission {missionId}");
-                break;
+                break;*/
         }
     }
 
     void OpenLessonSelectView()
     {
         Debug.Log("👉 Mở màn hình chọn bài học mới");
-        UIManager.OpenViewByMissionid(GlobalData.MissionKeys.LEARN_NEW);
     }
 
     void OpenReviewView()
@@ -62,6 +61,5 @@ public class MissionActionManager : MonoBehaviour
     void OpenPracticeView()
     {
         Debug.Log("👉 Mở giao diện luyện tập");
-        UIManager.OpenViewByMissionid(GlobalData.MissionKeys.PRACTICE3);
     }
 }
