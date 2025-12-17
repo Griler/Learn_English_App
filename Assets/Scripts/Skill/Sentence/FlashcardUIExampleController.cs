@@ -77,7 +77,6 @@ public class FlashcardUIExampleController : FlashcardUIController
         }
 
         exampleQuestionText.text = $"{preVerb}  __________ {postVerb}";
-        inputKeyBoardCustom.initButtonWord(conjugatedVerb);
     }
 
     public override void HandleAnswer(Enum type)

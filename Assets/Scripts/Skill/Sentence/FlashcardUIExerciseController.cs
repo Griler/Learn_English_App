@@ -40,7 +40,6 @@ public class FlashcardUIExerciseController : FlashcardUIController
         StartCoroutine(setTypeInputField(TypeInputField.Default));
         currentGrammarFlashcardExercise = card;
         exampleQuestionText.text = card.question;
-        inputKeyBoardCustom.initButtonWord(card.answer);
         nextButton.onClick.RemoveAllListeners();
         nextButton.onClick.AddListener(OnSubmitAnswer);
     }

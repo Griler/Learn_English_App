@@ -1,6 +1,7 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -20,10 +21,11 @@ public class ListeningGameManager : MonoBehaviour
     public GameObject container;
     public GameObject itemAnswer;
     public GameObject canavas;
+    public TextMeshProUGUI textQuestion;
 
     [Header("--- DATA CONFIG ---")]
     public List<ListeningQuestion> questions = new List<ListeningQuestion>();
-    public List<ListenAnswer> answerChoose = new List<ListenAnswer>();
+    public Dictionary<string, bool> answerChoose = new Dictionary<string, bool>();
 
     [Header("--- AUDIO ---")] 
     public AudioSource audioSource;
@@ -35,7 +37,7 @@ public class ListeningGameManager : MonoBehaviour
     public Button nextBtn; 
     public Button skipBtn; 
     public GameObject loadingPanel;
-    public TextMeshProUGUI textQuestion;
+    public Slider progressBar; 
 
     private int currentIndex = 0;
     private ListeningQuestion currentQ;
@@ -54,31 +56,30 @@ public class ListeningGameManager : MonoBehaviour
         skipBtn.onClick.AddListener(onSkipClick);
         canavas.SetActive(true);
         dashBoard.SetActive(false);
-        int categoryId = PlayerPrefs.GetInt("SelectedListenTopic");
+        if (GlobalData.questionsToListen != null && GlobalData.questionsToListen.Count > 0)
+        {
+            questions.Clear();
+            questions.AddRange(GlobalData.questionsToListen);
+            questions = questions.OrderBy(x => Random.value).Take(10).ToList();
+        }
+
         if (GoogleSpeechService.Instance == null) return;
-        StartCoroutine(ApiController.Instance.GetListenQuestionsByCategoryId(categoryId,
-            (list) =>
-            {
-                questions.AddRange(list);
-                if (questions.Count > 0)
-                {
-                    LoadQuestion(questions[currentIndex]);
-                }
-            }));
+
+        LoadQuestion(0);
     }
 
     // --- LUỒNG CHÍNH ---
-    void LoadQuestion(ListeningQuestion question)
+    void LoadQuestion(int index)
     {
-        currentQ = questions[currentIndex];
-
         resultText.text = "";
+        textQuestion.text = "Câu Hỏi: " + (currentIndex + 1);
         nextBtn.interactable = false;
         nextBtn.GetComponent<Image>().color = Color.darkGray;
         
         mcHandler.Hide();
         typingHandler.Hide();
-        textQuestion.text = "Question: " + currentIndex + 1; 
+
+        currentQ = questions[index];
         
         SetupGameMode();
         
@@ -114,7 +115,7 @@ public class ListeningGameManager : MonoBehaviour
         {
             typingHandler.gameObject.SetActive(true);
             isModeMultipleChoice = false;
-            questionInstruction.text = "Nghe và viết lại câu:";
+            questionInstruction.text = "Nghe và viết lại từ:";
             typingHandler.Setup(currentQ, NextQuestion, onSkipClick);
         }
     }
@@ -125,10 +126,11 @@ public class ListeningGameManager : MonoBehaviour
         nextBtn.GetComponent<Image>().color = Color.white;
     }
 
-    void HandleNextButton()
+    public void HandleNextButton()
     {
         if (isModeMultipleChoice)
         {
+            mcHandler.setInteractable(false);
             bool isCorrect = mcHandler.CheckAnswerAndShowFeedback();
             if (isCorrect)
             {
@@ -144,19 +146,17 @@ public class ListeningGameManager : MonoBehaviour
 
     IEnumerator ProcessCorrectAnswer()
     {
-        resultText.text = "Correct";
+        resultText.text = "Đúng";
         resultText.color = Color.green;
         ListenAnswer answer = new ListenAnswer();
-        answer.correctAws = currentQ.correctAnswer;
-        answer.isCorrect = true;
-        answerChoose.Add(answer);
+        answerChoose[currentQ.correctAnswer] = true;
         yield return new WaitForSeconds(0.5f);
         NextQuestion();
     }
 
     IEnumerator ProcessWrongAnswerMC()
     {
-        resultText.text = "Wrong";
+        resultText.text = "Sai";
         resultText.color = Color.red;
         
         // Khóa nút next
@@ -165,7 +165,7 @@ public class ListeningGameManager : MonoBehaviour
         ListenAnswer answer = new ListenAnswer();
         answer.correctAws = currentQ.correctAnswer;
         answer.isCorrect = false;
-        answerChoose.Add(answer);
+        answerChoose[currentQ.correctAnswer] = false;
         yield return new WaitForSeconds(0.5f);
         
         resultText.text = "";
@@ -178,7 +178,8 @@ public class ListeningGameManager : MonoBehaviour
         currentIndex++;
         if (currentIndex < questions.Count)
         {
-            LoadQuestion(questions[currentIndex]);
+            LoadQuestion(currentIndex);
+            updateProgressBar();
         }
         else
         {
@@ -195,7 +196,7 @@ public class ListeningGameManager : MonoBehaviour
         ListenAnswer answer = new ListenAnswer();
         answer.correctAws = currentQ.correctAnswer;
         answer.isCorrect = false;
-        answerChoose.Add(answer);
+        answerChoose[currentQ.correctAnswer] = false;
         NextQuestion();
     }
 
@@ -204,27 +205,32 @@ public class ListeningGameManager : MonoBehaviour
         if (audioSource.clip != null) audioSource.Play();
     }
 
-    async void initDashBoad()
-    {
-        string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        int categoryId = PlayerPrefs.GetInt("SelectedListenTopic");
-        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_LISTEN);
 
-        ApiController.Instance.SaveUserCategoryHistory(userId, categoryId, ApiController.CategoryType.Listening);
+    void initDashBoad()
+    {
         dashBoard.SetActive(true);
         for (int i = 0; i < answerChoose.Count; i++)
         {
             GameObject item = Instantiate(itemAnswer, container.transform);
             item.SetActive(true);
-            item.GetComponentsInChildren<TextMeshProUGUI>()[0].text = (i+1).ToString();
-            item.GetComponentsInChildren<TextMeshProUGUI>()[1].text = questions[i].correctAnswer;
-            if (answerChoose[i].isCorrect)
+            TextMeshProUGUI[] textComponents = item.GetComponentsInChildren<TextMeshProUGUI>();
+            if (textComponents.Length > 0)
+                textComponents[0].text = (i + 1).ToString();
+            string currentKey = answerChoose.Keys.ElementAt(i);
+
+            if (textComponents.Length > 1)
             {
-                item.GetComponentsInChildren<TextMeshProUGUI>()[1].color = Color.green;;
-            }
-            else
-            {
-                item.GetComponentsInChildren<TextMeshProUGUI>()[1].color = Color.softRed;;
+                textComponents[1].text = currentKey;
+                bool isCorrect = answerChoose[currentKey];
+
+                if (isCorrect)
+                {
+                    textComponents[1].color = Color.green;
+                }
+                else
+                {
+                    textComponents[1].color = Color.red;
+                }
             }
         }
     }
@@ -237,5 +243,11 @@ public class ListeningGameManager : MonoBehaviour
     public void onPlayAgain()
     {
         SceneManager.LoadScene("ListenScene");
+    }
+
+    protected void updateProgressBar()
+    {
+        float incrementValue = (progressBar.maxValue / questions.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

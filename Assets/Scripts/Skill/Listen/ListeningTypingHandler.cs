@@ -15,6 +15,7 @@ public class ListeningTypingHandler : MonoBehaviour
     private ListeningQuestion currentQ;
     private Action onNextCallBack;
     private Action onSkipCallback;
+    private bool isAdd = false;
 
     private void Start()
     {
@@ -23,25 +24,14 @@ public class ListeningTypingHandler : MonoBehaviour
 
     public void Setup(ListeningQuestion q, Action onNext, Action onSkip )
     {
+        isAdd = false;
         currentQ = q;
+        inputField.text = "";
         this.onNextCallBack = onNext;
         onSkipCallback = onSkip;
         typingContainer.SetActive(true);
         submitTypingBtn.interactable = true;
         resultText.text = "";
-        // Gọi script bàn phím ảo (đảm bảo typingContainer có script này)
-        try
-        {
-            var keyboard = typingContainer.GetComponent<InputKeyBoardCustom>();
-            if (keyboard != null)
-            {
-                keyboard.initButtonWord(q.correctAnswer);
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Lỗi khởi tạo bàn phím: " + e.Message);
-        }
     }
 
     void CheckTypingAnswer()
@@ -62,16 +52,18 @@ public class ListeningTypingHandler : MonoBehaviour
     
     IEnumerator ProcessCorrectAnswer()
     {
-        resultText.text = "Correct";
+        resultText.text = "Đúng";
         resultText.color = Color.green;
-        yield return new WaitForSeconds(0.5f); // Đợi một chút để người dùng thấy kết quả
+        yield return new WaitForSeconds(0.5f);
+        ListeningGameManager.Instance.answerChoose[currentQ.correctAnswer] = true;
         onNextCallBack?.Invoke();
     }
 
     IEnumerator ProcessWrongAnswer()
     {
-        resultText.text = "Wrong";
+        resultText.text = "Sai";
         resultText.color = Color.softRed;
+        ListeningGameManager.Instance.answerChoose[currentQ.correctAnswer] = false;
         yield return new WaitForSeconds(0.5f);
         resultText.text = "";
         resultText.color = Color.white;

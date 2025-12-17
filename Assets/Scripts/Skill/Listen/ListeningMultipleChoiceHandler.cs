@@ -27,14 +27,17 @@ public class ListeningMultipleChoiceHandler : MonoBehaviour
         currentQ = q;
         choiceContainer.SetActive(true);
         ResetUI();
+        setInteractable(true);
 
         // Tạo list đáp án (Đúng + Sai)
         List<string> options = new List<string> { q.correctAnswer };
-        if (!string.IsNullOrEmpty(q.wrongAnswers))
+        if (q.wrongAnswers.Count > 0 )
         {
             // Tách chuỗi các đáp án sai (phân cách bởi dấu phẩy) và thêm vào danh sách
-            var wrongOptions = q.wrongAnswers.Split(',').Select(o => o.Trim());
-            options.AddRange(wrongOptions);
+            for (int i = 0; i <  q.wrongAnswers.Count; i++)
+            {
+                options.Add(q.wrongAnswers[i]);
+            }
         }
 
         // Trộn đáp án
@@ -116,5 +119,14 @@ public class ListeningMultipleChoiceHandler : MonoBehaviour
     {
         if (currentButtonClick != null)
             currentButtonClick.GetComponent<Image>().color = defaultColor;
+    }
+
+    public void setInteractable(bool active)
+    {
+        for (int i = 0; i < choiceButtons.Length; i++)
+        {
+            choiceButtons[i].interactable = active ;
+            
+        }
     }
 }
