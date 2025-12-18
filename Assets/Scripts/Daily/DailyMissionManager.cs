@@ -12,9 +12,26 @@ public class DailyMissionManager : MonoBehaviour
     [SerializeField] private GameObject missionItemPrefab;
     [SerializeField] private Transform contentParent;
     [SerializeField] private string userId = "..."; // sau này có thể thay bằng FirebaseAuth.UserId
+    public List<string> oddDayMissions = new List<string>() 
+    { 
+        "login",
+        "learn_grammar",   // Học ngữ pháp
+        "pvp", // Đấu PvP
+        "learn_listen"     // Luyện nghe
+    };
 
+    // Danh sách nhiệm vụ ngày CHẴN (2, 4, 6...)
+    public List<string> evenDayMissions = new List<string>() 
+    { 
+        "login",
+        "learn_vocabulary", // Học từ vựng
+        "win_p2p",          // Thắng PvP
+        "learn_speaking",   // Luyện nói
+    };
+    
     private DatabaseReference dbRef;
     private List<DailyMission> missions = new List<DailyMission>();
+    private List<DailyMission> displayMissions = new List<DailyMission>();
 
     void OnEnable()
     {
@@ -31,7 +48,43 @@ public class DailyMissionManager : MonoBehaviour
                 Debug.LogError("Không thể khởi tạo Firebase: " + dependencyStatus);
             }
         });
+        Debug.Log(evenDayMissions.Count);
     }
+
+    public void GetMissionsForToday()
+    {
+        // 1. Quan trọng: Clear list hiển thị cũ trước khi thêm mới
+        // Nếu không mỗi lần gọi hàm này list sẽ bị dài ra gấp đôi
+        displayMissions.Clear();
+
+        int dayOfMonth = DateTime.Now.Day;
+
+        // 2. Tối ưu: Xác định danh sách ID cần dùng (Chẵn hay Lẻ) MỘT LẦN ở ngoài vòng lặp
+        // Việc này nhanh hơn là check if/else trong từng vòng lặp
+        List<string> targetIdList;
+    
+        if (dayOfMonth % 2 != 0)
+        {
+            targetIdList = oddDayMissions; // Ngày lẻ
+        }
+        else
+        {
+            targetIdList = evenDayMissions; // Ngày chẵn
+        }
+
+        // 3. Duyệt qua toàn bộ database nhiệm vụ
+        foreach (DailyMission dailyMission in missions)
+        {
+            if (targetIdList.Contains(dailyMission.id))
+            {
+                displayMissions.Add(dailyMission);
+            }
+        }
+    
+        // Debug để kiểm tra
+        Debug.Log($"Đã lọc được {displayMissions.Count} nhiệm vụ cho ngày hôm nay.");
+    }
+    
 
     void LoadMissionsWithResetCheck()
     {
@@ -184,7 +237,8 @@ public class DailyMissionManager : MonoBehaviour
 
     void DisplayMissions()
     {
-        int dataCount = missions.Count;
+        GetMissionsForToday();
+        int dataCount = displayMissions.Count;
         int currentUICount = contentParent.childCount;
 
         // BƯỚC 2: TÁI SỬ DỤNG HOẶC TẠO MỚI (POOLING)
@@ -212,7 +266,7 @@ public class DailyMissionManager : MonoBehaviour
             // Setup data
             if (item != null)
             {
-                item.Setup(missions[i], OnMissionClaimed);
+                item.Setup(displayMissions[i], OnMissionClaimed);
             }
         }
 

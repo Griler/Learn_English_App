@@ -20,47 +20,46 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         backButton.onClick.AddListener(onClickBackButton);
+        currentAnimalIndex = 0;
         setUpData();
     }
     
     public void ShowFlashcard()
     {   
+        if (listAnimals == null || listAnimals.Count == 0) return;
+
         flashcardPanel.SetActive(true);
-        currentWordData = listAnimals[0];
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentWordData);
         quizPanel.SetActive(false);
+
+        // Lấy data theo index hiện tại chứ không lấy [0] nữa
+        currentWordData = listAnimals[currentAnimalIndex];
+        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentWordData);
     }
 
     public void ShowFlashcardByButton()
     {
-        if (currentAnimalIndex >= listAnimals.Count - 1 )
+        bool isCorrect = quizPanel.GetComponent<QuizManager>().getCorrectAnswer();
+        if (!isCorrect) return;
+        currentAnimalIndex++;
+        if (currentAnimalIndex >= listAnimals.Count)
         {
             ShowFinishPanel();
             return;
         }    
-        bool isCorrect = quizPanel.GetComponent<QuizManager>().getCorrectAnswer();
-        if (!isCorrect) return;
         StartCoroutine(showNextFlashCard());
     }
-    IEnumerator  showNextFlashCard() 
+    IEnumerator showNextFlashCard() 
     {
         yield return new WaitForSeconds(0.75f);
-        flashcardPanel.SetActive(true);
-        currentWordData = listAnimals[currentAnimalIndex];
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentWordData);
-        quizPanel.SetActive(false);
+        ShowFlashcard();
     }
 
 
     public void ShowQuiz()
     {
         flashcardPanel.SetActive(false);
-        if (currentAnimalIndex < listAnimals.Count - 1 )
-        {
-            currentAnimalIndex++;
-        }      
-        quizPanel.GetComponent<QuizManager>().UpdateUI(currentWordData);
         quizPanel.SetActive(true);
+        quizPanel.GetComponent<QuizManager>().UpdateUI(currentWordData);
     }
     
     private void setUpData()

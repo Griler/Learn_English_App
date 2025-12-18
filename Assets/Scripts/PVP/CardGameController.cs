@@ -30,6 +30,7 @@ public class UserDataPVP
 {
     public string name;
     public int rank;
+    public int actorId;
     public UserDataPVP() { }
 }
 

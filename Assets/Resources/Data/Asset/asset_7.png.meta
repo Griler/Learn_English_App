@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 92c12faed7fdfb84ba80216eaf2a2513
+guid: ab0472178b87ee248bc959670084138c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3249553514098436703
-    second: sprite_speaking_loader_0
+      213: -6555498595090926133
+    second: asset_7_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,35 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sprite_speaking_loader_2
+      name: board
       rect:
         serializedVersion: 2
-        x: 0
-        y: 512
-        width: 512
-        height: 512
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f5aa57644bbb81d20800000000000000
-      internalID: 3249553514098436703
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: sprite_speaking_loader_1
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 512
-        width: 512
-        height: 512
+        x: 48
+        y: 1379
+        width: 613
+        height: 625
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,20 +128,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 23c75a8a5cde02f4daa960589dc6e0de
-      internalID: 247814031
+      spriteID: 7033814d0b6a37f4385b335407a3d01a
+      internalID: 1708614156
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sprite_speaking_loader_0
+      name: desk
       rect:
         serializedVersion: 2
-        x: 1024
-        y: 512
-        width: 512
-        height: 512
+        x: 714
+        y: 1390
+        width: 613
+        height: 625
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,20 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c23c4b42e3bcc944aa4a80d47efc2e61
-      internalID: 1382802455
+      spriteID: bcfcaa78a28f4004e96243e84962ac97
+      internalID: -1302977369
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sprite_speaking_loader_
+      name: chair
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 512
-        height: 512
+        x: 1398
+        y: 1379
+        width: 613
+        height: 625
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: af2b5c132b7233b4fb84e92a70377f3a
-      internalID: 1436383540
+      spriteID: 495ca817e702c0049a41ea2ce31f89f3
+      internalID: 1398217697
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sprite_speaking_loader_4
+      name: teacher
       rect:
         serializedVersion: 2
-        x: 512
-        y: 0
-        width: 512
-        height: 512
+        x: 719
+        y: 717
+        width: 613
+        height: 625
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 15aba5ed263d85e4086679ebfc65ca11
-      internalID: -1303485672
+      spriteID: 35298a015baff2a4ea2b9f8a6f3c6c0a
+      internalID: 422660050
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sprite_speaking_loader_3
+      name: book
       rect:
         serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 512
-        height: 512
+        x: 46
+        y: 707
+        width: 613
+        height: 625
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -238,8 +216,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b78f73bde2460274499cd80fb1a7d07a
-      internalID: -1164623314
+      spriteID: f4974cd30738d1443a3b99124c82c72c
+      internalID: -296536544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: student
+      rect:
+        serializedVersion: 2
+        x: 1385
+        y: 718
+        width: 613
+        height: 625
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa0538db4ca25be469988db5a42c36f4
+      internalID: -1844782781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: principal
+      rect:
+        serializedVersion: 2
+        x: 715
+        y: 48
+        width: 613
+        height: 598
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e42c02fc106f434db6d540ceeeeaea3
+      internalID: 782161483
       vertices: []
       indices: 
       edges: []
@@ -248,7 +270,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: cdd860e224524864b914b1da0bb56497
+    spriteID: 9fee48d0d63941648a5d001608d9d3e1
     internalID: 0
     vertices: []
     indices: 
@@ -256,16 +278,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":2.0},"gridSpriteSize":{"x":512.0,"y":512.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      sprite_speaking_loader_: 1436383540
-      sprite_speaking_loader_0: 1382802455
-      sprite_speaking_loader_1: 247814031
-      sprite_speaking_loader_2: 3249553514098436703
-      sprite_speaking_loader_3: -1164623314
-      sprite_speaking_loader_4: -1303485672
+      asset_7_0: -6555498595090926133
+      boar: -6555498595090926133
+      board: 1708614156
+      book: -296536544
+      chair: 1398217697
+      d: -6555498595090926133
+      desk: -1302977369
+      principal: 782161483
+      student: -1844782781
+      teacher: 422660050
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

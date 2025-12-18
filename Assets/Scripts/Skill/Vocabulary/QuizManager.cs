@@ -58,9 +58,10 @@ public class QuizManager : BaseCode
         }
         
         correctAnswers = !showEnglish ? currentVocabulary.nameEn : currentVocabulary.nameVi;
-        // tạo danh sách 4 đáp án (1 đúng + 3 sai)
+        int targetCount = UnityEngine.Mathf.Min(4, vocabulary.Count);
+        
         List<WordData> options = new List<WordData> { currentVocabulary };
-        while (options.Count < 4)
+        while (options.Count < targetCount)
         {
             WordData randomPair = vocabulary[Random.Range(0, vocabulary.Count)];
             if (!options.Contains(randomPair))
@@ -86,22 +87,28 @@ public class QuizManager : BaseCode
         for (int i = 0; i < answerButtons.Length; i++)
         {
             var btn = answerButtons[i];
-            var pair = options[i];
-
-            string answerText = showEnglish ? pair.nameVi : pair.nameEn;
-            try
+            if (i < options.Count)
             {
-                btn.GetComponentInChildren<TextMeshProUGUI>().text = answerText;
-                Debug.Log("btn: "+ answerText);
+                btn.gameObject.SetActive(true);
+                var pair = options[i]; 
+                string answerText = showEnglish ? pair.nameVi : pair.nameEn;
+                try
+                {
+                    btn.GetComponentInChildren<TextMeshProUGUI>().text = answerText;
+                    Debug.Log("btn: " + answerText);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    throw;
+                }
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => initChooseAnswer(btn.gameObject));
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogError(e);
-                throw;
+                btn.gameObject.SetActive(false);
             }
-
-            btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => initChooseAnswer(btn.gameObject));
         }
     }
 

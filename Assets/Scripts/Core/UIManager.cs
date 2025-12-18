@@ -35,16 +35,22 @@ public class UIManager : MonoBehaviour
         closeCurentView();
         switch (id)
         {
-            //case GlobalData.MissionKeys.LEARN_NEW:
-               // openViewLesson();
-               // break;
-            /*case GlobalData.MissionKeys.PVP:
-            case GlobalData.MissionKeys.REVIEW:
+            case GlobalData.MissionKeys.LEARN_VOCA:
+                openViewLesson();
+                break;
+            case GlobalData.MissionKeys.P2P:
+            case GlobalData.MissionKeys.WIN_P2P:
                 openViewReview();
-                break;*/
-            //case GlobalData.MissionKeys.PRACTICE3:
-                //openViewGrammar();
-               // break;
+                break;
+            case GlobalData.MissionKeys.LEARN_GRAMMAR:
+                openViewGrammar();
+                break;
+            case GlobalData.MissionKeys.LEARN_LISTEN:
+                openViewListen();
+                break;
+            case GlobalData.MissionKeys.LEARN_SPEAKING:
+                openViewSpeaking();
+                break;
         }
     }
 

@@ -54,6 +54,12 @@ MonoBehaviour:
   - RPC_SetBusyState
   - RPC_TimeoutTurnSwitch
   - RPC_SyncScore
+  - RPC_EndGame
+  - RPC_PenaltyPlayer
+  - RPC_RoundResult
+  - RPC_SetupGame
+  - RPC_SyncRound
+  - RPC_SyncLiveLoss
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

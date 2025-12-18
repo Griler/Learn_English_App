@@ -10621,6 +10621,16 @@ MonoBehaviour:
   missionItemPrefab: {fileID: 5903483951564843694, guid: 5e7255f52e126da49bba89a22d01aa46, type: 3}
   contentParent: {fileID: 1998926380635723991}
   userId: 
+  oddDayMissions:
+  - login
+  - learn_grammar
+  - pvp
+  - learn_listen
+  evenDayMissions:
+  - login
+  - learn_vocabulary
+  - win_p2p
+  - learn_speaking
 --- !u!1 &1349343054
 GameObject:
   m_ObjectHideFlags: 0

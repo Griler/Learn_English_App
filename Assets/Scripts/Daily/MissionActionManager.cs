@@ -17,28 +17,7 @@ public class MissionActionManager : MonoBehaviour
 
     public void ExecuteMissionAction(string missionId)
     {
-        switch (missionId)
-        {
-            /*case GlobalData.MissionKeys.LEARN_VOCA:
-                OpenLessonSelectView();
-                break;
-
-            // case GlobalData.MissionKeys.REVIEW:
-            //     OpenReviewView();
-            //     break;
-            //
-            // case GlobalData.MissionKeys.PVP:
-            //     OpenPvPMode();
-            //     break;
-
-            case GlobalData.MissionKeys.PRACTICE3:
-                OpenPracticeView();
-                break;
-
-            default:
-                Debug.Log($"❓Không có hành động cho mission {missionId}");
-                break;*/
-        }
+        UIManager.OpenViewByMissionid(missionId);
     }
 
     void OpenLessonSelectView()
@@ -49,7 +28,7 @@ public class MissionActionManager : MonoBehaviour
     void OpenReviewView()
     {
         Debug.Log("👉 Mở màn hình ôn tập");
-        //UIManager.OpenViewByMissionid(GlobalData.MissionKeys.REVIEW);
+        UIManager.OpenViewByMissionid(GlobalData.MissionKeys.P2P);
     }
 
     void OpenPvPMode()
