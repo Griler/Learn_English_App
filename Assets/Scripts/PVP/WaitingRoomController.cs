@@ -264,8 +264,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
                 PhotonNetwork.LoadLevel("PairScene");
                 break;
             case 3: // Tương ứng dropdown index 2
-                 Debug.Log("Mode 3 chưa implement");
-                 // PhotonNetwork.LoadLevel("SceneName...");
+                 PhotonNetwork.LoadLevel("SoundPickScene");
                 break;
             default:
                 PhotonNetwork.LoadLevel("PVPScene");
