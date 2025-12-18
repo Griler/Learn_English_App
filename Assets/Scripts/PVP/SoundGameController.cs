@@ -51,6 +51,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     public TextMeshProUGUI gameOverTimerPanel;
     public GameObject player1Container;
     public GameObject player2Container;
+    public TextMeshProUGUI questionText;
 
     [Header("--- GAME SETTINGS ---")] public int targetScoreToWin = 5;
     public float penaltyTime = 1.0f;
@@ -290,7 +291,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         {
             optionButtons[i].interactable = true;
             optionButtons[i].image.color = Color.white;
-
+            optionButtons[i].gameObject.SetActive(true);
             if (i < data.answers.Count)
             {
                 Sprite sp = spriteAtlas.GetSprite(data.answers[i].ToLower());
@@ -302,30 +303,29 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             }
         }
 
+        questionText.text = data.questionText;
         isRoundActive = true;
         isPenalty = false;
         statusText.text = "Nghe và chọn hình đúng!";
-        statusText.color = Color.white;
     }
 
     // --- INPUT & LOGIC ---
     void OnOptionClicked(int btnIndex)
     {
         if (!isRoundActive || isPenalty) return;
-        photonView.RPC("RPC_SubmitAnswer", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber, btnIndex);
+        photonView.RPC("RPC_SubmitAnswer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber, btnIndex);
     }
 
     [PunRPC]
     void RPC_SubmitAnswer(int senderActor, int btnIndex)
     {
-        if (!PhotonNetwork.IsMasterClient) return;
 
         GameQuestionData data = playList[currentQuestionIndex];
         bool isCorrect = (btnIndex == data.correctAnswerIdx);
-
+        if(isCorrect) playerScores[senderActor]++;
+        if (!PhotonNetwork.IsMasterClient) return;
         if (isCorrect)
         {
-            playerScores[senderActor]++;
             photonView.RPC("RPC_RoundResult", RpcTarget.All, senderActor, true, btnIndex);
 
             if (playerScores[senderActor] >= targetScoreToWin)
@@ -355,6 +355,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_RoundResult(int winnerActor, bool isCorrect, int btnIndex)
     {
+        Debug.LogError("vao update diem");
         UpdateScoreUI();
         isRoundActive = false;
         if (winnerActor == PhotonNetwork.LocalPlayer.ActorNumber)
@@ -382,13 +383,10 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         isPenalty = true;
         statusText.text = "SAI RỒI!";
         statusText.color = Color.red;
-        optionButtons[btnIndex].image.color = Color.red;
         optionButtons[btnIndex].interactable = false;
         yield return new WaitForSeconds(penaltyTime);
         isPenalty = false;
         statusText.text = "Chọn lại!";
-        statusText.color = Color.white;
-        optionButtons[btnIndex].image.color = Color.white;
         optionButtons[btnIndex].interactable = true;
     }
 
@@ -418,16 +416,11 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     {
         if (audioSource.clip != null) audioSource.Play();
     }
-
-    Sprite LoadSprite(string name)
-    {
-        Sprite sp = Resources.Load<Sprite>("VocabImages/" + name);
-        if (sp == null) sp = Resources.Load<Sprite>(name);
-        return sp;
-    }
+    
 
     void UpdateScoreUI()
     {
+        Debug.LogError(playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber) + "|" + playerScores[PhotonNetwork.LocalPlayer.ActorNumber]);
         int myScore = playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber)
             ? playerScores[PhotonNetwork.LocalPlayer.ActorNumber]
             : 0;
