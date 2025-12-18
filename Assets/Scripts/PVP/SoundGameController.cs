@@ -86,6 +86,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             int index = i;
             optionButtons[i].onClick.AddListener(() => OnOptionClicked(index));
         }
+
         InitUIPlayer();
 
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
@@ -103,7 +104,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     void LoadFullJsonFromFirebase()
     {
         loadingStatusText.text = "Đang tải danh sách từ vựng...";
-        reference.Child("questions").Child("list").GetValueAsync().ContinueWithOnMainThread(task =>
+        reference.Child("sound_data").GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsCompleted && task.Result.Value != null)
             {
@@ -120,6 +121,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
                             item.correctAnswer = child.Child("correctAnswer").Value.ToString();
                         if (child.Child("correctAnswerIdx").Value != null)
                             item.correctAnswerIdx = int.Parse(child.Child("correctAnswerIdx").Value.ToString());
+                        if (child.Child("questionText").Value != null)
+                            item.questionText = (child.Child("questionText").Value.ToString());
 
                         item.answers = new List<string>();
                         foreach (DataSnapshot ans in child.Child("answers").Children)
