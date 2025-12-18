@@ -53,9 +53,9 @@ public class CardGameController : MonoBehaviourPunCallbacks
     public TextMeshProUGUI loadingStatusText;
     public TextMeshProUGUI countdownText;
 
-    public GameObject gameOverPanel;
-    public TextMeshProUGUI gameOverText;
-    public TextMeshProUGUI gameOverTimerPanel;
+    public GameObject gameWinPanel;
+    public GameObject gameLosePanel;
+    private int rankChange = 0;
 
     public GameObject player1Container; // Avatar Left
     public GameObject player2Container; // Avatar Right
@@ -97,9 +97,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
         Hashtable resetProps = new Hashtable();
         resetProps.Add("IsLoaded", false); 
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
-        
+        rankChange = 0;
         InitUIPlayer();
-        matchId = PhotonNetwork.CurrentRoom.Name;
         // Fix lỗi dependencies Firebase trước khi chạy
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
@@ -477,7 +476,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
     void RPC_EndGameProcess()
     {
         loadingPanel.SetActive(false);
-        gameOverPanel.SetActive(true);
         isTimerRunning = false;
 
         int myScore = playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber)
@@ -488,43 +486,37 @@ public class CardGameController : MonoBehaviourPunCallbacks
         {
             if (kvp.Key != PhotonNetwork.LocalPlayer.ActorNumber) enemyScore = kvp.Value;
         }
-
+        UpdateMissionState(GlobalData.MissionKeys.P2P);
         if (myScore > enemyScore)
         {
-            gameOverText.text = "CHIẾN THẮNG!\n" + myPlayer.name;
             saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
+            gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
+
+            UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         }
         else if (myScore < enemyScore)
         {
-            gameOverText.text = "THẤT BẠI...\n" + otherPlayer.name;
             saveMatchDatabase("LOSE", EloCalculator.GameResult.Loss, otherPlayer.name);
+            gameLosePanel.SetActive(true);
+            gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
         else
         {
-            gameOverText.text = "HÒA NHAU!";
             saveMatchDatabase("DRAW", EloCalculator.GameResult.Draw, otherPlayer.name);
         }
 
         isGameStarted = false;
-        StartCoroutine(RunCountdownLoadScene());
     }
 
     void saveMatchDatabase(string resultState, EloCalculator.GameResult result, string otherName)
     {
         // Giả định bạn có sẵn script RankDatabaseManager và EloCalculator
-        int randomRankPoint = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
-        RankDatabaseManager.Instance.SaveMatchHistory(matchId, resultState, randomRankPoint, otherName, "Lật thẻ");
+        rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
+        RankDatabaseManager.Instance.SaveMatchHistory(matchId, resultState, rankChange, otherName, "Lật thẻ");
     }
 
-    IEnumerator<WaitForSeconds> RunCountdownLoadScene()
-    {
-        for (int i = 3; i >= 0; i--)
-        {
-            gameOverTimerPanel.text = "Trở về trang chủ sau: " + i;
-            yield return new WaitForSeconds(1f);
-        }
-        PhotonNetwork.LeaveRoom();
-    }
+
 
 // Thêm hàm Callback
     public override void OnLeftRoom()
@@ -568,7 +560,8 @@ void UpdateScoreUI()
     void InitUIPlayer()
     {
         loadingPanel.SetActive(true);
-        gameOverPanel.SetActive(false);
+        gameLosePanel.SetActive(false);
+        gameWinPanel.SetActive(false);
         countdownText.gameObject.SetActive(false);
         loadingStatusText.text = "ĐANG TẢI DỮ LIỆU.....";
 
@@ -601,5 +594,10 @@ void UpdateScoreUI()
     {
         if (player.CustomProperties.TryGetValue(key, out object val)) return val.ToString();
         return defaultValue;
+    }
+    
+    private async void UpdateMissionState(string nameMission)
+    {
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
     }
 }

@@ -28,8 +28,9 @@ public class LobbyController : MonoBehaviourPunCallbacks
     // Key để định danh chế độ chơi trên Server
     private const string MODE_KEY = "gm"; 
 
-    void Start()
+    public override void OnEnable()
     {
+        base.OnEnable();
         // 1. Setup ban đầu
         searchingPanel.SetActive(false); // Ẩn panel tìm trận đi
         

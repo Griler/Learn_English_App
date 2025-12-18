@@ -90,7 +90,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
                 case 3: targetIndex = 2; break;
                 default: targetIndex = 0; break;
             }
-
+            roomName.text = dropdownModeGame.options[targetIndex].text;
             if (dropdownModeGame.value != targetIndex)
             {
                 dropdownModeGame.value = targetIndex;
@@ -276,20 +276,6 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom != null)
         {
-            string name = PhotonNetwork.CurrentRoom.Name;
-            if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.RandomMatchmaking)
-            {
-                string prefix = name.Split("_")[0];
-                int length = name.Split("_")[1].Length;
-                string roomId = name.Split("_")[1].Substring(0, 3) +
-                                "..." + name.Split("_")[1].Substring(length - 3);
-                roomName.text = prefix + "_" + roomId;
-            }
-            else
-            {
-                roomName.text = name;
-            }
-            
             int currentPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
             int maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
             Debug.Log($"Đang ở phòng: {name} | Số người: {currentPlayers}");

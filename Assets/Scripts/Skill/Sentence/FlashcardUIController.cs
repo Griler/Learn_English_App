@@ -23,7 +23,6 @@ public class FlashcardUIController : BaseCode
 
     [Header("UI FlashCard other")] 
     [SerializeField] protected TextMeshProUGUI exampleQuestionText;
-    [SerializeField] protected InputKeyBoardCustom inputKeyBoardCustom;
     [SerializeField] protected List<Sprite> backgroundInputField;
     [SerializeField] protected Slider progressBar;
     [SerializeField] protected List<GrammarFlashcard> listCard;

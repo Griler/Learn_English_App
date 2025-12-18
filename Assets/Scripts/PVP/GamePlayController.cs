@@ -41,12 +41,12 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     public GameObject player2Container;
     
     public GameObject loadingPanel; // Panel che màn hình lúc tải
-    public GameObject gameOverPanel; // Panel che màn hình lúc tải
+    public GameObject gameWinPanel; // Panel che màn hình lúc tải
+    public GameObject gameLosePanel; // Panel che màn hình lúc tải
     public TextMeshProUGUI loadingStatusText;  // Text: "Đang tải...", "Đợi người khác..."
     public TextMeshProUGUI countdownText;
-    public TextMeshProUGUI gameOverText;
-    public TextMeshProUGUI gameOverTimerPanel;
-    
+
+    private int rankChange = 0;
     [Header("Timer Settings")]
     public float timeLimit = 5f; 
     public TextMeshProUGUI timerText;
@@ -74,7 +74,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         Hashtable resetProps = new Hashtable();
         resetProps.Add("IsLoaded", false); 
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
-        
+        rankChange = 0;
         for (var i = 0; i < answerButtons.Length; i++)
         {
             int index = i;
@@ -522,41 +522,34 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     void RPC_GameOver(string msg, int survivorActorNumber)
     {
         loadingPanel.SetActive(false);
-        gameOverPanel.SetActive(true);
         if (msg == "DRAW")
         {
-            gameOverText.text = "CẢ HAI HOÀ NHAU";
             saveMatchDatabase("DRAW",EloCalculator.GameResult.Draw,otherPlayer.name);
         }
         bool amIWinner = (PhotonNetwork.LocalPlayer.ActorNumber == survivorActorNumber);
+        UpdateMissionState(GlobalData.MissionKeys.P2P);
         if (amIWinner)
         {
-            gameOverText.text = "NGƯỜI CHIẾN THẮNG LÀ: \n" + myPlayer.name;
             saveMatchDatabase("WIN",EloCalculator.GameResult.Win,otherPlayer.name);
+            gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
+            UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         }
         else
         {
-            gameOverText.text = "NGƯỜI CHIẾN THẮNG LÀ: \n" + otherPlayer.name;
             saveMatchDatabase("LOSE",EloCalculator.GameResult.Loss,otherPlayer.name);
+            gameLosePanel.SetActive(true);
+            gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
         isTimerRunning = false;
         isGameStarted = false;
         SetButtonsInteractable(false);
-        StartCoroutine(RunCountdownLoadScene());
     }
-    
-    IEnumerator<WaitForSeconds> RunCountdownLoadScene()
+    private async void UpdateMissionState(string nameMission)
     {
-        gameOverTimerPanel.text = "Trờ về trang chủ sau: 3";
-        yield return new WaitForSeconds(1f);
-        gameOverTimerPanel.text = "Trờ về trang chủ sau: 2";
-        yield return new WaitForSeconds(1f);
-        gameOverTimerPanel.text = "Trờ về trang chủ sau: 1";
-        yield return new WaitForSeconds(1f);
-        gameOverTimerPanel.text = "Trờ về trang chủ sau: 0";
-        yield return new WaitForSeconds(0.5f);
-        PhotonNetwork.LeaveRoom();
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
     }
+
 
 // Thêm hàm Callback
     public override void OnLeftRoom()
@@ -567,8 +560,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     void saveMatchDatabase(string resultState,EloCalculator.GameResult result,string otherName)
     {
-        int randomRankPoint = EloCalculator.CalculateRatingChange(myPlayer.rank,otherPlayer.rank,result);
-        RankDatabaseManager.Instance.SaveMatchHistory(matchId,resultState, randomRankPoint, otherName, "Đáp Nhanh");
+        rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank,otherPlayer.rank,result);
+        RankDatabaseManager.Instance.SaveMatchHistory(matchId,resultState, rankChange, otherName, "Đáp Nhanh");
     }
 
     void UpdateLivesUI()
@@ -594,7 +587,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     void InitUIPlayer()
     {
         loadingPanel.SetActive(true);
-        gameOverPanel.SetActive(false);
+        gameLosePanel.SetActive(false);
+        gameWinPanel.SetActive(false);
         countdownText.gameObject.SetActive(false);
         loadingStatusText.text = "ĐANG TẢI CÂU HỎI.....";
 

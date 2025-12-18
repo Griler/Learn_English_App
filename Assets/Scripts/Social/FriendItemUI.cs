@@ -53,8 +53,8 @@ public class FriendItemUI : BaseCode
         {
             deleteBtn.onClick.AddListener(OnDeleteClicked);
         }
-        nameText.text = name;
-        rankPoint.text = rank;
+        nameText.text = "Tên: "+ name;
+        rankPoint.text = "Điểm Xếp Hạng: " + rank;
         avatarImage.sprite = assetManager.getSpriteAvatar(avatar);
         borderImage.sprite = assetManager.getSpriteBorder(border);
     }

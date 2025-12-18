@@ -8660,7 +8660,7 @@ MonoBehaviour:
   shopAvatar: {fileID: 275530076}
   shopBorder: {fileID: 882282796}
   settingView: {fileID: 193351422}
-  overlay: {fileID: 0}
+  overlay: {fileID: 1765710019}
   ShopLoader: {fileID: 996146354}
   nameTitle: {fileID: 139626293}
 --- !u!114 &996146354
@@ -22297,7 +22297,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'NO FRIENDS '
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
   m_sharedMaterial: {fileID: 7913893121916415999, guid: 1386ff11d419dd84f86c7da9528f5e0b, type: 2}

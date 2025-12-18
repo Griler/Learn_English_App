@@ -46,9 +46,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     public GameObject loadingPanel;
     public TextMeshProUGUI loadingStatusText;
     public TextMeshProUGUI countdownText;
-    public GameObject gameOverPanel;
-    public TextMeshProUGUI gameOverText;
-    public TextMeshProUGUI gameOverTimerPanel;
+    public GameObject gameWinPanel;
+    public GameObject gameLosePanel;
     public GameObject player1Container;
     public GameObject player2Container;
     public TextMeshProUGUI questionText;
@@ -80,7 +79,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         resetProps.Add("FirebaseLoaded", false);
         resetProps.Add("AudioLoaded", false);
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
-
+        rankChange = 0;
         playSoundBtn.onClick.AddListener(PlayCurrentSound);
         for (int i = 0; i < optionButtons.Length; i++)
         {
@@ -194,7 +193,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         foreach (var q in playList)
         {
             count++;
-            loadingStatusText.text = $"Đang tải audio ({count}/{playList.Count}): {q.correctAnswer}";
+            loadingStatusText.text = $"Đang tải audio ({count}/{playList.Count})";
 
             bool isSuccess = false;
 
@@ -278,7 +277,6 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     {
         currentQuestionIndex = roundIdx;
         GameQuestionData data = playList[currentQuestionIndex];
-
         // 1. Phát Audio
         if (data.audioClip != null)
         {
@@ -307,6 +305,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         isRoundActive = true;
         isPenalty = false;
         statusText.text = "Nghe và chọn hình đúng!";
+        statusText.color = Color.black;
+
     }
 
     // --- INPUT & LOGIC ---
@@ -362,13 +362,11 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         {
             statusText.text = "CHÍNH XÁC!";
             statusText.color = Color.green;
-            optionButtons[btnIndex].image.color = Color.green;
         }
         else
         {
             string winnerName = (winnerActor == otherPlayer.actorId) ? otherPlayer.name : "Đối thủ";
             statusText.text = $"{winnerName} GHI ĐIỂM!";
-            statusText.color = Color.red;
         }
     }
 
@@ -395,21 +393,23 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     void RPC_EndGame(int winnerActor)
     {
         loadingPanel.SetActive(false);
-        gameOverPanel.SetActive(true);
         isRoundActive = false;
         bool amIWinner = (PhotonNetwork.LocalPlayer.ActorNumber == winnerActor);
+        UpdateMissionState(GlobalData.MissionKeys.P2P);
         if (amIWinner)
         {
-            gameOverText.text = "CHIẾN THẮNG!\n" + myPlayer.name;
             saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
+            gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
+            UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         }
         else
         {
-            gameOverText.text = "THẤT BẠI...\n" + otherPlayer.name;
             saveMatchDatabase("LOSE", EloCalculator.GameResult.Loss, otherPlayer.name);
+            gameLosePanel.SetActive(true);
+            gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
 
-        StartCoroutine(RunCountdownLoadScene());
     }
 
     void PlayCurrentSound()
@@ -435,7 +435,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     void InitUIPlayer()
     {
         loadingPanel.SetActive(true);
-        gameOverPanel.SetActive(false);
+        gameLosePanel.SetActive(false);
+        gameWinPanel.SetActive(false);
         countdownText.gameObject.SetActive(false);
         loadingStatusText.text = "ĐANG TẢI DỮ LIỆU...";
         foreach (Player p in PhotonNetwork.PlayerList)
@@ -465,25 +466,20 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         return p.CustomProperties.ContainsKey(key) ? p.CustomProperties[key].ToString() : "0";
     }
 
+    private int rankChange = 0;
     void saveMatchDatabase(string state, EloCalculator.GameResult res, string oName)
-    {
-        RankDatabaseManager.Instance.SaveMatchHistory(matchId, state,
-            EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, res), oName, "Nghe Từ");
+    { 
+        rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, res);
+        RankDatabaseManager.Instance.SaveMatchHistory(matchId, state,rankChange, oName, "Nghe Từ");
     }
-
-    IEnumerator RunCountdownLoadScene()
-    {
-        for (int i = 3; i >= 0; i--)
-        {
-            gameOverTimerPanel.text = "Về Home: " + i;
-            yield return new WaitForSeconds(1f);
-        }
-
-        PhotonNetwork.LeaveRoom();
-    }
-
+    
     public override void OnLeftRoom()
     {
         SceneManager.LoadScene("HomeScene");
+    }
+    
+    private async void UpdateMissionState(string nameMission)
+    {
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
     }
 }
