@@ -106,6 +106,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
             if (dependencyStatus == DependencyStatus.Available)
             {
                 reference = FirebaseDatabase.DefaultInstance.RootReference;
+                FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.INMATCH);
                 LoadCardsFromFirebase();
             }
             else
@@ -522,6 +523,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         Debug.Log("Đã thoát phòng Card Game, về Home.");
+        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
         SceneManager.LoadScene("HomeScene"); 
     }
     

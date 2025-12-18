@@ -9,11 +9,13 @@ public class FriendItemUI : BaseCode
     public Image avatarImage; // (Chưa xử lý load ảnh thật để code gọn)
     public Image borderImage; // (Chưa xử lý load ảnh thật để code gọn)
     public TextMeshProUGUI rankPoint;
+    public TextMeshProUGUI status;
     public Button invitePvpBtn;
     public Button deleteBtn;
 
     private string currentFriendId;
     private string currentFriendName;
+    private string statusCurrent = "";
     private UserInfoData cachedInfo;
     private Action onDelCallback;
     
@@ -24,6 +26,23 @@ public class FriendItemUI : BaseCode
         currentFriendId = friendId;
         currentFriendName = info.name;
         onDelCallback = onDeleteCB;
+        if (status)
+        {
+            status.text = info.status;
+            statusCurrent = info.status;
+            switch (info.status)
+            {
+                case GlobalData.STATUS.ONLINE:
+                    status.color = Color.lawnGreen;
+                    break;
+                case GlobalData.STATUS.OFFLINE:
+                    status.color = Color.gray3;
+                    break;
+                case GlobalData.STATUS.INMATCH:
+                    status.color = Color.orangeRed;
+                    break;
+            } 
+        }
         if (invitePvpBtn)
         {
             invitePvpBtn.onClick.AddListener(OnInviteClicked);
@@ -35,8 +54,8 @@ public class FriendItemUI : BaseCode
         }
 
         cachedInfo = info;
-        nameText.text = info.name;
-        rankPoint.text = info.rankPoint.ToString();
+        nameText.text = "Tên: "+ info.name;
+        rankPoint.text = "Điểm: " + info.rankPoint.ToString();
         avatarImage.sprite = assetManager.getSpriteAvatar(info.avatar);
         borderImage.sprite = assetManager.getSpriteBorder(info.border);
     }
@@ -54,7 +73,7 @@ public class FriendItemUI : BaseCode
             deleteBtn.onClick.AddListener(OnDeleteClicked);
         }
         nameText.text = "Tên: "+ name;
-        rankPoint.text = "Điểm Xếp Hạng: " + rank;
+        rankPoint.text = "Điểm: " + rank;
         avatarImage.sprite = assetManager.getSpriteAvatar(avatar);
         borderImage.sprite = assetManager.getSpriteBorder(border);
     }
@@ -69,6 +88,16 @@ public class FriendItemUI : BaseCode
     void OnInviteClicked()
     {
         string userName = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.name;
+        if (statusCurrent == GlobalData.STATUS.INMATCH)
+        {
+            ToastSystem.Instance.ShowToast("không thể mời người đã trong trận");
+            return;
+        }
+        else if (statusCurrent == GlobalData.STATUS.OFFLINE)
+        {
+            ToastSystem.Instance.ShowToast("không thể mời người không hoạt động");
+            return;
+        }
         FriendSystem.Instance.SendInvite(currentFriendId, userName);
     }
 

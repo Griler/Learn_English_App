@@ -30,6 +30,8 @@ public class InformationUser : BaseCode
         if (FirebaseDatabaseManager.Instance.IsReady)
         {
             FirebaseDatabaseManager.Instance.ListenToUserInfo();
+            FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
+
         }
         // TRƯỜNG HỢP 2: Firebase chưa xong (Mới bật game)
         else
@@ -47,6 +49,7 @@ public class InformationUser : BaseCode
         FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= OnFirebaseReady;
         
         // Giờ thì an toàn 100% để gọi
+        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
         FirebaseDatabaseManager.Instance.ListenToUserInfo();
     }
     
@@ -73,5 +76,7 @@ public class InformationUser : BaseCode
     private void OnDisable()
     {
         userProfileSO.OnUserInfoChanged -= updateInformation;
+        click.onClick.RemoveAllListeners();
+
     }
 }

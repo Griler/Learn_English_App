@@ -83,4 +83,12 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             });
         };
     }
+    public void SetUserStatus(string status)
+    {
+        var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
+        if (currentUser != null && dbReference != null)
+        {
+            dbReference.Child("users").Child(currentUser.UserId).Child("userInfo").Child("status").SetValueAsync(status);
+        }
+    }
 }

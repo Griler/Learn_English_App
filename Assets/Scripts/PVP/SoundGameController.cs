@@ -94,6 +94,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             if (task.Result == DependencyStatus.Available)
             {
                 reference = FirebaseDatabase.DefaultInstance.RootReference;
+                FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.INMATCH);
                 LoadFullJsonFromFirebase();
             }
             else Debug.LogError("Firebase Error: " + task.Result);
@@ -475,6 +476,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     
     public override void OnLeftRoom()
     {
+        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
         SceneManager.LoadScene("HomeScene");
     }
     

@@ -10,6 +10,7 @@ public class UserInfoData
     public string email;
     public string name;
     public int rankPoint;
+    public string status;
 
     public UserInfoData(string avatar,string border,string email, string name, int coin, int rank)
     {

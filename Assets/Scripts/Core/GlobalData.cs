@@ -32,4 +32,10 @@ public static class GlobalData
         public static int COIN = 0;
     }
     public static List<ListeningQuestion> questionsToListen;
+    public static class STATUS
+    {
+        public const string ONLINE = "ONLINE";
+        public const string OFFLINE = "OFFLINE";
+        public const string INMATCH = "INMATCH";
+    }
 }

@@ -95,6 +95,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             {
                 // Kết nối thành công -> Bắt đầu lấy dữ liệu
                 reference = FirebaseDatabase.DefaultInstance.RootReference;
+                FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.INMATCH);
                 LoadQuestionsFromFirebase();
             }
             else
@@ -555,6 +556,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         Debug.Log("Đã thoát phòng ques Game, về Home.");
+        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
         SceneManager.LoadScene("HomeScene");
     }
 
