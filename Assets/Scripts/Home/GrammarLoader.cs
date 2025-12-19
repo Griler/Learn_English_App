@@ -62,7 +62,7 @@ public class GrammarLoader : MonoBehaviour
             try
             {
                 GameObject topicChild = Instantiate(topicPrefab, contentParent);
-                string titleTopic = topic.grammarPointID.Replace("_","\n");
+                string titleTopic = topic.grammarPointID.Replace("_"," ");
                 topicChild.GetComponentInChildren<TextMeshProUGUI>().text = titleTopic;
                 topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.grammarPointID));
             }

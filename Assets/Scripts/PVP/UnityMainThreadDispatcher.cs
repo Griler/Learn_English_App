@@ -9,11 +9,13 @@ public class UnityMainThreadDispatcher : MonoBehaviour
 
     public static UnityMainThreadDispatcher Instance()
     {
-        if (!_instance)
+        if (_instance == null)
         {
-            var go = new GameObject("UnityMainThreadDispatcher");
-            _instance = go.AddComponent<UnityMainThreadDispatcher>();
-            DontDestroyOnLoad(go);
+            _instance = new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
+            if (Application.isPlaying) 
+            {
+                DontDestroyOnLoad(_instance.gameObject);
+            }
         }
         return _instance;
     }

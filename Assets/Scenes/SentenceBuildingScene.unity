@@ -6271,6 +6271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputField: {fileID: 2136908433}
+  textInputField: {fileID: 0}
 --- !u!114 &668563044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8109,6 +8110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputField: {fileID: 746870942}
+  textInputField: {fileID: 0}
 --- !u!1 &1286649341
 GameObject:
   m_ObjectHideFlags: 0
@@ -9184,9 +9186,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1286649341}
-        m_TargetAssemblyTypeName: SpeakingController, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 1286649343}
+        m_TargetAssemblyTypeName: GrammarManager, Assembly-CSharp
+        m_MethodName: backHome
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

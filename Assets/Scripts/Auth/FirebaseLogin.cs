@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
 using Firebase.Database;
 using TMPro;
-using UnityEngine.SceneManagement; // Nếu bạn dùng TextMeshPro cho UI
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random; // Nếu bạn dùng TextMeshPro cho UI
 
 public class FirebaseLogin : MonoBehaviour
 {
@@ -126,6 +128,14 @@ public class FirebaseLogin : MonoBehaviour
             statusTextResigterForm.color = new Color32(220, 20, 60, 255);
             return;
         }
+        
+        int minLengthPw = 6;
+        if (password.Length < 6 || confrimPassword.Length < 6 )
+        {
+            statusTextResigterForm.text = " Vui lòng nhập xác nhập mật khẩu trên 5 ký tự";
+            statusTextResigterForm.color = new Color32(220, 20, 60, 255);
+            return;
+        }
 
         if (password != confrimPassword)
         {
@@ -133,7 +143,7 @@ public class FirebaseLogin : MonoBehaviour
             statusTextResigterForm.color = new Color32(220, 20, 60, 255);
             return;
         }
-
+        
         StartCoroutine(RegisterUser(email, password));
     }
 
@@ -151,32 +161,34 @@ public class FirebaseLogin : MonoBehaviour
 
         // Đăng ký Auth thành công
         FirebaseUser newUser = registerTask.Result.User;
-        string name = email.Split("@")[0];
-        UserInfoData userData = new UserInfoData("ava_1", "border_0", email, name, 0, 0);
+        string name = GetSimpleName(email);
+        UserInfoData userData = new UserInfoData("avatar_1", "border_0", email, name, 0, 0);
 
         string json = JsonUtility.ToJson(userData);
-
-        // BƯỚC 3: Lưu vào Realtime Database theo UserId
-        // Đường dẫn: users -> [UserID] -> {data}
-        var dbTask = FirebaseDatabaseManager.Instance.dbReference
+        var task1 = FirebaseDatabaseManager.Instance.dbReference.Child("users").Child(newUser.UserId)
+            .Child("items").Child("avatars").Child("avatar_1")
+            .SetValueAsync(true);
+        var task2 = FirebaseDatabaseManager.Instance.dbReference
             .Child("users")
             .Child(newUser.UserId)
             .Child("userInfo")
             .SetRawJsonValueAsync(json);
 
-        yield return new WaitUntil(() => dbTask.IsCompleted);
+        var allTasks = Task.WhenAll(task1, task2);
 
-        if (dbTask.Exception != null)
+        yield return new WaitUntil(() => allTasks.IsCompleted);
+
+        if (allTasks.Exception != null)
         {
+            // Nếu 1 trong 2 cái fail, nó sẽ nhảy vào đây
             statusTextResigterForm.text = "Đăng ký Auth xong nhưng lỗi lưu Database!";
-            Debug.LogError(dbTask.Exception.ToString());
+            Debug.LogError(allTasks.Exception.ToString());
         }
         else
         {
+            // Cả 2 đều thành công
             user = newUser;
-            popupNotification.ShowNotification($"Đăng ký thành công! Email: {user.Email}");
-
-            // Reset form hoặc chuyển scene tùy bạn
+            ToastSystem.Instance.ShowToast("Đăng ký thành công!");
             onMovetoLoginForm();
         }
     }
@@ -218,5 +230,19 @@ public class FirebaseLogin : MonoBehaviour
     {
         // Ví dụ: load scene có tên "GameScene"
         SceneManager.LoadSceneAsync("HomeScene");
+    }
+    
+    public string GetSimpleName(string email)
+    {
+        if (string.IsNullOrEmpty(email) || !email.Contains("@")) 
+            return "User_" + Random.Range(1000, 9999);
+
+        // Cắt lấy phần trước chữ @
+        string localPart = email.Split('@')[0];
+
+        // Thêm đuôi số random
+        int randomSuffix = Random.Range(100, 9999);
+
+        return $"{localPart}_{randomSuffix}";
     }
 }

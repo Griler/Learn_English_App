@@ -5,6 +5,7 @@ using Firebase.Extensions;
 using UnityEngine;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using UnityEngine.UI;
 
 public class ShopLoader : MonoBehaviour
 {
@@ -21,6 +22,11 @@ public class ShopLoader : MonoBehaviour
     private Dictionary<string, bool> userAvatars;
     private Dictionary<string, bool> userBorders;
 
+    public GameObject panelConfirm;
+    public Button buttonConfirm;
+    public Button buttonCancel;
+
+    
     public void LoadShopAvatars()
     {
         dbRef = FirebaseDatabaseManager.Instance.dbReference;
