@@ -81,7 +81,6 @@ public class GrammarManager : MonoBehaviour
     private void LoadData()
     {
         string grammarCategoryId = PlayerPrefs.GetString("SelectedGrammarTopic");
-        grammarCategoryId = "past_simple";
         FirebaseDatabaseManager.Instance.FetchGrammarData(grammarCategoryId, onConnectData);
     }
 

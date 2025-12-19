@@ -98,7 +98,6 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             else if (task.IsCompleted)
             {
                 DataSnapshot snapshot = task.Result;
-
                 if (snapshot.Exists && snapshot.HasChildren)
                 {
                     // Cách 1: Parse thủ công (An toàn và dễ debug nhất)
@@ -137,7 +136,8 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             ex.conjugatedVerb = child.Child("conjugatedVerb").Value?.ToString();
             ex.sentence = child.Child("sentence").Value?.ToString();
             ex.translation = child.Child("translation").Value?.ToString();
-
+            ex.grammarPointID = data.grammarPointID;
+            ex.ruleText = data.rule;
             data.examples.Add(ex);
         }
 
@@ -149,7 +149,8 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             miniEx.answer = child.Child("answer").Value?.ToString();
             miniEx.difficultyLevel = child.Child("difficultyLevel").Value?.ToString();
             miniEx.question = child.Child("question").Value?.ToString();
-
+            miniEx.grammarPointID = data.grammarPointID;
+            miniEx.ruleText = data.rule;
             data.miniExercises.Add(miniEx);
         }
 

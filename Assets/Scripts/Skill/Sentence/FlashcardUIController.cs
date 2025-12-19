@@ -20,6 +20,8 @@ public class FlashcardUIController : BaseCode
     [SerializeField] protected TMP_InputField verbInputField;
     [SerializeField] protected TextMeshProUGUI resultText;
     [SerializeField] protected GameObject flashCardContainer;
+    [SerializeField] protected TextMeshProUGUI ruleText;
+    [SerializeField] protected TextMeshProUGUI grammarId;
 
     [Header("UI FlashCard other")] 
     [SerializeField] protected TextMeshProUGUI exampleQuestionText;
@@ -51,12 +53,12 @@ public class FlashcardUIController : BaseCode
         verbInputField.GetComponent<Image>().sprite = backgroundInputField[Convert.ToInt32(colorIndex)];
         if (Convert.ToInt32(colorIndex) == 0)
         {
-            resultText.text = "Correct";
+            resultText.text = "Đúng";
             resultText.color = Color.lawnGreen;
         }
         else if(Convert.ToInt32(colorIndex) == 1)
         {
-            resultText.text = "Wrong";
+            resultText.text = "Sai";
             resultText.color = Color.softRed;
         }
         yield return new WaitForSeconds(0.75f);

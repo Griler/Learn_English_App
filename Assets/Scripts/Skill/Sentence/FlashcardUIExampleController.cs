@@ -9,14 +9,12 @@ using TMPro;
 public class FlashcardUIExampleController : FlashcardUIController
 {
     [Header("UI Learn Example")] 
-    [SerializeField] private TextMeshProUGUI ruleText;
     [SerializeField] private TextMeshProUGUI exampleText;
     [SerializeField] private TextMeshProUGUI translationText;
     [SerializeField] public List<GrammarFlashcardExmpale> listCardExample;
 
     private GrammarFlashcardExmpale currentGrammarFlashcardExmpale;
     private int cardExampleIndexCurrent = 0;
-    private string grammaId = "";
 
     protected override void Start()
     {
@@ -27,6 +25,7 @@ public class FlashcardUIExampleController : FlashcardUIController
 
     public void initUI()
     {
+        flashCardContainer.SetActive((true));
         listCardExample = GrammarManager.GetCardsToLearn();
         listCard.AddRange(listCardExample);
         if (listCardExample.Count > 0)
@@ -39,8 +38,9 @@ public class FlashcardUIExampleController : FlashcardUIController
     void ShowCardLearn(GrammarFlashcardExmpale card)
     {
         StartCoroutine(setTypeInputField(TypeInputField.Default));
+        verbInputField.text = "";
         currentGrammarFlashcardExmpale = card;
-        grammaId = card.grammarPointID;
+        grammarId.text = card.grammarPointID;
         ruleText.text = card.ruleText;
         exampleText.text = card.sentence;
         translationText.text = card.translation;
