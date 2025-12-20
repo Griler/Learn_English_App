@@ -20,7 +20,9 @@ public class SpeakingController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI referenceTextInputEN; // Câu mẫu
     [SerializeField] private TextMeshProUGUI referenceTextInputVI; // Câu mẫu
     [SerializeField] private TextMeshProUGUI ttsTextInput; // Text để đọc
+    [SerializeField] private TextMeshProUGUI highScore; // Text để đọc
     [SerializeField] private Slider volumeSlider;
+    [SerializeField] private Slider progressBar;
 
     [Header("Settings")]
     [SerializeField] private int recordingLength = 5;
@@ -30,12 +32,15 @@ public class SpeakingController : MonoBehaviour
 
     private AudioSource audioSource;
     private AudioClip recordedClip;
-    private List<AudioClip> ListRecordedClip = new List<AudioClip>();
+    private Dictionary<int,AudioClip> ListRecordedClip = new  Dictionary<int,AudioClip>();
+    private Dictionary<int,float> listScore = new  Dictionary<int,float>();
     private string micDeviceName;
     private bool isRecording = false;
+    private int recordCountDown = 2;
 
     private List<SentenceItem> listSentences = new List<SentenceItem>();
     private int currentQuestionIndex = 0;
+    private int lastQuestionIndex = 0;
     public GameObject panelNotice;
     public Button confirmButton;
     public Button cancelNotice;
@@ -102,7 +107,29 @@ public class SpeakingController : MonoBehaviour
 
         // Clamp index to be safe
         currentQuestionIndex = Mathf.Clamp(index, 0, listSentences.Count - 1);
+        if (currentQuestionIndex > lastQuestionIndex)
+        {
+            updateProgressBar();
+        }
+        lastQuestionIndex = Mathf.Max(currentQuestionIndex, lastQuestionIndex);
+        if (lastQuestionIndex == currentQuestionIndex)
+        {
+            nextButton.interactable = false;
+        }
+        else
+        {
+            nextButton.interactable = true;
+        }
 
+        if (listScore.ContainsKey(currentQuestionIndex))
+        {
+            highScore.text = "Điểm cao nhất: " + listScore[currentQuestionIndex].ToString("F2");
+        }
+        else
+        {
+            highScore.text = "Chưa có điểm cao nhất";
+        }
+        recordCountDown = 2;
         SentenceItem currentQuestion = listSentences[currentQuestionIndex];
         if (referenceTextInputEN) referenceTextInputEN.text = currentQuestion.en;
         if (referenceTextInputVI) referenceTextInputVI.text = currentQuestion.vn;
@@ -118,7 +145,6 @@ public class SpeakingController : MonoBehaviour
 
         // Update button states
         if (prevButton) prevButton.interactable = (currentQuestionIndex > 0);
-        //if (nextButton) nextButton.interactable = (currentQuestionIndex < listSentences.Count - 1);
     }
 
     public void OnClickNextBtn()
@@ -163,7 +189,6 @@ public class SpeakingController : MonoBehaviour
 
         micDeviceName = Microphone.devices[0];
         recordedClip = Microphone.Start(micDeviceName, false, recordingLength, recordingSampleRate);
-        ListRecordedClip.Add(recordedClip);
         isRecording = true;
 
         UpdateStatus("Recording...");
@@ -179,7 +204,7 @@ public class SpeakingController : MonoBehaviour
         if (recordButton) recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Record";
 
         if (!IsAudioValid(recordedClip)) return;
-
+        ListRecordedClip[currentQuestionIndex] = (recordedClip);
         UpdateStatus("Processing...");
         GoogleSpeechService.Instance.SpeechToText(recordedClip, OnSTTSuccess, OnApiError);
     }
@@ -250,10 +275,7 @@ public class SpeakingController : MonoBehaviour
     
     bool HasClipAtIndex(int index)
     {
-        return ListRecordedClip != null &&
-               index >= 0 &&
-               index < ListRecordedClip.Count &&
-               ListRecordedClip[index] != null;
+        return ListRecordedClip.ContainsKey(currentQuestionIndex);
     }
 
 
@@ -263,11 +285,33 @@ public class SpeakingController : MonoBehaviour
 
         string reference = referenceTextInputEN ? referenceTextInputEN.text : "";
         float score = CalculateScore(transcript, reference, confidence);
-
+        if (score > 80)
+        {
+            recordCountDown = recordCountDown - 2;
+        }
+        else
+        {
+            recordCountDown--;
+        }
         if (scoreText)
         {
-            scoreText.text = $"Score: {score:F1}/100";
+            scoreText.text = $"Score: {score:F2}/100";
             scoreText.color = score > 80 ? Color.green : (score > 50 ? Color.yellow : Color.red);
+            if (listScore.ContainsKey(currentQuestionIndex))
+            {
+                listScore[currentQuestionIndex] = Mathf.Max(listScore[currentQuestionIndex],score);
+                highScore.text = "Điểm cao nhất: " + listScore[currentQuestionIndex].ToString("F2");
+            }
+            else
+            {
+                listScore[currentQuestionIndex] = score;
+                highScore.text = "Điểm cao nhất: " + listScore[currentQuestionIndex].ToString("F2");
+            }
+        }
+
+        if (recordCountDown <= 0)
+        {
+            nextButton.interactable = true;
         }
 
         UpdateStatus("Done!");
@@ -276,6 +320,7 @@ public class SpeakingController : MonoBehaviour
     private void OnApiError(string error)
     {
         UpdateStatus($"Error: {error}");
+        ToastSystem.Instance.ShowToast("vui lòng thử lại");
         Debug.LogError(error);
     }
 
@@ -366,5 +411,12 @@ public class SpeakingController : MonoBehaviour
     private async void UpdateMissionState()
     {
         await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_SPEAKING);
+    }
+    
+    
+    protected void updateProgressBar()
+    {
+        float incrementValue = (progressBar.maxValue / listSentences.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

@@ -663,6 +663,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 171054641}
   m_CullTransparentMesh: 1
+--- !u!1 &219072527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 219072529}
+  - component: {fileID: 219072528}
+  m_Layer: 0
+  m_Name: FirebaseMgr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &219072528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219072527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8a0d4a14c284a8c9282dd95a9d1889e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userProfileSO: {fileID: 11400000, guid: edd89feb0d00e4446bbebaead1bb6e41, type: 2}
+--- !u!4 &219072529
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219072527}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.42668, y: 0.92408, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &387074365
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,6 +900,7 @@ MonoBehaviour:
   avatarImage: {fileID: 1687114760}
   borderImage: {fileID: 1477175732}
   rankPoint: {fileID: 1393643467}
+  status: {fileID: 0}
   invitePvpBtn: {fileID: 0}
   deleteBtn: {fileID: 0}
 --- !u!114 &396415261
@@ -1059,6 +1105,7 @@ MonoBehaviour:
   avatarImage: {fileID: 1738429716}
   borderImage: {fileID: 1869830139}
   rankPoint: {fileID: 25280798}
+  status: {fileID: 0}
   invitePvpBtn: {fileID: 0}
   deleteBtn: {fileID: 0}
 --- !u!222 &701443195
@@ -1201,6 +1248,7 @@ MonoBehaviour:
   avatarImage: {fileID: 1687114760}
   borderImage: {fileID: 1477175732}
   rankPoint: {fileID: 1393643467}
+  status: {fileID: 0}
   invitePvpBtn: {fileID: 0}
   deleteBtn: {fileID: 0}
 --- !u!222 &887804324
@@ -3304,6 +3352,7 @@ MonoBehaviour:
   avatarImage: {fileID: 1738429716}
   borderImage: {fileID: 1869830139}
   rankPoint: {fileID: 25280798}
+  status: {fileID: 0}
   invitePvpBtn: {fileID: 0}
   deleteBtn: {fileID: 0}
 --- !u!114 &2138049149
@@ -3488,3 +3537,4 @@ SceneRoots:
   - {fileID: 790208519}
   - {fileID: 1563692130}
   - {fileID: 2113340817}
+  - {fileID: 219072529}

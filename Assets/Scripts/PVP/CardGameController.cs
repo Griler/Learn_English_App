@@ -139,8 +139,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
                 foreach (DataSnapshot child in snapshot.Children)
                 {
-                    if (rawCardData.Count < 11)
-                    {
                         try
                         {
                             CardDataModel card = new CardDataModel();
@@ -157,8 +155,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
                         {
                             Debug.LogWarning("Parse lỗi: " + ex.Message);
                         }
-
-                    }
                 }
 
                 Debug.Log($"Đã tải kho: {rawCardData.Count} từ vựng.");
@@ -237,11 +233,15 @@ public class CardGameController : MonoBehaviourPunCallbacks
         if (isGameStarted) return; 
         isGameStarted = true;
         Debug.Log($"Setup Board với Seed: {seed}");
-        System.Random rnd = new System.Random(seed);
-
-        // A. Trộn kho từ vựng và lấy giới hạn (Limit)
+        UnityEngine.Random.InitState(seed);
+        rawCardData = rawCardData.OrderBy(item => item.id).ToList();
         List<CardDataModel> poolData = new List<CardDataModel>(rawCardData);
-        poolData = poolData.OrderBy(x => rnd.Next()).ToList();
+        
+        poolData = poolData.OrderBy(x =>
+        {
+            int random = UnityEngine.Random.Range(1, seed);
+            return random;
+        }).ToList();
 
         int countToTake = Mathf.Min(poolData.Count, maxPairsInGame);
         List<CardDataModel> selectedWords = poolData.Take(countToTake).ToList();
@@ -259,7 +259,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
         }
 
         // C. Trộn lại lần nữa để rải ra bàn
-        deck = deck.OrderBy(x => rnd.Next()).ToList();
+        deck = deck.OrderBy(x => UnityEngine.Random.value).ToList();
 
         // D. Spawn thẻ lên bàn
         foreach (Transform child in gridContainer) Destroy(child.gameObject);
@@ -507,7 +507,11 @@ public class CardGameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            saveMatchDatabase("DRAW", EloCalculator.GameResult.Draw, otherPlayer.name);
+            saveMatchDatabase("WIN", EloCalculator.GameResult.Draw, otherPlayer.name);
+            gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver((int)(rankChange/2));
+            UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
+
         }
 
         isGameStarted = false;

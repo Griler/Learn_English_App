@@ -53,7 +53,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     public TextMeshProUGUI questionText;
 
     [Header("--- GAME SETTINGS ---")] public int targetScoreToWin = 5;
-    public float penaltyTime = 1.0f;
+    public float penaltyTime = 3.0f;
     public int questionLimit = 20; // Số câu hỏi sẽ chơi
 
     // DATA
@@ -185,8 +185,14 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_ProcessAndDownloadAudio(int seed)
     {
-        System.Random rnd = new System.Random(seed);
-        playList = rawData.OrderBy(x => rnd.Next()).Take(questionLimit).ToList();
+        rawData = rawData.OrderBy(item => item.id).ToList();
+        UnityEngine.Random.InitState(seed);
+        playList = rawData.OrderBy(x =>
+        {
+            int random = UnityEngine.Random.Range(1, seed);
+            return random;
+            
+        }).Take(questionLimit).ToList();
 
         StartCoroutine(DownloadAudioSequence());
     }
