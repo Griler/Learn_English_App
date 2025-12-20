@@ -39,3 +39,36 @@ public static class GlobalData
         public const string INMATCH = "INMATCH";
     }
 }
+
+// PVPRandom.cs - Không cần gắn vào GameObject
+public class PVPRandom
+{
+    private uint _state;
+
+    // Khởi tạo với Seed
+    public PVPRandom(int seed)
+    {
+        // Ép kiểu sang uint, tránh số âm gây lỗi logic
+        _state = (uint)seed;
+        // Nếu seed = 0 thì đổi thành 1 (thuật toán này ghét số 0)
+        if (_state == 0) _state = 1;
+    }
+
+    // Hàm lấy số tiếp theo (thay thế Next() của System.Random)
+    public int Next()
+    {
+        // Công thức toán học cố định: không bao giờ thay đổi theo nền tảng
+        _state = _state * 1664525 + 1013904223;
+        
+        // Trả về số dương (loại bỏ bit dấu)
+        return (int)(_state >> 1);
+    }
+
+    // Hàm lấy số trong khoảng [min, max) (thay thế Range)
+    public int Range(int min, int max)
+    {
+        if (min >= max) return min;
+        // Dùng toán học thuần túy để chia lấy dư
+        return min + (Next() % (max - min));
+    }
+}

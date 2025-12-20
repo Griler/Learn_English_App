@@ -165,7 +165,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
                 Hashtable props = new Hashtable();
                 props.Add("IsLoaded", true);
                 PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-                RPC_SetupBoard(1, 1);
             }
         });
     }
@@ -270,7 +269,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
             GameObject cardObj = Instantiate(cardPrefab, gridContainer);
             CardController controller = cardObj.GetComponent<CardController>();
             cardObj.SetActive(true);
-            // Init thẻ
+            
             controller.Init(data.id, i, data.englishWord, data.spriteName, this, deck[i].isTypeWorld);
             activeCards.Add(controller);
         }  
@@ -514,6 +513,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
     {
         // Giả định bạn có sẵn script RankDatabaseManager và EloCalculator
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+            rankChange = 0;
         RankDatabaseManager.Instance.SaveMatchHistory(matchId, resultState, rankChange, otherName, "Lật thẻ");
     }
 
@@ -601,5 +602,41 @@ void UpdateScoreUI()
     private async void UpdateMissionState(string nameMission)
     {
         await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
+    }
+    
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
+
+        // 1. Dừng Timer ngay lập tức
+        isGameStarted = false;
+
+        statusText.text = "Đối thủ đã thoát! Bạn thắng!";
+        
+        // Gọi hàm xử lý thắng giống như khi hết máu
+        // Lưu ý: Cần truyền ID của chính mình vào làm survivor
+        int myActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        
+        // Tái sử dụng logic thắng cuộc
+        // Gọi trực tiếp vì không còn ai để RPC nữa (hoặc RPC cũng được nếu muốn chuẩn flow)
+        HandleOpponentLeftWin(myActorNumber);
+    }
+
+    void HandleOpponentLeftWin(int winnerActorNumber)
+    {
+        // Tính điểm Elo (giả sử thắng thì cộng điểm)
+        // Lưu lại lịch sử đấu: "OPP_DISCONNECT" hoặc "WIN"
+        saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
+        
+        // Cập nhật nhiệm vụ
+        UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
+        UpdateMissionState(GlobalData.MissionKeys.P2P);
+
+        // Hiển thị Panel Thắng
+        gameWinPanel.SetActive(true);
+        if(gameWinPanel.GetComponent<GameOverPanelController>() != null)
+        {
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
+        }
     }
 }

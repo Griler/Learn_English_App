@@ -471,6 +471,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     void saveMatchDatabase(string state, EloCalculator.GameResult res, string oName)
     { 
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, res);
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+            rankChange = 0;
         RankDatabaseManager.Instance.SaveMatchHistory(matchId, state,rankChange, oName, "Nghe Từ");
     }
     
@@ -482,6 +484,43 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     
     private async void UpdateMissionState(string nameMission)
     {
+     
         await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
+    }
+    
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
+
+        // 1. Dừng Timer ngay lập tức
+        isGameStarted = false;
+
+        statusText.text = "Đối thủ đã thoát! Bạn thắng!";
+        
+        // Gọi hàm xử lý thắng giống như khi hết máu
+        // Lưu ý: Cần truyền ID của chính mình vào làm survivor
+        int myActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        
+        // Tái sử dụng logic thắng cuộc
+        // Gọi trực tiếp vì không còn ai để RPC nữa (hoặc RPC cũng được nếu muốn chuẩn flow)
+        HandleOpponentLeftWin(myActorNumber);
+    }
+
+    void HandleOpponentLeftWin(int winnerActorNumber)
+    {
+        // Tính điểm Elo (giả sử thắng thì cộng điểm)
+        // Lưu lại lịch sử đấu: "OPP_DISCONNECT" hoặc "WIN"
+        saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
+        
+        // Cập nhật nhiệm vụ
+        UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
+        UpdateMissionState(GlobalData.MissionKeys.P2P);
+
+        // Hiển thị Panel Thắng
+        gameWinPanel.SetActive(true);
+        if(gameWinPanel.GetComponent<GameOverPanelController>() != null)
+        {
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
+        }
     }
 }
