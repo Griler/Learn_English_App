@@ -106,7 +106,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     }
     
     void LoadQuestionsFromFirebase() {
-    reference.Child("questions").Child("list") 
+    reference.Child("questions").Child("list_test") 
         .GetValueAsync().ContinueWithOnMainThread(task => {
         
         if (task.IsFaulted)
