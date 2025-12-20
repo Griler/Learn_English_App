@@ -88,7 +88,7 @@ public class DailyMissionManager : MonoBehaviour
 
     void LoadMissionsWithResetCheck()
     {
-        userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
+        userId = FirebaseDatabaseManager.Instance.fireAuthReference.CurrentUser.UserId;
 
         DatabaseReference userRef = FirebaseDatabase.DefaultInstance.GetReference("user_missions").Child(userId);
         userRef.GetValueAsync().ContinueWithOnMainThread(task =>

@@ -59,7 +59,7 @@ public class FriendSystem : MonoBehaviour
     private string roomCode = "";
     public void SendInvite(string friendId, string friendName)
     {
-        myUserId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
+        myUserId = FirebaseDatabaseManager.Instance.fireAuthReference.CurrentUser.UserId;
         
         // 1. Tạo một mã phòng ngẫu nhiên (Ví dụ: Room_4821)
         roomCode = "Room_" + Random.Range(1000, 9999);

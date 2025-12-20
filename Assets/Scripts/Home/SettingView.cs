@@ -76,7 +76,7 @@ public class SettingView : MonoBehaviour
         {
             ToastSystem.Instance.ShowToast("Vui lòng nhập tên");
         }
-        else if (nameInputField.text.Length<10)
+        else if (nameInputField.text.Length > 10)
         {
             ToastSystem.Instance.ShowToast("Vui lòng nhập tên dưới 10 ký tự");
         }
@@ -90,6 +90,7 @@ public class SettingView : MonoBehaviour
         
             yield return new WaitUntil(() => task.IsCompleted);
             ToastSystem.Instance.ShowToast("Bạn đổi tên thành công");
+            nameUser.text = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.name;
             panelInputName.SetActive(false);
         }
     }
