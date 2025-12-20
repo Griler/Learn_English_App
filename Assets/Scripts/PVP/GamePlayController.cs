@@ -178,33 +178,39 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     // --- RPC MỚI: NHẬN SEED VÀ TRỘN CÂU HỎI ---
     [PunRPC] 
-    void RPC_SetupAndStartGame(int seed, int startTurnActor, PhotonMessageInfo info)
+    void RPC_SetupAndStartGame(int[] mixedIndices, int startTurnActor, PhotonMessageInfo info)
     {
-        if (isGameStarted) return; 
+        if (isGameStarted) return;
         isGameStarted = true;
-        Debug.Log("Nhận được Seed: " + seed + ". Bắt đầu trộn câu hỏi...");
 
-        // 1. Tạo bộ random với Seed được đồng bộ
-        System.Random rnd = new System.Random(seed);
+        Debug.Log($"[SYNC] Đã nhận danh sách {mixedIndices.Length} câu từ Master.");
 
-        // 2. Trộn danh sách (Shuffle) dựa trên Seed này
-        // (Đây là thuật toán trộn Fisher-Yates chuẩn)
-        allQuestions = rawAllQuestions.OrderBy(x => rnd.Next()).ToList();
+        // 1. SẮP XẾP DANH SÁCH GỐC (BẮT BUỘC)
+        // Để đảm bảo index 0 của máy này giống hệt index 0 của máy kia
+        // Sắp xếp theo nội dung câu hỏi (hoặc ID nếu có)
+        rawAllQuestions = rawAllQuestions.OrderBy(q => q.questionText).ToList();
 
-        // 3. Cắt lấy 100 câu đầu tiên
-        int questionCountToTake = 100;
-        if (allQuestions.Count > questionCountToTake)
+        // 2. TẠO LIST CÂU HỎI THI ĐẤU
+        allQuestions = new List<QuestionData>();
+
+        foreach (int index in mixedIndices)
         {
-            allQuestions = allQuestions.Take(questionCountToTake).ToList();
+            // Kiểm tra an toàn để không bị lỗi Index Out Of Range
+            if (index >= 0 && index < rawAllQuestions.Count)
+            {
+                allQuestions.Add(rawAllQuestions[index]);
+            }
         }
 
-        Debug.Log($"Đã chốt {allQuestions.Count} câu hỏi cho ván này.");
+        Debug.Log($"Đã setup xong {allQuestions.Count} câu hỏi.");
 
+        // 3. Bật nút trả lời
         for (var i = 0; i < answerButtons.Length; i++)
         {
             answerButtons[i].gameObject.SetActive(true);
         }
-        // 4. Bắt đầu các logic game như cũ
+
+        // 4. Bắt đầu logic game
         InitGameLogic(startTurnActor);
     }
     
@@ -266,16 +272,38 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         {
             if (rawAllQuestions.Count > 0)
             {
-                int gameSeed = UnityEngine.Random.Range(0, 999999);
+                int[] shuffledIndices = getShuffledIndices();
                 int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
+
                 Debug.LogError("tao seed sau count down");
-                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, gameSeed, startActor);
+                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, shuffledIndices.ToArray(), startActor);
             }
             else
             {
                 Debug.LogError("List câu hỏi rỗng, không thể bắt đầu game!");
             }
         }
+    }
+
+    int[] getShuffledIndices()
+    {
+        int gameSeed = UnityEngine.Random.Range(1, 999999);
+        List<int> indices = new List<int>();
+        for (int i = 0; i < rawAllQuestions.Count; i++)
+        {
+            indices.Add(i);
+        }
+        System.Random sysRnd = new System.Random(gameSeed);
+        rawAllQuestions = rawAllQuestions.OrderBy(q => q.questionText).ToList();
+        var shuffledIndices = indices.OrderBy(x => sysRnd.Next()).ToList();
+
+        // 4. Cắt lấy 100 câu (nếu nhiều hơn)
+        if (shuffledIndices.Count > 100)
+        {
+            shuffledIndices = shuffledIndices.Take(100).ToList();
+        }
+
+        return shuffledIndices.ToArray();
     }
     
     void InitGameLogic(int startActor)
@@ -563,6 +591,8 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     void saveMatchDatabase(string resultState,EloCalculator.GameResult result,string otherName)
     {
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank,otherPlayer.rank,result);
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+            rankChange = 0;
         RankDatabaseManager.Instance.SaveMatchHistory(matchId,resultState, rankChange, otherName, "Đáp Nhanh");
     }
 
@@ -654,4 +684,44 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         }
     }
     
+    // --- XỬ LÝ KHI ĐỐI THỦ THOÁT GAME ---
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
+
+        // 1. Dừng Timer ngay lập tức
+        isTimerRunning = false;
+        isGameStarted = false;
+        SetButtonsInteractable(false);
+
+        // 2. Xử lý thắng cuộc cho người còn lại (là TUI)
+        // Vì đối thủ out nên tui thắng mặc định
+        statusText.text = "Đối thủ đã thoát! Bạn thắng!";
+        
+        // Gọi hàm xử lý thắng giống như khi hết máu
+        // Lưu ý: Cần truyền ID của chính mình vào làm survivor
+        int myActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        
+        // Tái sử dụng logic thắng cuộc
+        // Gọi trực tiếp vì không còn ai để RPC nữa (hoặc RPC cũng được nếu muốn chuẩn flow)
+        HandleOpponentLeftWin(myActorNumber);
+    }
+
+    void HandleOpponentLeftWin(int winnerActorNumber)
+    {
+        // Tính điểm Elo (giả sử thắng thì cộng điểm)
+        // Lưu lại lịch sử đấu: "OPP_DISCONNECT" hoặc "WIN"
+        saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
+        
+        // Cập nhật nhiệm vụ
+        UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
+        UpdateMissionState(GlobalData.MissionKeys.P2P);
+
+        // Hiển thị Panel Thắng
+        gameWinPanel.SetActive(true);
+        if(gameWinPanel.GetComponent<GameOverPanelController>() != null)
+        {
+            gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
+        }
+    }
 }

@@ -24,11 +24,11 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         // Phải kiểm tra xem đã có thằng nào nắm giữ Instance chưa
         if (Instance != null && Instance != this)
         {
+            Debug.LogError(gameObject.name);// Hủy cái mới ngay, KHÔNG ĐƯỢC ĐỤNG VÀO Instance cũ
             Destroy(gameObject); // Hủy cái mới ngay, KHÔNG ĐƯỢC ĐỤNG VÀO Instance cũ
             return; 
         }
-
-        Instance = this; // Chỉ gán khi chưa có ai, hoặc là chính mình
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     
         _ = InitializeFirebase();

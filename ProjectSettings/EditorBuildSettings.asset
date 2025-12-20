@@ -26,9 +26,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ListenScene.unity
     guid: 51ddb69e4376ef1478695ac88e068863
-  - enabled: 0
-    path: Assets/Scenes/Test.unity
-    guid: 892b87cdbc3d79e43a80b367809e17c8
   - enabled: 1
     path: Assets/Scenes/WaitingRoomScene.unity
     guid: 27a8bd65add5639478c772a15d48825d

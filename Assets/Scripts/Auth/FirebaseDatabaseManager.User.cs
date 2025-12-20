@@ -37,7 +37,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         
         UserInfoData uInfo = JsonUtility.FromJson<UserInfoData>(json);
 
-        UnityMainThreadDispatcher.Instance().Enqueue(() => {
+        UnityMainThreadDispatcher.Instance.Enqueue(() => {
              // Giả sử bạn có biến userProfileSO ở đây hoặc truyền vào
              userProfileSO.UpdateUserInfo(uInfo); 
              Debug.Log("Updated User Info from Firebase");
@@ -78,7 +78,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             }
 
             // Đẩy về SO
-            UnityMainThreadDispatcher.Instance().Enqueue(() => {
+            UnityMainThreadDispatcher.Instance.Enqueue(() => {
                 userProfileSO.UpdateFriendList();
             });
         };

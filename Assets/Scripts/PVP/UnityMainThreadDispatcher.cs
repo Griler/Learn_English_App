@@ -7,17 +7,18 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     private static UnityMainThreadDispatcher _instance;
     private static readonly Queue<Action> _executionQueue = new Queue<Action>();
 
-    public static UnityMainThreadDispatcher Instance()
+    public static UnityMainThreadDispatcher Instance;
+
+    private void Awake()
     {
-        if (_instance == null)
+        if (Instance != null && Instance != this)
         {
-            _instance = new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
-            if (Application.isPlaying) 
-            {
-                DontDestroyOnLoad(_instance.gameObject);
-            }
+            Debug.LogError(gameObject.name);// Hủy cái mới ngay, KHÔNG ĐƯỢC ĐỤNG VÀO Instance cũ
+            Destroy(gameObject); // Hủy cái mới ngay, KHÔNG ĐƯỢC ĐỤNG VÀO Instance cũ
+            return; 
         }
-        return _instance;
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public void Enqueue(Action action)
@@ -41,6 +42,7 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     
     private void OnApplicationQuit()
     {
+        Debug.Log("set Offline");
         FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.OFFLINE);
     }
 }

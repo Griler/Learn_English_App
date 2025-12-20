@@ -53,6 +53,12 @@ public class FirebaseLogin : MonoBehaviour
     void setUserAuth()
     {
         auth = FirebaseAuth.DefaultInstance;
+        if (auth.CurrentUser != null)
+        {
+            popupNotification.ShowNotification(" Đăng nhập thành công!");
+            //statusTextLoginForm.text = $" Đăng nhập thành công! Xin chào {user.Email}";
+            loadNextScene();
+        }
     }
 
     public void OnLoginButtonPressed()
@@ -112,7 +118,7 @@ public class FirebaseLogin : MonoBehaviour
         {
             user = loginTask.Result.User;
             popupNotification.ShowNotification(" Đăng nhập thành công!");
-            //statusTextLoginForm.text = $" Đăng nhập thành công! Xin chào {user.Email}";
+            FirebaseDatabaseManager.Instance.currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
             loadNextScene();
         }
     }
