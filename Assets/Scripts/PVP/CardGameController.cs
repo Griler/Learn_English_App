@@ -91,6 +91,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     DatabaseReference reference;
     private bool isGameStarted = false; // Cờ chặn gọi setup 2 lần
     private bool canClick = true; // Cờ chặn gọi setup 2 lần
+    private bool isGameOver = false; 
 
     private void Start()
     {
@@ -98,6 +99,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
         resetProps.Add("IsLoaded", false); 
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
         rankChange = 0;
+        isGameOver = false; 
+
         InitUIPlayer();
         // Fix lỗi dependencies Firebase trước khi chạy
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
@@ -477,6 +480,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     {
         loadingPanel.SetActive(false);
         isTimerRunning = false;
+        isGameOver = true;
 
         int myScore = playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber)
             ? playerScores[PhotonNetwork.LocalPlayer.ActorNumber]
@@ -606,6 +610,7 @@ void UpdateScoreUI()
     
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        if(isGameOver) return;
         Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
 
         // 1. Dừng Timer ngay lập tức

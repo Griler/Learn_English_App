@@ -66,6 +66,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     private bool isPenalty = false;
     private bool isGameStarted = false;
     private string matchId = "";
+    private bool isGameOver = false; 
+
 
     private Dictionary<int, int> playerScores = new Dictionary<int, int>();
     [NotNull] private UserDataPVP myPlayer = new UserDataPVP();
@@ -80,6 +82,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         resetProps.Add("AudioLoaded", false);
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
         rankChange = 0;
+        isGameOver = false; 
         playSoundBtn.onClick.AddListener(PlayCurrentSound);
         for (int i = 0; i < optionButtons.Length; i++)
         {
@@ -395,6 +398,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     {
         loadingPanel.SetActive(false);
         isRoundActive = false;
+        isGameOver = true;
         bool amIWinner = (PhotonNetwork.LocalPlayer.ActorNumber == winnerActor);
         UpdateMissionState(GlobalData.MissionKeys.P2P);
         if (amIWinner)
@@ -490,6 +494,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        if(isGameOver) return;
         Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
 
         // 1. Dừng Timer ngay lập tức

@@ -69,12 +69,14 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     private Dictionary<int, int> playerLives = new Dictionary<int, int>();
     DatabaseReference reference;
     [SerializeField] private List<QuestionData> rawAllQuestions = new List<QuestionData>();
+    private bool isGameOver = false; 
     private void Start()
     {
         Hashtable resetProps = new Hashtable();
         resetProps.Add("IsLoaded", false); 
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
         rankChange = 0;
+        isGameOver = false; 
         for (var i = 0; i < answerButtons.Length; i++)
         {
             int index = i;
@@ -551,6 +553,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     void RPC_GameOver(string msg, int survivorActorNumber)
     {
         loadingPanel.SetActive(false);
+        isGameOver = true;
         if (msg == "DRAW")
         {
             saveMatchDatabase("DRAW",EloCalculator.GameResult.Draw,otherPlayer.name);
@@ -687,6 +690,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     // --- XỬ LÝ KHI ĐỐI THỦ THOÁT GAME ---
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        if(isGameOver) return;
         Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
 
         // 1. Dừng Timer ngay lập tức
