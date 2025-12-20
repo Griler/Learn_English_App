@@ -40,8 +40,8 @@ public class FlashcardUIExampleController : FlashcardUIController
         StartCoroutine(setTypeInputField(TypeInputField.Default));
         verbInputField.text = "";
         currentGrammarFlashcardExmpale = card;
-        grammarId.text = card.grammarPointID;
-        ruleText.text = card.ruleText;
+        grammarId.text = grammarDefinitions[card.grammarPointID.ToUpper()].ToUpper();
+        ruleText.text = "Quy tắc: " + card.ruleText;
         exampleText.text = card.sentence;
         translationText.text = card.translation;
         resultText.text = "";

@@ -11,6 +11,7 @@ public class FlashcardUIExerciseController : FlashcardUIController
     private int cardExerciseIndexCurrent = 0;
     private GrammarFlashcardExercise currentGrammarFlashcardExercise;
     public Button skipButton;
+    public Button nextSkipButton;
     
     private void OnEnable()
     {
@@ -18,26 +19,23 @@ public class FlashcardUIExerciseController : FlashcardUIController
         GameEvents.showExerciseUI += showExerciseUI;
         skipButton.onClick.AddListener((() =>
         {
-            StartCoroutine(HandleSkipDelay());
+            resultText.text = currentGrammarFlashcardExercise.answer;
+            resultText.color = Color.forestGreen;
+            nextSkipButton.gameObject.SetActive(true);
         }));
-    }
-    
-    private IEnumerator HandleSkipDelay()
-    {
-        // 1. Chờ 0.5 giây
-        resultText.text = currentGrammarFlashcardExercise.answer;
-
-        yield return new WaitForSeconds(0.5f);
-        // 2. Chạy logic của bạn
-        cardExerciseIndexCurrent++;
-        if (cardExerciseIndexCurrent < listCardExercise.Count)
+        nextSkipButton.onClick.AddListener(() =>
         {
-            ShowCardExercise(listCardExercise[cardExerciseIndexCurrent]);
-        }
-        else
-        {
-            ShowFinishPanel();
-        }
+            cardExerciseIndexCurrent++;
+            if (cardExerciseIndexCurrent < listCardExercise.Count)
+            {
+                updateProgressBar();
+                ShowCardExercise(listCardExercise[cardExerciseIndexCurrent]);
+            }
+            else
+            {
+                ShowFinishPanel();
+            }
+        });
     }
 
     private void OnDestroy()
@@ -71,8 +69,9 @@ public class FlashcardUIExerciseController : FlashcardUIController
         verbInputField.text = "";
         currentGrammarFlashcardExercise = card;
         exampleQuestionText.text = card.question;
-        grammarId.text = card.grammarPointID;
-        ruleText.text = card.ruleText;
+        grammarId.text = grammarDefinitions[card.grammarPointID.ToUpper()].ToUpper();
+        ruleText.text = "Quy tắc: " + card.ruleText;
+        nextSkipButton.gameObject.SetActive(false);
         nextButton.onClick.RemoveAllListeners();
         nextButton.onClick.AddListener(OnSubmitAnswer);
     }
@@ -120,6 +119,11 @@ public class FlashcardUIExerciseController : FlashcardUIController
         {
             HandleAnswer(TypeInputField.Wrong);
         }
-        
+    }
+    
+    protected override void updateProgressBar()
+    {
+        float incrementValue = (progressBar.maxValue / listCardExercise.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

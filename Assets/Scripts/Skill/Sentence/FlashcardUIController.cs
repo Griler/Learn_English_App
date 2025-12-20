@@ -29,6 +29,26 @@ public class FlashcardUIController : BaseCode
     [SerializeField] protected Slider progressBar;
     [SerializeField] protected List<GrammarFlashcard> listCard;
     [SerializeField] protected Button nextButton;
+    public Dictionary<string, string> grammarDefinitions = new Dictionary<string, string>()
+    {
+        // --- HIỆN TẠI (PRESENT) ---
+        { "PRESENT_SIMPLE", "Thì hiện tại đơn" },
+        { "PRESENT_CONTINUOUS", "Thì hiện tại tiếp diễn" },
+        { "PRESENT_PERFECT", "Thì hiện tại hoàn thành" },
+        { "PRESENT_PERFECT_CONTINUOUS", "Thì hiện tại hoàn thành tiếp diễn" },
+
+        // --- QUÁ KHỨ (PAST) ---
+        { "PAST_SIMPLE", "Thì quá khứ đơn" },
+        { "PAST_CONTINUOUS", "Thì quá khứ tiếp diễn" },
+        { "PAST_PERFECT", "Thì quá khứ hoàn thành" },
+        { "PAST_PERFECT_CONTINUOUS", "Thì quá khứ hoàn thành tiếp diễn" },
+
+        // --- TƯƠNG LAI (FUTURE) ---
+        { "FUTURE_SIMPLE", "Thì tương lai đơn" },
+        { "FUTURE_CONTINUOUS", "Thì tương lai tiếp diễn" },
+        { "FUTURE_PERFECT", "Thì tương lai hoàn thành" },
+        { "FUTURE_PERFECT_CONTINUOUS", "Thì tương lai hoàn thành tiếp diễn" }
+    };
     
     private int currentCardIndex = 0;
     private float incrementValue = 0;
