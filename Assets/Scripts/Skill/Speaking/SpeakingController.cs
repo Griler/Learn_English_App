@@ -410,6 +410,8 @@ public class SpeakingController : MonoBehaviour
 
     private async void UpdateMissionState()
     {
+        string topicKey = PlayerPrefs.GetString("CurrentSpeakingTopic");
+        FirebaseDatabaseManager.Instance.SaveProgress(topicKey,"speaking", true);
         await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_SPEAKING);
     }
     

@@ -22,8 +22,9 @@ public class SpeakingLoader : MonoBehaviour
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void LoadTopicsFromFirebase()
+   public void LoadTopicsFromFirebase()
     {
+        // 1. Tải danh sách chủ đề Speaking
         FirebaseDatabase.DefaultInstance
             .GetReference("speaking")
             .GetValueAsync()
@@ -32,36 +33,88 @@ public class SpeakingLoader : MonoBehaviour
                 if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
-                    int index = 0;
+                    key.Clear(); // Xóa list cũ trước khi add mới
+                    
                     foreach (var child in snapshot.Children)
                     {
-                       key.Add(child.Key);
-                       string keyDic = child.Key;  // ví dụ: "greetings"
-                       topicIndexDict[keyDic] = index; 
-                       index++;
+                       key.Add(child.Key); // Ví dụ: "greetings", "travel"
                     }
+
                     string json = snapshot.GetRawJsonValue();
-                    //Debug.Log("Loaded JSON:\n" + json);
-                    data = JsonUtility.FromJson<EnglishData>(json);
-                    Debug.Log("First greeting: " + data.greetings[0].en);
-                    LoadItem();
+                    try {
+                        data = JsonUtility.FromJson<EnglishData>(json);
+                        
+                        // 2. Sau khi có danh sách, tải tiếp tiến độ User
+                        LoadUserProgress();
+                    }
+                    catch (System.Exception e) {
+                         Debug.LogError("JSON Error: " + e.Message);
+                    }
                 }
             });
     }
 
-    void LoadItem()
+    void LoadUserProgress()
     {
+        string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        
+        // Đường dẫn: users/{uid}/learning_progress/speaking
+        FirebaseDatabase.DefaultInstance
+            .GetReference($"users/{userId}/learning_progress/speaking")
+            .GetValueAsync().ContinueWithOnMainThread(task => 
+            {
+                DataSnapshot progressSnapshot = null;
+                if (task.IsCompleted && !task.IsFaulted)
+                {
+                    progressSnapshot = task.Result;
+                }
+                
+                // Truyền snapshot tiến độ vào hàm tạo UI
+                LoadItem(progressSnapshot);
+            });
+    }
 
+    void LoadItem(DataSnapshot userProgress)
+    {
         foreach (Transform c in container) Destroy(c.gameObject);
+        
         for (int i = 0; i < key.Count; i++)
         {
             GameObject go = Instantiate(item, container);
-            go.GetComponent<SpeakingItem>().setImage(sprite[i]);
-            string[] parts = key[i].Split('_');
-            go.GetComponent<SpeakingItem>().setName(parts[0]);
+            
+            // Set hình ảnh (nếu có đủ sprite)
+            if (i < sprite.Count) go.GetComponent<SpeakingItem>().setImage(sprite[i]);
+            
+            // Xử lý tên hiển thị (bỏ dấu gạch dưới nếu có)
             string currentKey = key[i];
+            string displayName = currentKey.Split('_')[0]; 
+            
+            go.GetComponent<SpeakingItem>().setName(displayName);
             go.GetComponent<SpeakingItem>().setOnClickButton(() => OnTopicClicked(currentKey));
-            //go.GetComponent<SpeakingItem>().on
+
+            // --- CHECK TIẾN ĐỘ ---
+            bool isCompleted = false;
+            if ( userProgress != null && userProgress.HasChild(currentKey))
+            {
+                var userTopicData = userProgress.Child(currentKey);
+
+                // Lấy giá trị isComplete (mặc định false nếu không tìm thấy)
+                if (userTopicData.HasChild("isCompleted"))
+                {
+                    // Parse giá trị sang bool an toàn
+                    bool.TryParse(userTopicData.Child("isCompleted").Value.ToString(), out isCompleted);
+                }
+            }
+
+            if (isCompleted)
+            {
+                go.GetComponentsInChildren<Image>()[0].color = Color.white;
+            }
+            else
+            {
+                go.GetComponentsInChildren<Image>()[0].color = Color.gray;
+
+            }
         }
     }
 

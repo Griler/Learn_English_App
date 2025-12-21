@@ -56,4 +56,33 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         });
     }
     
+    public void SaveProgress(string topicId,string pathType, bool isComplete = true)
+    {
+        var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
+        if (currentUser == null)
+        {
+            Debug.LogError("Chưa đăng nhập, không thể lưu!");
+            return;
+        }
+        
+
+        string path = $"users/{currentUser.UserId}/learning_progress/{pathType}/{topicId}";
+        Dictionary<string, object> updateData = new Dictionary<string, object>();
+        updateData["isCompleted"] = isComplete;
+        FirebaseDatabase.DefaultInstance
+            .GetReference(path)
+            .UpdateChildrenAsync(updateData) // Dùng Update thay vì Set để không mất các field khác nếu có
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    Debug.Log($"Đã lưu tiến độ Topic: {topicId}");
+                }
+                else
+                {
+                    Debug.LogError($"Lỗi lưu tiến độ: {task.Exception}");
+                }
+            });
+    }
+    
 }

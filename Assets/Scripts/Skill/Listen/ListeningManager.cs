@@ -233,7 +233,8 @@ public class ListeningGameManager : MonoBehaviour
                 }
             }
         }
-
+        string learnCategoryId = PlayerPrefs.GetString("SelectedListenTopic");
+        FirebaseDatabaseManager.Instance.SaveProgress(learnCategoryId, "listen", true);
         UpdateMissionState();
     }
 

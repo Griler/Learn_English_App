@@ -53,30 +53,8 @@ public class FlashcardUIExampleController : FlashcardUIController
     
     public void SentenceSplitter(string sentence, string conjugatedVerb)
     {
-        string fullSentence = sentence;
-        string correctVerb = conjugatedVerb;
-
-        string preVerb = "";
-        string postVerb = "";
-
-
-        int verbIndex = fullSentence.IndexOf(
-            correctVerb,
-            StringComparison.OrdinalIgnoreCase
-        );
-
-        if (verbIndex != -1) // Nếu tìm thấy động từ
-        {
-            preVerb = fullSentence.Substring(0, verbIndex - 1);
-            int postIndex = verbIndex + correctVerb.Length;
-            postVerb = fullSentence.Substring(postIndex);
-        }
-        else
-        {
-            Debug.LogError($"Không tìm thấy động từ '{correctVerb}' trong câu!");
-        }
-
-        exampleQuestionText.text = $"{preVerb}  __________ {postVerb}";
+        string fullSentence = sentence.Replace(conjugatedVerb,"________");
+        exampleQuestionText.text = fullSentence;
     }
 
     public override void HandleAnswer(Enum type)
@@ -100,6 +78,8 @@ public class FlashcardUIExampleController : FlashcardUIController
     {
         setActiveFlashCard(false);
         //FirebaseDatabaseManager.Instance.SaveLearnedGrammar(grammarId:grammaId);
+        string grammarCategoryId = PlayerPrefs.GetString("SelectedGrammarTopic");
+        FirebaseDatabaseManager.Instance.SaveProgress(grammarCategoryId, "grammar", true);
         GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học. Bạn có muốn làm bài luyện tập nhanh không ?",Color.black);
         UpdateMissionState();
     }
