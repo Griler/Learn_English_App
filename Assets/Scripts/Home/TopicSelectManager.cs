@@ -14,7 +14,7 @@ public class TopicSelectManager : MonoBehaviour
     [SerializeField] GameObject topicButtonPrefab;
     [SerializeField] GameObject viewSubTopic;
     
-    void Start()
+    void OnEnable()
     {
         LoadMainTopics();
     }
@@ -24,16 +24,24 @@ public class TopicSelectManager : MonoBehaviour
         FirebaseDatabaseManager.Instance.LoadMainTopics(Populate);
     }
 
-    void Populate(List<string> topics)
+    void Populate(Dictionary<string,bool> topics)
     {
         foreach (Transform c in contentParent) Destroy(c.gameObject);
-        foreach (string topic in topics)
+        foreach (var topic in topics)
         {
             try
             {
                 GameObject topicChild = Instantiate(topicButtonPrefab, contentParent);
-                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = topic;
-                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic));
+                topicChild.GetComponentInChildren<TextMeshProUGUI>().text = GlobalData.mapNameVocabulary[topic.Key];
+                if (topic.Value)
+                {
+                    topicChild.GetComponentsInChildren<Image>()[0].color = Color.white;
+                }
+                else
+                {
+                    topicChild.GetComponentsInChildren<Image>()[0].color = Color.gray;
+                }
+                topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.Key));
             }
             catch (Exception e)
             {

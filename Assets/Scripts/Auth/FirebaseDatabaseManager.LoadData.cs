@@ -11,33 +11,77 @@ using UnityEditor;
 
 public partial class FirebaseDatabaseManager : MonoBehaviour
 {
-
-    
-    public void LoadMainTopics(Action<List<string>> onComplete)
+    public void LoadMainTopics(Action<Dictionary<string, bool>> onComplete)
     {
+        // 1. Kiểm tra User đã đăng nhập chưa để lấy UserID
+        var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
+        if (currentUser == null)
+        {
+            Debug.LogError("User chưa đăng nhập!");
+            return;
+        }
+
+        string userId = currentUser.UserId;
+
+        // 2. Lấy danh sách Topics từ "vocab_topics"
         FirebaseDatabase.DefaultInstance
             .GetReference("vocab_topics")
             .GetValueAsync()
-            .ContinueWithOnMainThread(task =>
+            .ContinueWithOnMainThread(taskTopics =>
             {
-                if (task.IsCompleted)
+                if (taskTopics.IsFaulted || taskTopics.IsCanceled)
                 {
-                    DataSnapshot snapshot = task.Result;
-                    List<string> mainTopics = new List<string>();
-                    foreach (var child in snapshot.Children)
-                    {
-                        mainTopics.Add(child.Key);
-                    }
+                    Debug.LogError("Lỗi tải vocab_topics: " + taskTopics.Exception);
+                    return;
+                }
 
-                    onComplete?.Invoke(mainTopics);
-                }
-                else
-                {
-                    Debug.LogError("Error loading topics!");
-                }
+                DataSnapshot topicsSnapshot = taskTopics.Result;
+
+                // 3. Sau khi có Topics, lấy tiếp dữ liệu tiến độ của User
+                // Giả sử cấu trúc data user là: users/{userId}/topics/{topicKey}/isComplete
+                FirebaseDatabase.DefaultInstance
+                    .GetReference($"users/{userId}/learning_progress/vocab_topics")
+                    .GetValueAsync()
+                    .ContinueWithOnMainThread(taskUser =>
+                    {
+                        if (taskUser.IsFaulted || taskUser.IsCanceled)
+                        {
+                            Debug.LogError("Lỗi tải user data: " + taskUser.Exception);
+                            return;
+                        }
+
+                        DataSnapshot userSnapshot = taskUser.Result;
+                        Dictionary<string, bool> result = new Dictionary<string, bool>();
+
+                        // 4. Duyệt qua từng Topic và map với dữ liệu User
+                        foreach (var child in topicsSnapshot.Children)
+                        {
+                            string topicKey = child.Key;
+                            bool isComplete = false;
+
+                            // Kiểm tra xem User có dữ liệu về topic này không
+                            if (userSnapshot.HasChild(topicKey))
+                            {
+                                var userTopicData = userSnapshot.Child(topicKey);
+
+                                // Lấy giá trị isComplete (mặc định false nếu không tìm thấy)
+                                if (userTopicData.HasChild("isCompleted"))
+                                {
+                                    // Parse giá trị sang bool an toàn
+                                    bool.TryParse(userTopicData.Child("isCompleted").Value.ToString(), out isComplete);
+                                }
+                            }
+
+                            // Thêm vào Dictionary kết quả
+                            result.Add(topicKey, isComplete);
+                        }
+
+                        // Trả về kết quả
+                        onComplete?.Invoke(result);
+                    });
             });
     }
-    
+
     public void LoadWords(string mainTopic, string category, Action<List<WordData>> onComplete)
     {
         FirebaseDatabase.DefaultInstance
@@ -62,10 +106,10 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
                 }
             });
     }
-    
-    public void LoadSubTopics(string mainTopic,Action<List<string>> onComplete )
+
+    public void LoadSubTopics(string mainTopic, Action<List<string>> onComplete)
     {
-        string path = "vocab_topics/" +  mainTopic;
+        string path = "vocab_topics/" + mainTopic;
         FirebaseDatabase.DefaultInstance
             .GetReference("vocab_topics")
             .Child(mainTopic)
@@ -80,53 +124,55 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
                     {
                         subTopics.Add(child.Key);
                     }
+
                     onComplete?.Invoke(subTopics);
                 }
             });
     }
-    
+
     public void FetchGrammarData(string grammarCategoryId, Action<GrammarData> cb)
     {
         Debug.Log("Đang tải dữ liệu từ Firebase...");
 
         FirebaseDatabase.DefaultInstance.GetReference("grammar")
-            .Child("topics").Child(grammarCategoryId).GetValueAsync().ContinueWithOnMainThread(task => {
-            if (task.IsFaulted)
+            .Child("topics").Child(grammarCategoryId).GetValueAsync().ContinueWithOnMainThread(task =>
             {
-                Debug.LogError("Lỗi khi lấy dữ liệu: " + task.Exception);
-            }
-            else if (task.IsCompleted)
-            {
-                DataSnapshot snapshot = task.Result;
-                if (snapshot.Exists && snapshot.HasChildren)
+                if (task.IsFaulted)
                 {
-                    // Cách 1: Parse thủ công (An toàn và dễ debug nhất)
-                    ParseDataManually(snapshot, cb);
-                    
-                    // Cách 2: Nếu dùng thư viện JSON ngoài (như Newtonsoft) có thể parse string JSON
-                    // string jsonRaw = snapshot.GetRawJsonValue();
-                    // GrammarData data = JsonConvert.DeserializeObject<GrammarData>(jsonRaw);
+                    Debug.LogError("Lỗi khi lấy dữ liệu: " + task.Exception);
                 }
-                else
+                else if (task.IsCompleted)
                 {
-                    Debug.LogWarning("Không tìm thấy dữ liệu tại node ");
+                    DataSnapshot snapshot = task.Result;
+                    if (snapshot.Exists && snapshot.HasChildren)
+                    {
+                        // Cách 1: Parse thủ công (An toàn và dễ debug nhất)
+                        ParseDataManually(snapshot, cb);
+
+                        // Cách 2: Nếu dùng thư viện JSON ngoài (như Newtonsoft) có thể parse string JSON
+                        // string jsonRaw = snapshot.GetRawJsonValue();
+                        // GrammarData data = JsonConvert.DeserializeObject<GrammarData>(jsonRaw);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Không tìm thấy dữ liệu tại node ");
+                    }
                 }
-            }
-        });
+            });
     }
 
     void ParseDataManually(DataSnapshot snapshot, Action<GrammarData> cb)
     {
         GrammarData data = new GrammarData();
-        
+
         // Lấy các trường cơ bản
-        if (snapshot.Child("description").Exists) 
+        if (snapshot.Child("description").Exists)
             data.description = snapshot.Child("description").Value.ToString();
-        
-        if (snapshot.Child("rule").Exists) 
+
+        if (snapshot.Child("rule").Exists)
             data.rule = snapshot.Child("rule").Value.ToString();
-        
-        if (snapshot.Child("grammarPointID").Exists) 
+
+        if (snapshot.Child("grammarPointID").Exists)
             data.grammarPointID = snapshot.Child("grammarPointID").Value.ToString();
         // --- LẤY EXAMPLES ---
         DataSnapshot examplesSnapshot = snapshot.Child("examples");
@@ -170,5 +216,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         {
             Debug.Log($"Câu hỏi 1: {data.miniExercises[0].question} (Đáp án: {data.miniExercises[0].answer})");
         }
+
         cb?.Invoke(data);
-    }}
+    }
+}

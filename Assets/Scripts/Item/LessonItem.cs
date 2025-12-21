@@ -9,6 +9,7 @@ public class LessonItem : BaseCode
 {
     [SerializeField] private TextMeshProUGUI lessonName;
     [SerializeField] private Image lessonImage;
+    [SerializeField] private Image startIcon;
     [SerializeField] private TextMeshProUGUI lessonStar;
     [SerializeField] private Button playLessonButton;
     private string lessonPlay;
@@ -47,5 +48,14 @@ public class LessonItem : BaseCode
         }
         lessonImage.sprite = assetManager.getSpriteAnimal(name);
         lessonImage.SetNativeSize();
+    }
+
+    public void setHightLightStart()
+    {
+        startIcon.color = Color.white;
+    }    
+    public void setDisableStart()
+    {
+        startIcon.color = Color.gray;
     }
 }

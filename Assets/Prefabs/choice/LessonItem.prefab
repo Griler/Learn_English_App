@@ -259,8 +259,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -124.85, y: 2}
-  m_SizeDelta: {x: 418.3065, y: 112.0068}
+  m_AnchoredPosition: {x: -178.1016, y: 2}
+  m_SizeDelta: {x: 311.7968, y: 112.0068}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &998136881736463135
 CanvasRenderer:
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -426,6 +426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lessonName: {fileID: 1806081902870523481}
   lessonImage: {fileID: 2600477354849068123}
+  startIcon: {fileID: 7638607235735686790}
   lessonStar: {fileID: 3152252217227822728}
   playLessonButton: {fileID: 9135002895629586722}
 --- !u!1 &6384490482323823672
@@ -581,7 +582,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2086808546316902824
 RectTransform:
   m_ObjectHideFlags: 0
@@ -598,7 +599,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -288, y: -43}
+  m_AnchoredPosition: {x: 46, y: 6}
   m_SizeDelta: {x: 92, y: 86}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5046805967655457230
