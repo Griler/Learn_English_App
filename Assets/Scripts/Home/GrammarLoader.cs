@@ -33,6 +33,8 @@ public class GrammarLoader : MonoBehaviour
                 if (task.IsFaulted)
                 {
                     Debug.LogError("❌ Lỗi tải topics: " + task.Exception);
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadTopicsFromFirebase();
+                    ToastNetwork.Instance.showDisconnect();
                     return;
                 }
 
@@ -66,6 +68,13 @@ public class GrammarLoader : MonoBehaviour
             .GetValueAsync().ContinueWithOnMainThread(task => 
             {
                 DataSnapshot progressSnapshot = null;
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadUserProgress();
+                    ToastNetwork.Instance.showDisconnect();
+                    return;
+                }
+                
                 if (task.IsCompleted && !task.IsFaulted)
                 {
                     progressSnapshot = task.Result;

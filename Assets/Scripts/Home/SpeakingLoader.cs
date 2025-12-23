@@ -30,6 +30,13 @@ public class SpeakingLoader : MonoBehaviour
             .GetValueAsync()
             .ContinueWithOnMainThread(task =>
             {
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadTopicsFromFirebase();
+                    ToastNetwork.Instance.showDisconnect();
+                    return;
+                }
+                
                 if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
@@ -64,9 +71,17 @@ public class SpeakingLoader : MonoBehaviour
             .GetValueAsync().ContinueWithOnMainThread(task => 
             {
                 DataSnapshot progressSnapshot = null;
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadTopicsFromFirebase();
+                    ToastNetwork.Instance.showDisconnect();
+                    return;
+                }
+                
                 if (task.IsCompleted && !task.IsFaulted)
                 {
                     progressSnapshot = task.Result;
+                    ToastNetwork.Instance.hideDisconnect();
                 }
                 
                 // Truyền snapshot tiến độ vào hàm tạo UI

@@ -39,6 +39,12 @@ public class ListenLoader : MonoBehaviour
             if (task.IsCompleted && !task.IsFaulted)
             {
                 DataSnapshot snapshot = task.Result;
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadDataFromFirebase();
+                    ToastNetwork.Instance.showDisconnect();
+                    return;
+                }
                 if (snapshot.Exists && snapshot.Value != null)
                 {
                     string jsonContent = snapshot.GetRawJsonValue();
@@ -80,8 +86,15 @@ public class ListenLoader : MonoBehaviour
         progressRef.GetValueAsync().ContinueWithOnMainThread(task => 
         {
             DataSnapshot progressSnapshot = null;
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                ToastNetwork.Instance.actionOnClickButton = () => LoadDataFromFirebase();
+                ToastNetwork.Instance.showDisconnect();
+                return;
+            }
             if (task.IsCompleted && !task.IsFaulted)
             {
+                ToastNetwork.Instance.hideDisconnect();
                 progressSnapshot = task.Result;
             }
 

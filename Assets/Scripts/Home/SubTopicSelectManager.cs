@@ -71,8 +71,14 @@ public class SubTopicSelectManager : MonoBehaviour
                 .GetValueAsync().ContinueWithOnMainThread(task => 
                 {
                     DataSnapshot progressSnapshot = task.Result;
-                    
-                    // Gọi hàm Populate với cả danh sách bài và dữ liệu tiến độ
+                    if (task.IsCanceled || task.IsFaulted)
+                    {
+                        ToastNetwork.Instance.actionOnClickButton = () => LoadSubTopics(parentCategoryId);
+                        ToastNetwork.Instance.showDisconnect();
+                        return;
+                    }
+
+                    ToastNetwork.Instance.hideDisconnect();
                     Populate(subTopics, progressSnapshot);
                 });
         });

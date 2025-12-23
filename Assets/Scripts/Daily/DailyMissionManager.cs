@@ -93,6 +93,12 @@ public class DailyMissionManager : MonoBehaviour
         DatabaseReference userRef = FirebaseDatabase.DefaultInstance.GetReference("user_missions").Child(userId);
         userRef.GetValueAsync().ContinueWithOnMainThread(task =>
         {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                ToastNetwork.Instance.actionOnClickButton = () => LoadMissionsWithResetCheck();
+                ToastNetwork.Instance.showDisconnect();
+                return;
+            }
             if (task.IsCompleted)
             {
                 DataSnapshot snapshot = task.Result;
@@ -122,7 +128,12 @@ public class DailyMissionManager : MonoBehaviour
             .GetValueAsync()
             .ContinueWithOnMainThread(task =>
             {
-                if (!task.IsCompleted) return;
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadMissionsWithResetCheck();
+                    ToastNetwork.Instance.showDisconnect();
+                    return; 
+                }
                 DataSnapshot snapshot = task.Result;
 
                 Dictionary<string, object> resetData = new Dictionary<string, object>();
@@ -164,8 +175,13 @@ public class DailyMissionManager : MonoBehaviour
         // 1️⃣ Tải danh sách nhiệm vụ gốc
         db.GetReference("daily_missions").GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            if (!task.IsCompleted) return;
-
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                ToastNetwork.Instance.actionOnClickButton = () => LoadMissionsWithResetCheck();
+                ToastNetwork.Instance.showDisconnect();
+                return;
+            }
+    
             DataSnapshot missionSnap = task.Result;
             missions.Clear();
 
@@ -216,6 +232,13 @@ public class DailyMissionManager : MonoBehaviour
             .GetValueAsync()
             .ContinueWithOnMainThread(task =>
             {
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadMissionsWithResetCheck();
+                    ToastNetwork.Instance.showDisconnect();
+                    return;
+                }
+                
                 if (task.IsCompleted && task.Result.Exists)
                 {
                     DataSnapshot snapshot = task.Result;
@@ -230,7 +253,7 @@ public class DailyMissionManager : MonoBehaviour
                         }
                     }
                 }
-
+                ToastNetwork.Instance.hideDisconnect();
                 DisplayMissions();
             });
     }

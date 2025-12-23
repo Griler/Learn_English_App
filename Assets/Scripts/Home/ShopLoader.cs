@@ -35,6 +35,12 @@ public class ShopLoader : MonoBehaviour
         dbRef.Child("shop").Child("avatars").GetValueAsync()
             .ContinueWithOnMainThread(task =>
         {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                ToastNetwork.Instance.actionOnClickButton = () => LoadShopAvatars();
+                ToastNetwork.Instance.showDisconnect();
+                return;
+            }
             string json = task.Result.GetRawJsonValue();
             shopAvatars = JsonConvert.DeserializeObject<List<ShopItem>>(json);
 
@@ -53,7 +59,13 @@ public class ShopLoader : MonoBehaviour
         userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         dbRef.Child("users").Child(userId).Child("items").Child("avatars")
           .GetValueAsync().ContinueWithOnMainThread(task =>
-        {
+        {   
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                ToastNetwork.Instance.actionOnClickButton = () => LoadShopAvatars();
+                ToastNetwork.Instance.showDisconnect();
+                return;
+            }
             userAvatars = new Dictionary<string, bool>();
 
             foreach (var child in task.Result.Children)
@@ -75,6 +87,7 @@ public class ShopLoader : MonoBehaviour
         {
             Destroy(child);
         }
+        ToastNetwork.Instance.hideDisconnect();
         foreach (var item in shopAvatars)
         {
             if (userAvatars.ContainsKey(item.Id))

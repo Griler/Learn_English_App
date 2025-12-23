@@ -31,6 +31,8 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             {
                 if (taskTopics.IsFaulted || taskTopics.IsCanceled)
                 {
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadMainTopics(onComplete);
+                    ToastNetwork.Instance.showDisconnect();
                     Debug.LogError("Lỗi tải vocab_topics: " + taskTopics.Exception);
                     return;
                 }
@@ -47,6 +49,8 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
                         if (taskUser.IsFaulted || taskUser.IsCanceled)
                         {
                             Debug.LogError("Lỗi tải user data: " + taskUser.Exception);
+                            ToastNetwork.Instance.actionOnClickButton = () => LoadMainTopics(onComplete);
+                            ToastNetwork.Instance.showDisconnect();
                             return;
                         }
 
@@ -77,6 +81,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
                         }
 
                         // Trả về kết quả
+                        ToastNetwork.Instance.hideDisconnect();
                         onComplete?.Invoke(result);
                     });
             });
@@ -94,12 +99,15 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
                 if (task.IsFaulted)
                 {
                     Debug.LogError("❌ Firebase load failed: " + task.Exception);
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadWords(mainTopic, category, onComplete);
+                    ToastNetwork.Instance.showDisconnect();
                     onComplete?.Invoke(null);
                     return;
                 }
 
                 if (task.IsCompleted)
                 {
+                    ToastNetwork.Instance.hideDisconnect();
                     string data = task.Result.GetRawJsonValue();
                     List<WordData> vocabularies = JsonConvert.DeserializeObject<List<WordData>>(data);
                     onComplete?.Invoke(vocabularies);
@@ -116,6 +124,15 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             .GetValueAsync()
             .ContinueWithOnMainThread(task =>
             {
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("❌ Firebase load failed: " + task.Exception);
+                    ToastNetwork.Instance.actionOnClickButton = () => LoadSubTopics(mainTopic, onComplete);
+                    ToastNetwork.Instance.showDisconnect();
+                    onComplete?.Invoke(null);
+                    return;
+                }
+                
                 if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
@@ -139,7 +156,10 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             {
                 if (task.IsFaulted)
                 {
+                    ToastNetwork.Instance.actionOnClickButton = () => FetchGrammarData(grammarCategoryId, cb);
+                    ToastNetwork.Instance.showDisconnect();
                     Debug.LogError("Lỗi khi lấy dữ liệu: " + task.Exception);
+                    return;
                 }
                 else if (task.IsCompleted)
                 {

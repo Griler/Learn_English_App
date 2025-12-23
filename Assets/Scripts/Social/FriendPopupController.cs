@@ -29,6 +29,7 @@ public class FriendPopupController : MonoBehaviour
     private void OnEnable()
     {
         SwitchTab(0);
+        
     }
 
     public void SwitchTab(int index)
@@ -43,7 +44,7 @@ public class FriendPopupController : MonoBehaviour
         {
             case 0:
                 panelListFriend.gameObject.SetActive(true);
-                title.text = "Friends List";
+                title.text = "Danh sách bạn bè";
                 panelListFriend.OnShow();
                 btnTabList.GetComponentInChildren<Image>().color = Color.limeGreen;
                 btnTabAdd.GetComponentInChildren<Image>().color = Color.gray2;
@@ -51,7 +52,7 @@ public class FriendPopupController : MonoBehaviour
                 break;
             case 1:
                 panelFriendAdd.gameObject.SetActive(true);
-                title.text = "Add Friends";
+                title.text = "Kết bạn";
                 panelFriendAdd.OnShow();
                 btnTabList.GetComponentInChildren<Image>().color = Color.gray2;
                 btnTabAdd.GetComponentInChildren<Image>().color = Color.limeGreen;
@@ -60,7 +61,7 @@ public class FriendPopupController : MonoBehaviour
                 break;
             case 2:
                 panelFriendRequests.gameObject.SetActive(true);
-                title.text = "Accept Friends";
+                title.text = "Danh sách kết bạn";
                 panelFriendRequests.OnShow();
                 btnTabList.GetComponentInChildren<Image>().color = Color.gray2;
                 btnTabAdd.GetComponentInChildren<Image>().color = Color.gray2;

@@ -42,7 +42,7 @@ public class ShopPanelController : MonoBehaviour
         shopBorder.SetActive(false);
         settingView.SetActive(false);
         ShopLoader.LoadShopAvatars();
-        nameTitle.text = "Shop".ToUpper();
+        nameTitle.text = "Cửa Hàng".ToUpper();
     }
 
     void openshopBorder()
