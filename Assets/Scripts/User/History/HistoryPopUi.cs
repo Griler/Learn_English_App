@@ -105,6 +105,10 @@ public class HistoryPopupUI : MonoBehaviour
             if (match.rankChange > 0)
             {
                 newItem = Instantiate(historyWinItemPrefab, contentContainer);
+            }     
+            if (match.rankChange == 0)
+            {
+                newItem = Instantiate(historyWinItemPrefab, contentContainer);
             }
             else
             {

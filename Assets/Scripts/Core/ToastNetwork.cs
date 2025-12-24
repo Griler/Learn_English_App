@@ -8,6 +8,7 @@ public class ToastNetwork : MonoBehaviour
     public TextMeshProUGUI textNotice;
     public Button againButton;
     public Action actionOnClickButton;
+    public GameObject overlay;
 
     public Action ActionOnClickButton
     {
@@ -38,6 +39,7 @@ public class ToastNetwork : MonoBehaviour
     public void showDisconnect(string text = "Có lỗi xảy ra vui lòng thử lại ....")
     {
         againButton.gameObject.SetActive(true);
+        overlay.SetActive(true);
         this.textNotice.text = text;
         gameObject.SetActive(true);
         gameObject.GetComponentInChildren<CanvasGroup>().alpha = 1;
@@ -47,6 +49,7 @@ public class ToastNetwork : MonoBehaviour
     {
         gameObject.GetComponentInChildren<CanvasGroup>().alpha = 0;
         gameObject.SetActive(false);
+        overlay.SetActive(false);
     }
 
     public void setAction(Action action)

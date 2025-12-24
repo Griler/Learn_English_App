@@ -13,6 +13,11 @@ public class LeaderboardManager : MonoBehaviour
     void Start()
     {
         statusText.gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        statusText.gameObject.SetActive(false);
         GetTop5Users();
     }
 
@@ -21,26 +26,24 @@ public class LeaderboardManager : MonoBehaviour
         DatabaseReference dbRef = FirebaseDatabase.DefaultInstance.GetReference("users");
 
         // Query vẫn như cũ: trỏ vào userInfo/rankPoint
+        dbRef.KeepSynced(true);
         Query query = dbRef.OrderByChild("userInfo/rankPoint").LimitToLast(5);
-
-        query.GetValueAsync().ContinueWithOnMainThread(task =>
+           query.GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsCompleted)
             {
                 DataSnapshot snapshot = task.Result;
                 List<UserData> topUsers = new List<UserData>();
-
+                
                 if (snapshot.HasChildren)
                 {
+                    Debug.Log(snapshot.ChildrenCount);
                     foreach (DataSnapshot userSnap in snapshot.Children)
                     {
                         // 1. Lấy chuỗi JSON thô từ Firebase
                         string jsonRaw = userSnap.GetRawJsonValue();
-
-                        // 2. Dùng Newtonsoft để Deserialize (biến chuỗi thành Object)
-                        // Nó sẽ tự động map các field trong userInfo vào class
                         UserData userObj = JsonConvert.DeserializeObject<UserData>(jsonRaw);
-
+                        Debug.Log(userObj.UserInfo.name + "|" + userObj.UserInfo.rankPoint);
                         if (userObj != null)
                         {
                             // 3. Gán UserID (Key) thủ công vì Key không nằm trong chuỗi JSON
@@ -68,7 +71,7 @@ public class LeaderboardManager : MonoBehaviour
     {
         Debug.Log("=== BẢNG XẾP HẠNG (NEWTONSOFT) ===");
         int rank = 1;
-        for (int i = 0; i < users.Count; i++)
+        for (int i = 0; i < 5; i++)
         {
             rankItem[i].GetComponent<RankItem>().setData(users[i].UserInfo);
         }

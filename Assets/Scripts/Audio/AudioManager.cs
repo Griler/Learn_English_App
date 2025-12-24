@@ -32,8 +32,13 @@ public class AudioManager : MonoBehaviour
         GoogleSpeechService.Instance.TextToSpeech(word,
         (clip =>
         {
-            GetComponent<AudioSource>().clip = clip;
-            GetComponent<AudioSource>().Play();
+            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+           audioSource.clip = clip;
+           audioSource.Play();
         }),
         s => {
             Debug.LogError(s);

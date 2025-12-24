@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class GameController : MonoBehaviour
 {
     [Header("UI Panels")]
     public GameObject flashcardPanel;
+    public GameObject container;
     public GameObject quizPanel;
     private List<WordData> listAnimals = new List<WordData>();
     [SerializeField] private int currentAnimalIndex = 0;
@@ -17,6 +19,12 @@ public class GameController : MonoBehaviour
     [SerializeField] private Button backButton;
     private string topic = "";
     private string subCategrgy = "";
+
+    private void Awake()
+    {
+        container.SetActive(false);
+    }
+
     private void Start()
     {
         backButton.onClick.AddListener(onClickBackButton);
@@ -84,6 +92,7 @@ public class GameController : MonoBehaviour
         }
         listAnimals.AddRange(words);
         quizPanel.GetComponent<QuizManager>().initQuiz(listAnimals);
+        container.SetActive(true);
         ShowFlashcard();
     }
     

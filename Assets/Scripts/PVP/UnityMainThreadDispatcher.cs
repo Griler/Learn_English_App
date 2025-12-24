@@ -39,10 +39,4 @@ public class UnityMainThreadDispatcher : MonoBehaviour
             }
         }
     }
-    
-    private void OnApplicationQuit()
-    {
-        Debug.Log("set Offline");
-        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.OFFLINE);
-    }
 }

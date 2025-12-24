@@ -145,7 +145,10 @@ public class GamePlayController : MonoBehaviourPunCallbacks
                     
                     // Lấy đáp án đúng
                     if (child.Child("correctAnswerIdx").Value != null)
-                        newQ.correctAnswerIdx = int.Parse(child.Child("correctAnswerIdx").Value.ToString());
+                        newQ.correctAnswerIdx = int.Parse(child.Child("correctAnswerIdx").Value.ToString());   
+                    
+                    if (child.Child("id").Value != null)
+                        newQ.id = int.Parse(child.Child("id").Value.ToString());
 
                     // Lấy mảng đáp án
                     List<string> answersList = new List<string>();
@@ -180,29 +183,19 @@ public class GamePlayController : MonoBehaviourPunCallbacks
 
     // --- RPC MỚI: NHẬN SEED VÀ TRỘN CÂU HỎI ---
     [PunRPC] 
-    void RPC_SetupAndStartGame(int[] mixedIndices, int startTurnActor, PhotonMessageInfo info)
+    void RPC_SetupAndStartGame(int seed, int startTurnActor, PhotonMessageInfo info)
     {
         if (isGameStarted) return;
         isGameStarted = true;
-
-        Debug.Log($"[SYNC] Đã nhận danh sách {mixedIndices.Length} câu từ Master.");
-
-        // 1. SẮP XẾP DANH SÁCH GỐC (BẮT BUỘC)
-        // Để đảm bảo index 0 của máy này giống hệt index 0 của máy kia
-        // Sắp xếp theo nội dung câu hỏi (hoặc ID nếu có)
-        rawAllQuestions = rawAllQuestions.OrderBy(q => q.questionText).ToList();
-
-        // 2. TẠO LIST CÂU HỎI THI ĐẤU
+        UnityEngine.Random.InitState(seed);
+        rawAllQuestions = rawAllQuestions.OrderBy(x =>   x.id).ToList();
         allQuestions = new List<QuestionData>();
-
-        foreach (int index in mixedIndices)
+        allQuestions = rawAllQuestions.OrderBy(x =>
         {
-            // Kiểm tra an toàn để không bị lỗi Index Out Of Range
-            if (index >= 0 && index < rawAllQuestions.Count)
-            {
-                allQuestions.Add(rawAllQuestions[index]);
-            }
-        }
+            int random = UnityEngine.Random.Range(1, seed);
+            Debug.Log("random: " + random);
+            return random;
+        }).ToList();
 
         Debug.Log($"Đã setup xong {allQuestions.Count} câu hỏi.");
 
@@ -274,11 +267,11 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         {
             if (rawAllQuestions.Count > 0)
             {
-                int[] shuffledIndices = getShuffledIndices();
+                int seed = UnityEngine.Random.Range(1, 9999);
                 int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;
 
                 Debug.LogError("tao seed sau count down");
-                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, shuffledIndices.ToArray(), startActor);
+                photonView.RPC("RPC_SetupAndStartGame", RpcTarget.All, seed, startActor);
             }
             else
             {
@@ -286,27 +279,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             }
         }
     }
-
-    int[] getShuffledIndices()
-    {
-        int gameSeed = UnityEngine.Random.Range(1, 999999);
-        List<int> indices = new List<int>();
-        for (int i = 0; i < rawAllQuestions.Count; i++)
-        {
-            indices.Add(i);
-        }
-        System.Random sysRnd = new System.Random(gameSeed);
-        rawAllQuestions = rawAllQuestions.OrderBy(q => q.questionText).ToList();
-        var shuffledIndices = indices.OrderBy(x => sysRnd.Next()).ToList();
-
-        // 4. Cắt lấy 100 câu (nếu nhiều hơn)
-        if (shuffledIndices.Count > 100)
-        {
-            shuffledIndices = shuffledIndices.Take(100).ToList();
-        }
-
-        return shuffledIndices.ToArray();
-    }
+    
     
     void InitGameLogic(int startActor)
     {
