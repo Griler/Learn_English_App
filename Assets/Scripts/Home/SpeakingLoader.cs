@@ -66,7 +66,7 @@ public class SpeakingLoader : MonoBehaviour
         string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         
         // Đường dẫn: users/{uid}/learning_progress/speaking
-        FirebaseDatabase.DefaultInstance
+        FirebaseDatabaseManager.Instance.dbReference.Database
             .GetReference($"users/{userId}/learning_progress/speaking")
             .GetValueAsync().ContinueWithOnMainThread(task => 
             {

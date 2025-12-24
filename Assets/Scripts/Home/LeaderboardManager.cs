@@ -26,7 +26,6 @@ public class LeaderboardManager : MonoBehaviour
         DatabaseReference dbRef = FirebaseDatabase.DefaultInstance.GetReference("users");
 
         // Query vẫn như cũ: trỏ vào userInfo/rankPoint
-        dbRef.KeepSynced(true);
         Query query = dbRef.OrderByChild("userInfo/rankPoint").LimitToLast(5);
            query.GetValueAsync().ContinueWithOnMainThread(task =>
         {
