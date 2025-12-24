@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7883076191359875840
 RectTransform:
   m_ObjectHideFlags: 0
@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.5, y: 0}
-  m_SizeDelta: {x: -11, y: -20}
+  m_AnchoredPosition: {x: 0, y: 2.5}
+  m_SizeDelta: {x: -30, y: -25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4766545863552751637
 CanvasRenderer:
@@ -140,10 +140,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cow
+  m_text: dsdsdsdsdsds
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1386ff11d419dd84f86c7da9528f5e0b, type: 2}
-  m_sharedMaterial: {fileID: 7913893121916415999, guid: 1386ff11d419dd84f86c7da9528f5e0b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
+  m_sharedMaterial: {fileID: 8581698275949360407, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 27.2
   m_fontSizeBase: 80
   m_fontWeight: 400
   m_enableAutoSizing: 1
