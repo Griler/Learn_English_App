@@ -122,7 +122,7 @@ public class CardController : BaseCode
         isFaceUp = false;
         isLocked = false;
         cardButton.interactable = true;
-        cardBackground.gameObject.SetActive(false);
+        cardBackground.gameObject.SetActive(true);
         frontContent.SetActive(true);
         transform.localScale = Vector3.one;
     }
