@@ -35,8 +35,12 @@ public class GameManager : MonoBehaviour
 
     public void AddLetter(string letter)
     {
-        if(inputField)
+        if (inputField)
+        {
             inputField.text = inputField.text + letter;
+            inputField.caretPosition = inputField.text.Length;
+        }
+
         if (textInputField)
             textInputField.text = textInputField.text + letter;
     }
