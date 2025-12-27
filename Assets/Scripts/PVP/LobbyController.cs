@@ -2,170 +2,188 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro; // Sử dụng TextMeshPro
-using ExitGames.Client.Photon; // Cần thư viện này để dùng Hashtable
+using TMPro; // Dùng TextMeshPro
+using ExitGames.Client.Photon;
+using System.Collections;
+using Hashtable = ExitGames.Client.Photon.Hashtable; // Cần để dùng Coroutine
 
 public class LobbyController : MonoBehaviourPunCallbacks
 {
-    [Header("UI - Game Mode Buttons")]
-    public Button btnMode1; // Ví dụ: 1vs1 Thường
-    public Button btnMode2; // Ví dụ: 1vs1 Xếp hạng
-    public Button btnMode3; // Ví dụ: Chế độ đặc biệt
+    [Header("UI - Buttons Mode")]
+    public Button btnMode1; // Nút Mode Trả Lời Câu Hỏi
+    public Button btnMode2; // Nút Mode Lật Thẻ
+    public Button btnMode3; // Nút Mode Nghe Chọn Ảnh
 
     [Header("UI - Searching Panel")]
-    public GameObject searchingPanel;    // Panel chứa thông báo và nút hủy
-    public TextMeshProUGUI statusText;   // Text hiển thị "Đang tìm Mode 1..."
-    public Button btnCancel;             // Nút Hủy tìm
-    public TextMeshProUGUI btnText;             // Nút Hủy tìm
-    public GameObject hover;
+    public GameObject searchingPanel;    // Panel bao gồm Text và nút Hủy
+    public TextMeshProUGUI statusText;   // Hiển thị: "Đang tìm...", "Đang tạo..."
+    public Button btnCancel;             // Nút Hủy
+    public GameObject hoverBlocker;      // Một tấm nền trong suốt để chặn bấm linh tinh
+
     [Header("Settings")]
-    public string waitingRoomScene = "WaitingRoomScene"; // Tên Scene phòng chờ
+    public string waitingRoomScene = "WaitingRoomScene"; // Tên Scene Waiting Room
 
-    // Biến lưu trạng thái
-    private int selectedMode = 0;   // Lưu chế độ người chơi vừa chọn
+    // --- BIẾN STATIC ĐỂ XỬ LÝ 'CHƠI TIẾP' ---
+    // Biến này được gọi từ GameOverController để báo hiệu cần tìm trận ngay
+    public static int AutoJoinMode = 0; 
+
+    // Biến nội bộ
+    private int selectedMode = 0;   
     private bool isCanceling = false;
+    private const string MODE_KEY = "gm"; // Key định danh chế độ chơi
 
-    // Key để định danh chế độ chơi trên Server
-    private const string MODE_KEY = "gm"; 
+    // Biến cho cơ chế Retry (Chống tạo 2 phòng cùng lúc)
+    private int joinAttempt = 0; 
+    private const int MAX_ATTEMPTS = 2; // Thử tìm 2 lần rồi mới tạo
 
     public override void OnEnable()
     {
         base.OnEnable();
-        // 1. Setup ban đầu
-        searchingPanel.SetActive(false); // Ẩn panel tìm trận đi
-        
-        // Disable các nút khi chưa kết nối xong
-        SetModeButtonsInteractable(false);
 
-        // 2. Gán sự kiện cho các nút
-        // Dùng Lambda expression để truyền tham số mode vào hàm
-        btnMode1.onClick.AddListener(() => OnStartSearch(1, "Tìm trận Trả Lời Câu Hỏi"));
-        btnMode2.onClick.AddListener(() => OnStartSearch(2, "Tìm trận Lật Thẻ Bài"));
-        btnMode3.onClick.AddListener(() => OnStartSearch(3, "Tìm trận Nghe Chon Ảnh"));
+        // 1. Setup UI ban đầu
+        searchingPanel.SetActive(false);
+        if(hoverBlocker) hoverBlocker.SetActive(false);
+
+        // Khóa nút nếu chưa kết nối
+        SetModeButtonsInteractable(PhotonNetwork.IsConnected);
+
+        // 2. Gán sự kiện click cho các nút
+        btnMode1.onClick.AddListener(() => OnStartSearch(1, "Đang tìm trận: Trả Lời Câu Hỏi..."));
+        btnMode2.onClick.AddListener(() => OnStartSearch(2, "Đang tìm trận: Lật Thẻ Bài..."));
+        btnMode3.onClick.AddListener(() => OnStartSearch(3, "Đang tìm trận: Nghe Chọn Ảnh..."));
 
         btnCancel.onClick.AddListener(OnCancelSearch);
 
-        // 3. Kết nối Photon
-        if (!PhotonNetwork.IsConnected)
+        // 3. Kết nối Photon nếu chưa
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            // Nếu chưa vào Lobby thì vào
+            if (!PhotonNetwork.InLobby)
+            {
+                PhotonNetwork.JoinLobby();
+            }
+            else
+            {
+                // Nếu lỡ đang ở trong Lobby rồi thì cập nhật UI luôn
+                OnJoinedLobby(); 
+            }
+        }
+        // Trường hợp 2: Mất mạng hẳn
+        else if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
         }
+        // Trường hợp 3: Đang lửng lơ (ConnectingToMasterServer) -> CHÍNH LÀ LỖI CỦA BẠN
         else
         {
-            OnConnectedToMaster(); // Nếu đã kết nối rồi thì mở khóa nút luôn
+            // KHÔNG GỌI JOINLOBBY Ở ĐÂY.
+            // Hãy im lặng chờ đợi. Khi Photon kết nối xong, nó sẽ tự gọi hàm OnConnectedToMaster bên dưới.
+            Debug.Log("Client đang bận kết nối... vui lòng chờ Callback.");
         }
     }
 
-    // --- LOGIC UI & NÚT BẤM ---
-
-    // Hàm gọi khi bấm 1 trong 3 nút chọn chế độ
-    void OnStartSearch(int mode, string statusMsg)
+    public override void OnConnected()
     {
-        NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.RandomMatchmaking;
-        selectedMode = mode;
-        isCanceling = false;
-
-        // Hiện Panel tìm kiếm
-        searchingPanel.SetActive(true);
-        statusText.text = statusMsg;
-        btnText.text = "Huỷ";
-
-        // Khóa các nút chọn mode lại để không bấm lung tung
-        SetModeButtonsInteractable(false);
-
-        // --- PHOTON LOGIC: TÌM PHÒNG THEO MODE ---
-        // Tạo bộ lọc: Chỉ tìm phòng nào có Property "gm" == mode mình chọn
-        Hashtable expectedCustomRoomProperties = new Hashtable { { MODE_KEY, selectedMode } };
-        
-        // 0 là maxPlayers (0 = không check số lượng ở bước lọc này, server tự check đầy phòng)
-        PhotonNetwork.JoinRandomRoom(expectedCustomRoomProperties, 0);
-        hover.SetActive(true);
+        Debug.Log("vao connect");
     }
-
-    void OnCancelSearch()
-    {
-        isCanceling = true;
-        
-        // Thay vì tắt ngay, ta thông báo cho người dùng biết hệ thống đang xử lý
-        statusText.text = "Đang hủy...";
-        btnCancel.interactable = false; // Khóa nút h
-    }
-    
-    void StopSearchAndClosePanel()
-    {
-        isCanceling = false;
-        searchingPanel.SetActive(false); // Tắt panel
-        SetModeButtonsInteractable(true); // Mở lại các nút chọn mode
-        btnCancel.interactable = true;
-        btnText.text = "Tìm Trận";
-        hover.SetActive(true); // Reset nút hủy cho lần sau
-        Debug.Log("Đã hủy tìm trận hoàn tất.");
-    }
-
-    void SetModeButtonsInteractable(bool state)
-    {
-        btnMode1.interactable = state;
-        btnMode2.interactable = state;
-        btnMode3.interactable = state;
-    }
-
-    // --- PHOTON CALLBACKS ---
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Đã kết nối tới Server!, lb ");
-        MyNetworkManager.Instance.SetMyUserData();
-        SetModeButtonsInteractable(true);
-
+        Debug.Log("Lobby: Đã kết nối Master. Đang vào Lobby...");
+        //PhotonNetwork.JoinLobby();
     }
-    // Thêm hàm này (hoặc sửa hàm cũ) để bật nút đúng thời điểm
+
     public override void OnJoinedLobby()
     {
-        Debug.Log("LobbyController: Đã thực sự vào Lobby -> Bật nút tìm trận.");
+        Debug.Log("Lobby: Đã vào Lobby.");
         SetModeButtonsInteractable(true);
+
+        // --- KIỂM TRA LOGIC AUTO JOIN (CHƠI TIẾP) ---
+        if (AutoJoinMode > 0)
+        {
+            int mode = AutoJoinMode;
+            AutoJoinMode = 0; // Reset ngay để tránh lặp vô hạn
+
+            Debug.Log($"Phát hiện yêu cầu Chơi Tiếp -> Auto tìm Mode {mode}");
+            
+            string msg = "Đang tìm lại trận...";
+            switch (mode)
+            {
+                case 1: msg = "Đang tìm lại: Trả Lời Câu Hỏi..."; break;
+                case 2: msg = "Đang tìm lại: Lật Thẻ Bài..."; break;
+                case 3: msg = "Đang tìm lại: Nghe Chọn Ảnh..."; break;
+            }
+            
+            // Tự động kích hoạt tìm trận
+            OnStartSearch(mode, msg);
+        }
     }
 
-    // 1. Tìm thấy phòng (Khớp Mode) -> Vào luôn
-    public override void OnJoinedRoom()
+    // --- LOGIC TÌM TRẬN ---
+
+    void OnStartSearch(int mode, string msg)
     {
-        if (NetworkGameState.CurrentJoinType != NetworkGameState.JoinType.RandomMatchmaking)
-        {
-            return;
-        }
-        
-        // Kiểm tra xem người dùng có vừa bấm Hủy không
-        if (isCanceling)
-        {
-            statusText.text = "Đang thoát phòng vừa tìm thấy...";
-            Debug.Log("Lỡ vào phòng khi đang hủy -> Rời phòng ngay.");
-            PhotonNetwork.LeaveRoom(); 
-            return;
-        }
+        selectedMode = mode;
+        isCanceling = false;
+        joinAttempt = 0; // Reset số lần thử
 
-        PhotonNetwork.LoadLevel("WaitingRoomScene");
+        // Hiển thị UI
+        searchingPanel.SetActive(true);
+        statusText.text = msg;
+        SetModeButtonsInteractable(false);
+        if(hoverBlocker) hoverBlocker.SetActive(true);
+
+        // Bắt đầu tìm kiếm
+        JoinRoomByMode();
     }
 
-    // 2. Không tìm thấy phòng nào (của Mode này) -> Tạo phòng mới
+    // Hàm tìm phòng theo Mode (được tách ra để tái sử dụng khi Retry)
+    void JoinRoomByMode()
+    {
+        Hashtable expectedProps = new Hashtable { { MODE_KEY, selectedMode } };
+        // Tham số 0 nghĩa là không lọc theo MaxPlayers (để server tự lo)
+        MyNetworkManager.Instance.SetMyUserData();
+        PhotonNetwork.JoinRandomRoom(expectedProps, 0);
+    }
+
+    // --- LOGIC RETRY & TẠO PHÒNG (QUAN TRỌNG) ---
+
+    // Khi KHÔNG tìm thấy phòng nào phù hợp
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        if (isCanceling)
+        if (isCanceling) 
         {
-            StopSearchAndClosePanel();
+            StopSearchAndClosePanel(); 
             return;
         }
 
-        // Nếu không hủy -> Logic tạo phòng như cũ
-        Debug.Log("Không thấy phòng, tạo mới...");
-        statusText.text = "Đang tạo phòng mới...";
-        CreateRoomWithMode();
-    }
-    
-    public override void OnLeftRoom()
-    {
-        // Khi đã thoát phòng thành công -> Coi như quy trình hủy hoàn tất
-        if (isCanceling)
+        joinAttempt++; 
+
+        if (joinAttempt < MAX_ATTEMPTS)
         {
-            StopSearchAndClosePanel();
+            // Chưa thử đủ số lần -> Đợi random rồi thử lại (Để tránh 2 người cùng tạo phòng)
+            float randomDelay = Random.Range(0.5f, 1.5f); 
+            Debug.Log($"Không thấy phòng. Thử lại lần {joinAttempt} sau {randomDelay}s...");
+            statusText.text = $"Đang tìm phòng ({joinAttempt})...";
+            
+            StartCoroutine(WaitAndRetry(randomDelay));
+        }
+        else
+        {
+            // Đã thử hết cách -> Tạo phòng mới
+            Debug.Log("Không thấy phòng nào -> Tạo mới.");
+            statusText.text = "Đang tạo phòng mới...";
+            CreateRoomWithMode();
+        }
+    }
+
+    IEnumerator WaitAndRetry(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        // Kiểm tra lại xem người dùng có bấm hủy trong lúc chờ không
+        if (!isCanceling)
+        {
+            JoinRoomByMode(); // Thử tìm lại
         }
     }
 
@@ -175,29 +193,77 @@ public class LobbyController : MonoBehaviourPunCallbacks
         options.MaxPlayers = 2;
         options.IsOpen = true;
         options.IsVisible = true;
-
-        // --- CẤU HÌNH QUAN TRỌNG ĐỂ TÁCH CHẾ ĐỘ CHƠI ---
-        // 1. Gán nhãn cho phòng này là Mode mấy
-        options.CustomRoomProperties = new Hashtable() { { MODE_KEY, selectedMode } };
         
-        // 2. Bắt buộc phải khai báo key này cho Lobby biết để còn lọc được
+        // Setup Property để người khác tìm được
+        options.CustomRoomProperties = new Hashtable() { { MODE_KEY, selectedMode } };
         options.CustomRoomPropertiesForLobby = new string[] { MODE_KEY };
-        string roomName = "Match_" + System.Guid.NewGuid().ToString();
+
+        string roomName = "Room_" + Random.Range(1000, 9999);
         PhotonNetwork.CreateRoom(roomName, options);
     }
-    
-    // Xử lý khi tạo phòng thất bại (ví dụ trùng tên - hiếm gặp khi để null)
+
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        if (isCanceling)
-        {
-            StopSearchAndClosePanel();
-            return;
-        }     
         Debug.LogError("Tạo phòng lỗi: " + message);
-        // Thử lại hoặc báo lỗi UI
-        Invoke("OnCancelSearch", 2f); // Tự hủy sau 2s
+        // Nếu lỗi tạo phòng, thử retry lại từ đầu
+        if (!isCanceling) StartCoroutine(WaitAndRetry(1f));
     }
 
-  
+    // --- KHI VÀO PHÒNG THÀNH CÔNG ---
+
+    public override void OnJoinedRoom()
+    {
+        // Trường hợp hiếm: Vừa tìm thấy thì người dùng bấm Hủy
+        if (isCanceling)
+        {
+            PhotonNetwork.LeaveRoom();
+            return;
+        }
+
+        Debug.Log("Đã vào phòng thành công -> Chuyển sang WaitingRoom");
+        PhotonNetwork.LoadLevel(waitingRoomScene);
+    }
+
+    // --- XỬ LÝ HỦY (CANCEL) ---
+
+    void OnCancelSearch()
+    {
+        isCanceling = true;
+        statusText.text = "Đang hủy...";
+        StopAllCoroutines(); // Dừng việc retry
+        
+        // Đảm bảo xóa cờ AutoJoin để không bị lặp lại nếu quay lại Lobby
+        AutoJoinMode = 0; 
+
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+        else
+        {
+            // Nếu chưa vào phòng (đang kết nối hoặc đang retry) thì tắt UI luôn
+            StopSearchAndClosePanel();
+        }
+    }
+
+    public override void OnLeftRoom()
+    {
+        // Callback khi thoát phòng thành công (do bấm hủy)
+        StopSearchAndClosePanel();
+    }
+
+    void StopSearchAndClosePanel()
+    {
+        isCanceling = false;
+        searchingPanel.SetActive(false);
+        SetModeButtonsInteractable(true);
+        if(hoverBlocker) hoverBlocker.SetActive(false);
+    }
+
+    void SetModeButtonsInteractable(bool state)
+    {
+        btnMode1.interactable = state;
+        btnMode2.interactable = state;
+        btnMode3.interactable = state;
+    }
 }

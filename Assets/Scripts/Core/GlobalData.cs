@@ -89,6 +89,23 @@ public static class GlobalData
         { "FUTURE_PERFECT", "Thì tương lai hoàn thành" },
         { "FUTURE_PERFECT_CONTINUOUS", "Thì tương lai hoàn thành tiếp diễn" }
     };
+    
+    public static List<string> sortOrder = new List<string>()
+    {
+        "PRESENT_SIMPLE",
+        "PAST_SIMPLE",
+        "FUTURE_SIMPLE",
+        "PRESENT_CONTINUOUS",
+        "PAST_CONTINUOUS",
+        "FUTURE_CONTINUOUS",
+        "PRESENT_PERFECT",
+        "PAST_PERFECT",
+        "FUTURE_PERFECT",
+        "PRESENT_PERFECT_CONTINUOUS",
+        "PAST_PERFECT_CONTINUOUS",
+        "FUTURE_PERFECT_CONTINUOUS"
+    };
+    
 }
 
 // PVPRandom.cs - Không cần gắn vào GameObject

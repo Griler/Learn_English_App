@@ -88,7 +88,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
             answerButtons[i].gameObject.SetActive(false);
         }
 
-        matchId = PhotonNetwork.CurrentRoom.Name;
+       // matchId = PhotonNetwork.CurrentRoom.Name;
         SetButtonsInteractable(false);
         InitUIPlayer();
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
@@ -193,7 +193,6 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         allQuestions = rawAllQuestions.OrderBy(x =>
         {
             int random = UnityEngine.Random.Range(1, seed);
-            Debug.Log("random: " + random);
             return random;
         }).ToList();
 

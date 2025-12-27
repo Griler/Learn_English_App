@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using Firebase.Database;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Firebase.Extensions;
 using TMPro;
@@ -18,6 +19,13 @@ public class GrammarLoader : MonoBehaviour
     
     void OnEnable()
     { 
+        foreach (Transform c in contentParent)
+        {
+            c.gameObject.SetActive(false);
+            Destroy(c.gameObject);
+        }
+        Canvas.ForceUpdateCanvases();
+        LoadingController.Instance.Show();
         LoadTopicsFromFirebase();
     }
 
@@ -87,8 +95,8 @@ public class GrammarLoader : MonoBehaviour
     
     void Populate(List<GrammarTopic> topics, DataSnapshot userProgress)
     {
-        foreach (Transform c in contentParent) Destroy(c.gameObject);
-        
+        LoadingController.Instance.Hide();
+        topics = topics.OrderBy(x =>  x.grammarPointID).Reverse().ToList();
         foreach (GrammarTopic topic in topics)
         {
             try

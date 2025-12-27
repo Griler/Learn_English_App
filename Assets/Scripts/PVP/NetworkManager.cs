@@ -110,6 +110,7 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
+        Debug.Log("vào conect netWork");
         PhotonNetwork.JoinLobby();
     }
     public override void OnJoinedRoom()
@@ -128,14 +129,14 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         Debug.Log("Đã vào Lobby.");
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 2; // Giới hạn 2 người
-        roomOptions.IsVisible = false;
+        
         // Kiểm tra xem có phòng nào đang chờ vào không?
         if ((!string.IsNullOrEmpty(pendingRoomCode)&& 
             NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite))
         {
-            
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.MaxPlayers = 2; // Giới hạn 2 người
+            roomOptions.IsVisible = false;
             Debug.Log("Giờ mới bắt đầu vào phòng chờ lúc nãy: " + pendingRoomCode);
             PhotonNetwork.JoinOrCreateRoom(pendingRoomCode,roomOptions, TypedLobby.Default);
         }

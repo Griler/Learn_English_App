@@ -54,6 +54,7 @@ public class GameOverPanelController : MonoBehaviour
         else
         {
             FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
+            LobbyController.AutoJoinMode = 1;
             SceneManager.LoadScene("HomeScene");
         }
     }

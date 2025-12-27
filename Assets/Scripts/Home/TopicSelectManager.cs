@@ -21,12 +21,19 @@ public class TopicSelectManager : MonoBehaviour
 
     void LoadMainTopics()
     {
+        foreach (Transform c in contentParent)
+        {
+            c.gameObject.SetActive(false);
+            Destroy(c.gameObject);
+        }
+        Canvas.ForceUpdateCanvases();
+        LoadingController.Instance.Show();
         FirebaseDatabaseManager.Instance.LoadMainTopics(Populate);
     }
 
     void Populate(Dictionary<string,bool> topics)
     {
-        foreach (Transform c in contentParent) Destroy(c.gameObject);
+        LoadingController.Instance.Hide();
         foreach (var topic in topics)
         {
             try
