@@ -12,9 +12,8 @@ using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
 using JetBrains.Annotations;
-using UnityEngine.Networking; // Cần thiết để tải Audio
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
 using UnityEngine.U2D;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -54,11 +53,12 @@ public class SoundGameController : MonoBehaviourPunCallbacks
 
     [Header("--- GAME SETTINGS ---")] public int targetScoreToWin = 5;
     public float penaltyTime = 3.0f;
-    public int questionLimit = 20; // Số câu hỏi sẽ chơi
+    public int questionLimit = 20;
+    private const int BOT_ACTOR_NUMBER = 9999;
 
     // DATA
-    private List<GameQuestionData> rawData = new List<GameQuestionData>(); // Full database
-    public List<GameQuestionData> playList = new List<GameQuestionData>(); // 20 câu đã lọc
+    private List<GameQuestionData> rawData = new List<GameQuestionData>();
+    public List<GameQuestionData> playList = new List<GameQuestionData>();
 
     // STATE
     private int currentQuestionIndex = 0;
@@ -66,8 +66,8 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     private bool isPenalty = false;
     private bool isGameStarted = false;
     private string matchId = "";
-    private bool isGameOver = false; 
-
+    private bool isGameOver = false;
+    private int rankChange = 0;
 
     private Dictionary<int, int> playerScores = new Dictionary<int, int>();
     [NotNull] private UserDataPVP myPlayer = new UserDataPVP();
@@ -81,8 +81,10 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         resetProps.Add("FirebaseLoaded", false);
         resetProps.Add("AudioLoaded", false);
         PhotonNetwork.LocalPlayer.SetCustomProperties(resetProps);
+
         rankChange = 0;
-        isGameOver = false; 
+        isGameOver = false;
+
         playSoundBtn.onClick.AddListener(PlayCurrentSound);
         for (int i = 0; i < optionButtons.Length; i++)
         {
@@ -139,19 +141,35 @@ public class SoundGameController : MonoBehaviourPunCallbacks
                     }
                 }
 
-                Hashtable props = new Hashtable();
-                props.Add("FirebaseLoaded", true);
-                PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-                loadingStatusText.text = "Đang đồng bộ dữ liệu...";
+                // --- [BOT vs PVP] ---
+                if (BotMatchHelper.IsBotMatch)
+                {
+                    // MODE BOT: Tự tải Audio luôn, không cần sync
+                    loadingStatusText.text = "Đang tải Audio (Bot Mode)...";
+                    int seed = UnityEngine.Random.Range(0, 999999);
+                    // Gọi hàm xử lý local
+                    RPC_ProcessAndDownloadAudio(seed);
+                }
+                else
+                {
+                    // MODE PVP: Báo cáo đã load xong JSON
+                    Hashtable props = new Hashtable();
+                    props.Add("FirebaseLoaded", true);
+                    PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+                    loadingStatusText.text = "Đang đồng bộ dữ liệu...";
+                }
             }
         });
     }
 
-    // --- BƯỚC 2: ĐỒNG BỘ ---
+    // --- BƯỚC 2: ĐỒNG BỘ (Chỉ PvP) ---
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
+        if (BotMatchHelper.IsBotMatch) return; // Bot bỏ qua bước này
+
         if (!PhotonNetwork.IsMasterClient) return;
 
+        // Check Firebase Loaded
         if (changedProps.ContainsKey("FirebaseLoaded"))
         {
             if (CheckAllPlayersProp("FirebaseLoaded"))
@@ -161,6 +179,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             }
         }
 
+        // Check Audio Loaded
         if (changedProps.ContainsKey("AudioLoaded"))
         {
             if (CheckAllPlayersProp("AudioLoaded"))
@@ -181,7 +200,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         return true;
     }
 
-    // --- BƯỚC 3: LỌC LIST & TẢI AUDIO (GOOGLE DỊCH) ---
+    // --- BƯỚC 3: LỌC LIST & TẢI AUDIO ---
     [PunRPC]
     void RPC_ProcessAndDownloadAudio(int seed)
     {
@@ -191,7 +210,6 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         {
             int random = UnityEngine.Random.Range(1, seed);
             return random;
-            
         }).Take(questionLimit).ToList();
 
         StartCoroutine(DownloadAudioSequence());
@@ -206,8 +224,6 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             loadingStatusText.text = $"Đang tải audio ({count}/{playList.Count})";
 
             bool isSuccess = false;
-
-            // URL Google Dịch (Unofficial API)
             string word = UnityWebRequest.EscapeURL(q.correctAnswer);
             string url =
                 $"https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&text_len=32&client=tw-ob&q={word}&tl=en";
@@ -228,17 +244,25 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             }
 
             // Delay để tránh bị Google chặn (Lỗi 429)
-            if (isSuccess) yield return new WaitForSeconds(0.2f); // Nghỉ 0.2s nếu ok
+            if (isSuccess) yield return new WaitForSeconds(0.3f); // Nghỉ 0.2s nếu ok
             else yield return new WaitForSeconds(1.5f); // Nghỉ 1.5s nếu lỗi
         }
 
-        loadingStatusText.text = "Đợi người chơi khác...";
-        Hashtable props = new Hashtable();
-        props.Add("AudioLoaded", true);
-        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        if (BotMatchHelper.IsBotMatch)
+        {
+            // Bot Mode: Tải xong là chạy Countdown luôn
+            RPC_StartCountdown();
+        }
+        else
+        {
+            loadingStatusText.text = "Đợi người chơi khác...";
+            Hashtable props = new Hashtable();
+            props.Add("AudioLoaded", true);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
     }
 
-    // --- BƯỚC 4: GAMEPLAY ---
+    // --- BƯỚC 4: GAMEPLAY START ---
     [PunRPC]
     void RPC_StartCountdown()
     {
@@ -258,6 +282,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         countdownText.gameObject.SetActive(false);
         loadingPanel.SetActive(false);
 
+        // Master ra lệnh setup game
         if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("RPC_SetupGameLogic", RpcTarget.All);
@@ -271,7 +296,19 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         isGameStarted = true;
 
         playerScores.Clear();
-        foreach (Player p in PhotonNetwork.PlayerList) playerScores.Add(p.ActorNumber, 0);
+
+        // Init điểm
+        if (BotMatchHelper.IsBotMatch)
+        {
+            playerScores.Add(PhotonNetwork.LocalPlayer.ActorNumber, 0);
+            playerScores.Add(BOT_ACTOR_NUMBER, 0);
+        }
+        else
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+                playerScores.Add(p.ActorNumber, 0);
+        }
+
         UpdateScoreUI();
 
         if (PhotonNetwork.IsMasterClient) StartNewRound(0);
@@ -287,6 +324,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     {
         currentQuestionIndex = roundIdx;
         GameQuestionData data = playList[currentQuestionIndex];
+
         // 1. Phát Audio
         if (data.audioClip != null)
         {
@@ -317,6 +355,53 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         statusText.text = "Nghe và chọn hình đúng!";
         statusText.color = Color.black;
 
+        // --- [BOT TRIGGER] ---
+        // Trong chế độ này, Bot cũng nghe và trả lời
+        if (BotMatchHelper.IsBotMatch)
+        {
+            StartCoroutine(BotAnswerRoutine());
+        }
+    }
+
+    // --- [BOT LOGIC] ---
+    IEnumerator BotAnswerRoutine()
+    {
+        // Random thời gian Bot nghe và suy nghĩ (3s - 6s)
+        float delay = UnityEngine.Random.Range(2f, 3f);
+        yield return new WaitForSeconds(delay);
+
+        // Nếu vòng chơi đã hết (do người chơi trả lời rồi) thì thôi
+        if (!isRoundActive) yield break;
+        if (isGameOver) yield break;
+
+        // Tính toán đúng sai
+        bool isCorrect = UnityEngine.Random.Range(0, 100) < BotMatchHelper.BotAccuracy;
+        int choice = -1;
+        GameQuestionData data = playList[currentQuestionIndex];
+
+        if (isCorrect)
+        {
+            choice = data.correctAnswerIdx;
+        }
+        else
+        {
+            List<int> wrongList = new List<int>();
+            for (int i = 0; i < 4; i++)
+            {
+                if (i != data.correctAnswerIdx)
+                {
+                    wrongList.Add(i);
+                }
+            }
+
+            if (wrongList.Count > 0)
+            {
+                choice = wrongList[UnityEngine.Random.Range(0, wrongList.Count)];
+            }
+        }
+
+        // Bot trả lời
+        RPC_SubmitAnswer(BOT_ACTOR_NUMBER, choice);
     }
 
     // --- INPUT & LOGIC ---
@@ -329,13 +414,17 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_SubmitAnswer(int senderActor, int btnIndex)
     {
-
+        // Client nào cũng được phép cập nhật điểm cục bộ để UI mượt
         GameQuestionData data = playList[currentQuestionIndex];
         bool isCorrect = (btnIndex == data.correctAnswerIdx);
-        if(isCorrect) playerScores[senderActor]++;
+
+        // Chỉ Master xử lý logic điều hướng game
         if (!PhotonNetwork.IsMasterClient) return;
+
         if (isCorrect)
         {
+            if (playerScores.ContainsKey(senderActor)) playerScores[senderActor]++;
+
             photonView.RPC("RPC_RoundResult", RpcTarget.All, senderActor, true, btnIndex);
 
             if (playerScores[senderActor] >= targetScoreToWin)
@@ -355,19 +444,29 @@ public class SoundGameController : MonoBehaviourPunCallbacks
 
     IEnumerator WaitAndNextRound()
     {
-        isRoundActive = false;
+        isRoundActive = false; // Khóa round lại để Bot không trả lời thêm
         yield return new WaitForSeconds(2.0f);
         int nextIdx = (currentQuestionIndex + 1) % playList.Count;
         StartNewRound(nextIdx);
     }
 
-    // --- FEEDBACK ---
+    // --- FEEDBACK & SYNC ---
     [PunRPC]
     void RPC_RoundResult(int winnerActor, bool isCorrect, int btnIndex)
     {
-        Debug.LogError("vao update diem");
-        UpdateScoreUI();
-        isRoundActive = false;
+        // Cập nhật lại điểm số (Sync từ server xuống để chắc chắn)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Master đã cộng rồi, giờ chỉ cần gửi update UI nếu cần
+            // Nhưng logic ở trên đã cộng trước khi gọi RPC này, 
+            // nên ta cần sync Dictionary điểm số xuống client
+            int[] actors = playerScores.Keys.ToArray();
+            int[] scores = playerScores.Values.ToArray();
+            photonView.RPC("RPC_SyncScoreBoard", RpcTarget.All, actors, scores);
+        }
+
+        isRoundActive = false; // Dừng round
+
         if (winnerActor == PhotonNetwork.LocalPlayer.ActorNumber)
         {
             statusText.text = "CHÍNH XÁC!";
@@ -375,15 +474,41 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            string winnerName = (winnerActor == otherPlayer.actorId) ? otherPlayer.name : "Đối thủ";
+            string winnerName = (winnerActor == otherPlayer.actorId || winnerActor == BOT_ACTOR_NUMBER)
+                ? otherPlayer.name
+                : "Đối thủ";
             statusText.text = $"{winnerName} GHI ĐIỂM!";
+            statusText.color = Color.red;
         }
+    }
+
+    [PunRPC]
+    void RPC_SyncScoreBoard(int[] actors, int[] scores)
+    {
+        playerScores.Clear();
+        for (int i = 0; i < actors.Length; i++) playerScores.Add(actors[i], scores[i]);
+        UpdateScoreUI();
     }
 
     [PunRPC]
     void RPC_PenaltyPlayer(int targetActor, int btnIndex)
     {
-        if (targetActor == PhotonNetwork.LocalPlayer.ActorNumber) StartCoroutine(PenaltyRoutine(btnIndex));
+        // Nếu là mình bị phạt
+        if (targetActor == PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            StartCoroutine(PenaltyRoutine(btnIndex));
+        }
+        // Nếu Bot bị phạt (chỉ hiện text nếu muốn)
+        else if (targetActor == BOT_ACTOR_NUMBER)
+        {
+            statusText.text = $"{otherPlayer.name} CHỌN SAI!";
+            statusText.color = Color.blue;
+        }
+        else
+        {
+            statusText.text = $"{otherPlayer.name} CHỌN SAI!";
+            statusText.color = Color.firebrick;
+        }
     }
 
     IEnumerator PenaltyRoutine(int btnIndex)
@@ -398,15 +523,17 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         optionButtons[btnIndex].interactable = true;
     }
 
-    // --- END GAME & UTILS ---
+    // --- END GAME ---
     [PunRPC]
     void RPC_EndGame(int winnerActor)
     {
         loadingPanel.SetActive(false);
         isRoundActive = false;
         isGameOver = true;
+
         bool amIWinner = (PhotonNetwork.LocalPlayer.ActorNumber == winnerActor);
         UpdateMissionState(GlobalData.MissionKeys.P2P);
+
         if (amIWinner)
         {
             saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
@@ -422,25 +549,27 @@ public class SoundGameController : MonoBehaviourPunCallbacks
             gameLosePanel.GetComponent<GameOverPanelController>().Modegame = 3;
             gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
-
     }
 
     void PlayCurrentSound()
     {
         if (audioSource.clip != null) audioSource.Play();
     }
-    
 
     void UpdateScoreUI()
     {
-        Debug.LogError(playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber) + "|" + playerScores[PhotonNetwork.LocalPlayer.ActorNumber]);
-        int myScore = playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber)
-            ? playerScores[PhotonNetwork.LocalPlayer.ActorNumber]
-            : 0;
+        int myScore = 0;
         int enemyScore = 0;
+
+        if (playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber))
+            myScore = playerScores[PhotonNetwork.LocalPlayer.ActorNumber];
+
         foreach (var kvp in playerScores)
+        {
             if (kvp.Key != PhotonNetwork.LocalPlayer.ActorNumber)
                 enemyScore = kvp.Value;
+        }
+
         p1ScoreText.text = $"Tôi: {myScore}/{targetScoreToWin}";
         p2ScoreText.text = $"Đối thủ: {enemyScore}/{targetScoreToWin}";
     }
@@ -452,8 +581,28 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         gameWinPanel.SetActive(false);
         countdownText.gameObject.SetActive(false);
         loadingStatusText.text = "ĐANG TẢI DỮ LIỆU...";
+
+        // Setup P1
         foreach (Player p in PhotonNetwork.PlayerList)
-            UpdateSinglePlayerUI(p, p.IsLocal ? player1Container : player2Container);
+        {
+            if (p.IsLocal) UpdateSinglePlayerUI(p, player1Container);
+            else if (!BotMatchHelper.IsBotMatch) UpdateSinglePlayerUI(p, player2Container);
+        }
+
+        // Setup P2 (Bot)
+        if (BotMatchHelper.IsBotMatch)
+        {
+            otherPlayer.name = BotMatchHelper.BotName;
+            otherPlayer.rank = BotMatchHelper.BotRank;
+            otherPlayer.actorId = BOT_ACTOR_NUMBER;
+
+            player2Container.SetActive(true);
+            player2Container.GetComponent<FriendItemUI>().SetupUI(
+                BotMatchHelper.BotName,
+                BotMatchHelper.BotAvatarID,
+                BotMatchHelper.BotBorderID,
+                BotMatchHelper.BotRank.ToString());
+        }
     }
 
     void UpdateSinglePlayerUI(Player p, GameObject container)
@@ -479,58 +628,47 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         return p.CustomProperties.ContainsKey(key) ? p.CustomProperties[key].ToString() : "0";
     }
 
-    private int rankChange = 0;
     void saveMatchDatabase(string state, EloCalculator.GameResult res, string oName)
-    { 
+    {
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, res);
         if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
             rankChange = 0;
-        RankDatabaseManager.Instance.SaveMatchHistory(matchId, state,rankChange, oName, "Nghe Từ");
+        RankDatabaseManager.Instance.SaveMatchHistory(matchId, state, rankChange, oName, "Nghe Từ");
     }
-    
+
     public override void OnLeftRoom()
     {
+        Debug.Log("Đã thoát Sound Game.");
         FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
         SceneManager.LoadScene("HomeScene");
     }
-    
+
     private async void UpdateMissionState(string nameMission)
     {
         await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
     }
-    
+
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        if(isGameOver) return;
+        if (isGameOver) return;
+        if (BotMatchHelper.IsBotMatch) return;
+
         Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
-
-        // 1. Dừng Timer ngay lập tức
         isGameStarted = false;
-
         statusText.text = "Đối thủ đã thoát! Bạn thắng!";
-        
-        // Gọi hàm xử lý thắng giống như khi hết máu
-        // Lưu ý: Cần truyền ID của chính mình vào làm survivor
+
         int myActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
-        
-        // Tái sử dụng logic thắng cuộc
-        // Gọi trực tiếp vì không còn ai để RPC nữa (hoặc RPC cũng được nếu muốn chuẩn flow)
         HandleOpponentLeftWin(myActorNumber);
     }
 
     void HandleOpponentLeftWin(int winnerActorNumber)
     {
-        // Tính điểm Elo (giả sử thắng thì cộng điểm)
-        // Lưu lại lịch sử đấu: "OPP_DISCONNECT" hoặc "WIN"
         saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
-        
-        // Cập nhật nhiệm vụ
         UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         UpdateMissionState(GlobalData.MissionKeys.P2P);
 
-        // Hiển thị Panel Thắng
         gameWinPanel.SetActive(true);
-        if(gameWinPanel.GetComponent<GameOverPanelController>() != null)
+        if (gameWinPanel.GetComponent<GameOverPanelController>() != null)
         {
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }

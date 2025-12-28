@@ -2001,7 +2001,7 @@ MonoBehaviour:
   player2Container: {fileID: 1597843564}
   questionText: {fileID: 1301607822}
   targetScoreToWin: 5
-  penaltyTime: 1
+  penaltyTime: 3
   questionLimit: 20
   playList: []
 --- !u!1 &691229325
@@ -5974,6 +5974,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 202554794}
     m_Modifications:
+    - target: {fileID: 1590354769765457606, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1590354769765457606, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1590354769765457606, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 1590354769765457606, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756121596069252738, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756121596069252738, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756121596069252738, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 750
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756121596069252738, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -50
+      objectReference: {fileID: 0}
     - target: {fileID: 6359836144775067255, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6058,6 +6090,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Failed Light
       objectReference: {fileID: 0}
+    - target: {fileID: 8989642940235210897, guid: 3832b0e24466b5e4d84c4e091191bf48, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6076,6 +6112,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 202554794}
     m_Modifications:
+    - target: {fileID: 745297704677410396, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 745297704677410396, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 745297704677410396, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 745297704677410396, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -50
+      objectReference: {fileID: 0}
     - target: {fileID: 5448626337168837141, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6159,6 +6211,26 @@ PrefabInstance:
     - target: {fileID: 6578568733674420319, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
       propertyPath: m_Name
       value: Level Complete Light
+      objectReference: {fileID: 0}
+    - target: {fileID: 6578568733674420319, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7906998228344844524, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7906998228344844524, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7906998228344844524, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 750
+      objectReference: {fileID: 0}
+    - target: {fileID: 7906998228344844524, guid: c30a740d0a258254aad080c8c7c8cb9a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
