@@ -39,7 +39,8 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
         props["BorderID"] = userProfileSo.userInfo.border;
         props["Rank"] = userProfileSo.userInfo.rankPoint.ToString();
         props["IsReady"] = false; // Mặc định vào phòng là chưa Ready
-    
+        props["IsBot"] = false; 
+
         // Đẩy lên mạng
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     }

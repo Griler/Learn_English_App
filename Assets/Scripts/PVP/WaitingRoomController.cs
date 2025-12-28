@@ -4,6 +4,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class WaitingRoomController : MonoBehaviourPunCallbacks
 {
@@ -27,18 +28,18 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     [Header("UI Game Mode")]
     public TMP_Dropdown dropdownModeGame;
     private const string MODE_KEY = "gm";
+
+    [Header("Bot Settings")]
+    public float maxWaitTime = 5f; // Chờ 15s không có ai thì gọi Bot
+    private float currentWaitTimer;
+    private bool isTimerRunning = false;
     
     private void Start()
     {
-        if (readyButton)
-        {
-            readyButton.onClick.AddListener(OnClick_ToggleReady);
-        }
+        BotMatchHelper.Reset(); // Reset trạng thái Bot mỗi khi vào Room
 
-        if (outButton)
-        {
-            outButton.onClick.AddListener(onClickOutRoom);    
-        }
+        if (readyButton) readyButton.onClick.AddListener(OnClick_ToggleReady);
+        if (outButton) outButton.onClick.AddListener(onClickOutRoom);    
         dropdownModeGame.onValueChanged.AddListener(OnDropdownChanged);
 
         UpdatePlayerListUI();
@@ -48,22 +49,87 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
                        (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsReady"];
         UpdateReadyButtonUI(isReady);
         UpdateRoomInfo();
-        
         GetAndShowGameMode();
+
+        // BẮT ĐẦU ĐẾM NGƯỢC NẾU LÀ CHỦ PHÒNG VÀ CHƯA CÓ AI
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 1)
+        {
+            currentWaitTimer = maxWaitTime;
+            isTimerRunning = true;
+            if(statusText) statusText.text = $"Đang tìm đối thủ... ({Mathf.Ceil(currentWaitTimer)})";
+        }
     }
-    
-    // --- [LOGIC MỚI] GỬI DỮ LIỆU LÊN SERVER KHI MASTER ĐỔI DROPDOWN ---
+
+    private void Update()
+    {
+        // LOGIC ĐẾM NGƯỢC TẠO BOT
+        if (isTimerRunning && PhotonNetwork.IsMasterClient)
+        {
+            if (PhotonNetwork.PlayerList.Length > 1)
+            {
+                isTimerRunning = false; // Có người vào rồi thì dừng đếm
+                return;
+            }
+
+            currentWaitTimer -= Time.deltaTime;
+            if(statusText) statusText.text = $"Đang tìm đối thủ... ({Mathf.Ceil(currentWaitTimer)})";
+
+            if (currentWaitTimer <= 0)
+            {
+                isTimerRunning = false;
+                StartBotMatch();
+            }
+        }
+    }
+
+// Thêm hàm hiển thị Bot vào WaitingRoomController
+
+    void StartBotMatch()
+    {
+        readyButton.interactable = false;
+        Debug.Log("Hết giờ chờ! Hệ thống tự tạo Bot.");
+        if(statusText) statusText.text = "Đã tìm thấy đối thủ!";
+
+        // 1. Đóng phòng (Fake full room)
+        if(PhotonNetwork.CurrentRoom != null) {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.CurrentRoom.IsVisible = false;
+        }
+
+        // 2. Setup dữ liệu Bot
+        string myRankStr = GetSafeString(PhotonNetwork.LocalPlayer, "Rank");
+        BotMatchHelper.SetupBotMatch(int.Parse(myRankStr));
+
+        // 3. [MỚI] HIỂN THỊ BOT LÊN UI NGAY LẬP TỨC
+        if (player2Container != null)
+        {
+            player2Container.SetActive(true);
+            // Gọi hàm SetupUI của FriendItemUI (giả sử script này gắn trên prefab)
+            player2Container.GetComponent<FriendItemUI>().SetupUI(
+                BotMatchHelper.BotName,
+                BotMatchHelper.BotAvatarID,
+                BotMatchHelper.BotBorderID,
+                BotMatchHelper.BotRank.ToString()
+            );
+        }
+        
+        if (player2TextStatus != null) player2TextStatus.gameObject.SetActive(false);
+
+        // 4. Delay 2 giây để người chơi kịp nhìn thấy đối thủ trước khi vào game
+        StartCoroutine(DelayStartGame());
+    }
+
+    IEnumerator DelayStartGame()
+    {
+        yield return new WaitForSeconds(2.0f); // Chờ 2 giây
+        StartGame();
+    }    
+    // --- [LOGIC GỬI DỮ LIỆU GAME MODE] ---
     void OnDropdownChanged(int index)
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            // Map từ Index của Dropdown sang ID của Mode
-            // (Dựa theo logic cũ của bạn: Case 1 -> value 0, Case 2 -> value 1...)
-            // Vậy ngược lại: Index 0 -> Mode 1, Index 1 -> Mode 2...
             int modeId = index + 1; 
-
-            Debug.Log($"Master thay đổi mode: Index {index} -> ModeID {modeId}");
-
             ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
             props[MODE_KEY] = modeId;
             PhotonNetwork.CurrentRoom.SetCustomProperties(props);
@@ -73,39 +139,25 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     void GetAndShowGameMode()
     {
         dropdownModeGame.interactable = PhotonNetwork.IsMasterClient;
-
         var roomProps = PhotonNetwork.CurrentRoom.CustomProperties;
-
         if (roomProps.ContainsKey(MODE_KEY))
         {
             int mode = (int)roomProps[MODE_KEY];
-
-            Debug.Log("WaitingRoom: Sync Mode từ Server = " + mode);
+            int targetIndex = mode - 1;
+            if (targetIndex < 0) targetIndex = 0;
             
-            int targetIndex = 0;
-            switch (mode)
-            {
-                case 1: targetIndex = 0; break;
-                case 2: targetIndex = 1; break;
-                case 3: targetIndex = 2; break;
-                default: targetIndex = 0; break;
-            }
-            roomName.text = dropdownModeGame.options[targetIndex].text;
             if (dropdownModeGame.value != targetIndex)
             {
                 dropdownModeGame.value = targetIndex;
                 dropdownModeGame.RefreshShownValue(); 
             }
+            if(roomName) roomName.text = dropdownModeGame.options[targetIndex].text;
         }
     }
 
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
-        // Nếu cái thay đổi chứa key "gm" thì cập nhật UI
-        if (propertiesThatChanged.ContainsKey(MODE_KEY))
-        {
-            GetAndShowGameMode();
-        }
+        if (propertiesThatChanged.ContainsKey(MODE_KEY)) GetAndShowGameMode();
     }
 
     void UpdatePlayerListUI()
@@ -124,26 +176,28 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         {
             player1Container.SetActive(true);
             UpdateSinglePlayerUI(myPlayer, player1Container, player1IconReady);
-            if(player1TextStatus != null) player1TextStatus.gameObject.SetActive(false);
+            if(player1TextStatus) player1TextStatus.gameObject.SetActive(false);
         }
 
         if (otherPlayer != null)
         {
             player2Container.SetActive(true);
             UpdateSinglePlayerUI(otherPlayer, player2Container, player2IconReady);
-            if(player2TextStatus != null) player2TextStatus.gameObject.SetActive(false);
+            if(player2TextStatus) player2TextStatus.gameObject.SetActive(false);
+            
+            // Có người thật -> Hủy Timer Bot
+            isTimerRunning = false;
+            if(statusText) statusText.text = "Đã tìm thấy người chơi!";
         }
         else
         {
             player2Container.SetActive(false);
-            if(player2TextStatus != null)
+            if(player2TextStatus)
             {
                 player2TextStatus.gameObject.SetActive(true);
                 player2TextStatus.text = "Waiting for opponent...";
             }
         }
-        
-        // Mỗi lần có người vào/ra, check lại quyền tương tác Dropdown (nếu Host out, người này thành Host thì được mở khóa)
         dropdownModeGame.interactable = PhotonNetwork.IsMasterClient;
     }
 
@@ -171,22 +225,19 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         return false;
     }
 
-    // --- EVENT NÚT READY ---
     public void OnClick_ToggleReady()
     {
+        // Nếu đang countdown Bot mà bấm Ready thì kệ nó, hoặc logic tùy bạn
         object isReadyObj;
         bool currentReady = false;
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsReady", out isReadyObj))
         {
             currentReady = (bool)isReadyObj;
         }
-
         bool newReadyState = !currentReady;
-
         ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
         props["IsReady"] = newReadyState;
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-
         UpdateReadyButtonUI(newReadyState);
     }
 
@@ -195,21 +246,12 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         outButton.interactable = !isReady;
         readyButtonText.text = isReady ? "CANCEL" : "READY";
         readyButton.image.color = isReady ? Color.gray : Color.green;
-        
-        if (PhotonNetwork.IsMasterClient)
-        {
-            dropdownModeGame.interactable = !isReady;
-        }
+        if (PhotonNetwork.IsMasterClient) dropdownModeGame.interactable = !isReady;
     }
-
-    // --- CÁC CALLBACK CỦA PHOTON ---
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdatePlayerListUI();
-        // Khi người mới vào, cần đảm bảo họ nhìn thấy đúng Mode hiện tại
-        
-        // (Thực ra họ tự chạy Start->GetAndShowGameMode rồi, nhưng gọi lại cho chắc)
         GetAndShowGameMode(); 
     }
 
@@ -221,6 +263,8 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     void CheckAllPlayersReady()
     {
+        if (BotMatchHelper.IsBotMatch) return; // Nếu đang mode Bot thì bỏ qua check Ready
+
         if (!PhotonNetwork.IsMasterClient) return;
         if (PhotonNetwork.PlayerList.Length < 2) return;
 
@@ -233,42 +277,33 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             }
             else return; 
         }
-
         StartGame();
     }
 
     void StartGame()
     {
-        statusText.text = "Tất cả đã sẵn sàng! Đang vào game...";
-        PhotonNetwork.CurrentRoom.IsOpen = false;
-        PhotonNetwork.CurrentRoom.IsVisible = false;
+        if(statusText) statusText.text = "Đang vào game...";
         
+        // Đảm bảo đóng phòng
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.CurrentRoom.IsVisible = false;
+        }
+
         int mode = 0;
         if(PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(MODE_KEY))
         {
             mode = (int)PhotonNetwork.CurrentRoom.CustomProperties[MODE_KEY];
         }
-        else
-        {
-            mode = 1; 
-        }
-
-        Debug.Log("Start Game với Mode ID: " + mode);
+        else mode = 1; 
 
         switch (mode)
         {
-            case 1: // Tương ứng dropdown index 0
-                PhotonNetwork.LoadLevel("PVPScene");
-                break;
-            case 2: // Tương ứng dropdown index 1
-                PhotonNetwork.LoadLevel("PairScene");
-                break;
-            case 3: // Tương ứng dropdown index 2
-                 PhotonNetwork.LoadLevel("SoundPickScene");
-                break;
-            default:
-                PhotonNetwork.LoadLevel("PVPScene");
-                break;
+            case 1: PhotonNetwork.LoadLevel("PVPScene"); break;
+            case 2: PhotonNetwork.LoadLevel("PairScene"); break;
+            case 3: PhotonNetwork.LoadLevel("SoundPickScene"); break;
+            default: PhotonNetwork.LoadLevel("PVPScene"); break;
         }
     }
     
@@ -276,30 +311,25 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom != null)
         {
-            int currentPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-            int maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
-            Debug.Log($"Đang ở phòng: {name} | Số người: {currentPlayers}");
+            Debug.Log($"Đang ở phòng: {name}");
         }
     }
     
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        ToastSystem.Instance.ShowToast($"Người chơi {otherPlayer.NickName} đã thoát phòng.");
         ResetMyReadyState();
         UpdatePlayerListUI();
-
-        if (statusText != null)
-        {
-            statusText.text = "Đối thủ đã thoát. Đang đợi người mới...";
-        }
+        if (statusText) statusText.text = "Đối thủ đã thoát. Đang tìm người mới...";
         
-        // Nếu người thoát là Host, người ở lại thành Host -> Cần mở khóa Dropdown
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("Tôi đã trở thành Host mới.");
             PhotonNetwork.CurrentRoom.IsOpen = true; 
             PhotonNetwork.CurrentRoom.IsVisible = true;
-            dropdownModeGame.interactable = true; // Cho phép chỉnh mode
+            dropdownModeGame.interactable = true;
+            
+            // Kích hoạt lại timer chờ Bot
+            isTimerRunning = true;
+            currentWaitTimer = maxWaitTime;
         }
     }
 

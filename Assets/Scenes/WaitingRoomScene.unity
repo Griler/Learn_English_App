@@ -284,6 +284,7 @@ GameObject:
   - component: {fileID: 173051668}
   - component: {fileID: 173051669}
   - component: {fileID: 173051670}
+  - component: {fileID: 173051671}
   m_Layer: 5
   m_Name: WattingRoom
   m_TagString: Untagged
@@ -340,6 +341,7 @@ MonoBehaviour:
   readyButtonText: {fileID: 649586747}
   roomName: {fileID: 1093730202}
   statusText: {fileID: 384663908}
+  matchmakingManager: {fileID: 173051671}
   dropdownModeGame: {fileID: 811949034}
 --- !u!114 &173051669
 MonoBehaviour:
@@ -379,6 +381,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 173051666}
   m_CullTransparentMesh: 1
+--- !u!114 &173051671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173051666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc3ebea62f54c1880111db4c084d3b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxWaitTime: 10
 --- !u!1 &205175571
 GameObject:
   m_ObjectHideFlags: 0
