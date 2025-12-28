@@ -62,6 +62,7 @@ MonoBehaviour:
   - RPC_SyncLiveLoss
   - RPC_ProcessAndDownloadAudio
   - RPC_SetupGameLogic
+  - RPC_SyncAllScores
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

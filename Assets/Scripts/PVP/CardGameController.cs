@@ -16,7 +16,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-// Data Model để map với JSON Firebase
+// Data Model
 [System.Serializable]
 public class CardDataModel
 {
@@ -36,17 +36,18 @@ public class UserDataPVP
 
 public class CardGameController : MonoBehaviourPunCallbacks
 {
-    [Header("--- GAME SETTINGS ---")] [Tooltip("Số cặp thẻ muốn chơi (VD: 10 cặp = 20 thẻ)")]
+    [Header("--- GAME SETTINGS ---")] 
     public int maxPairsInGame = 10;
-
     public float turnTimeLimit = 15f;
+    private const int BOT_ACTOR_NUMBER = 9999; // ID Định danh cho Bot
 
-    [Header("--- UI REFERENCES ---")] public Transform gridContainer; // Grid Layout Group
+    [Header("--- UI REFERENCES ---")] 
+    public Transform gridContainer;
     public GameObject cardPrefab;
 
     public TextMeshProUGUI statusText;
     public TextMeshProUGUI p1ScoreText; // Điểm Player 1 (Local)
-    public TextMeshProUGUI p2ScoreText; // Điểm Player 2 (Remote)
+    public TextMeshProUGUI p2ScoreText; // Điểm Player 2 (Remote/Bot)
     public TextMeshProUGUI timerText;
 
     public GameObject loadingPanel;
@@ -61,17 +62,13 @@ public class CardGameController : MonoBehaviourPunCallbacks
     public GameObject player2Container; // Avatar Right
 
     [Header("--- DATA ---")]
-    // List chứa dữ liệu thô từ Firebase (Kho 50-60 từ)
     [SerializeField]
     private List<CardDataModel> rawCardData = new List<CardDataModel>();
-
-    // List quản lý các thẻ đang hiện trên bàn
     private List<CardController> activeCards = new List<CardController>();
 
     private string matchId = "";
-    // State Game
     private int currentTurnActorNumber;
-    private bool isProcessingMatch = false; // Cờ chặn click khi đang so sánh
+    private bool isProcessingMatch = false; 
     private int firstCardIndex = -1;
     private int secondCardIndex = -1;
 
@@ -82,15 +79,15 @@ public class CardGameController : MonoBehaviourPunCallbacks
     // Score & Win Condition
     private Dictionary<int, int> playerScores = new Dictionary<int, int>();
     private int totalPairsFound = 0;
-    private int targetPairsToWin = 0; // Sẽ được set khi Start Game
+    private int targetPairsToWin = 0; 
     
     // User Info
     [NotNull] private UserDataPVP myPlayer = new UserDataPVP();
     [NotNull] private UserDataPVP otherPlayer = new UserDataPVP();
 
     DatabaseReference reference;
-    private bool isGameStarted = false; // Cờ chặn gọi setup 2 lần
-    private bool canClick = true; // Cờ chặn gọi setup 2 lần
+    private bool isGameStarted = false; 
+    private bool canClick = true; 
     private bool isGameOver = false; 
 
     private void Start()
@@ -101,8 +98,9 @@ public class CardGameController : MonoBehaviourPunCallbacks
         rankChange = 0;
         isGameOver = false; 
 
+        // Setup UI ban đầu (Load avatar Bot nếu cần)
         InitUIPlayer();
-        // Fix lỗi dependencies Firebase trước khi chạy
+
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
             var dependencyStatus = task.Result;
@@ -119,48 +117,48 @@ public class CardGameController : MonoBehaviourPunCallbacks
         });
     }
 
-    // 1. LOAD DATA TỪ FIREBASE (Giữ nguyên format logic)
+    // 1. LOAD DATA
     void LoadCardsFromFirebase()
     {
         reference.Child("card_data").Child("list").GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            if (task.IsFaulted)
+            if (task.IsFaulted || !task.IsCompleted || task.Result.Value == null) return;
+
+            DataSnapshot snapshot = task.Result;
+            rawCardData = new List<CardDataModel>();
+
+            foreach (DataSnapshot child in snapshot.Children)
             {
-                Debug.LogError("Lỗi kết nối Firebase");
-                return;
+                try
+                {
+                    CardDataModel card = new CardDataModel();
+                    if (child.Child("id").Value != null)
+                        card.id = int.Parse(child.Child("id").Value.ToString());
+                    if (child.Child("englishWord").Value != null)
+                        card.englishWord = child.Child("englishWord").Value.ToString();
+                    if (child.Child("spriteName").Value != null)
+                        card.spriteName = child.Child("spriteName").Value.ToString();
+
+                    rawCardData.Add(card);
+                }
+                catch (System.Exception ex) { }
             }
 
-            if (task.IsCompleted)
+            Debug.Log($"Đã tải kho: {rawCardData.Count} từ vựng.");
+            isGameStarted = false; // Reset cờ start
+
+            // --- [LOGIC PHÂN NHÁNH BOT vs PVP] ---
+            if (BotMatchHelper.IsBotMatch)
             {
-                DataSnapshot snapshot = task.Result;
-                if (snapshot.Value == null) return;
-
-                rawCardData = new List<CardDataModel>();
-
-                foreach (DataSnapshot child in snapshot.Children)
-                {
-                        try
-                        {
-                            CardDataModel card = new CardDataModel();
-                            if (child.Child("id").Value != null)
-                                card.id = int.Parse(child.Child("id").Value.ToString());
-                            if (child.Child("englishWord").Value != null)
-                                card.englishWord = child.Child("englishWord").Value.ToString();
-                            if (child.Child("spriteName").Value != null)
-                                card.spriteName = child.Child("spriteName").Value.ToString();
-
-                            rawCardData.Add(card);
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Debug.LogWarning("Parse lỗi: " + ex.Message);
-                        }
-                }
-
-                Debug.Log($"Đã tải kho: {rawCardData.Count} từ vựng.");
+                loadingStatusText.text = "Đang vào trận đấu tập...";
+                int seed = UnityEngine.Random.Range(1, 999999);
+                
+                // Start countdown giả
+                RPC_StartCountdown();
+            }
+            else 
+            {
                 loadingStatusText.text = "Đang đợi người chơi khác...";
-
-                // Báo hiệu tôi đã tải xong
                 Hashtable props = new Hashtable();
                 props.Add("IsLoaded", true);
                 PhotonNetwork.LocalPlayer.SetCustomProperties(props);
@@ -168,9 +166,11 @@ public class CardGameController : MonoBehaviourPunCallbacks
         });
     }
 
-    // --- 2. CHECK READY & START COUNTDOWN ---
+    // --- 2. CHECK READY (Chỉ dùng cho PvP) ---
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
+        if (BotMatchHelper.IsBotMatch) return; // Bỏ qua nếu là Bot
+
         if (PhotonNetwork.IsMasterClient && changedProps.ContainsKey("IsLoaded"))
         {
             CheckAllPlayersReady();
@@ -179,7 +179,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
     private void CheckAllPlayersReady()
     {
-        // Phải đảm bảo phòng đủ 2 người và cả 2 đều Loaded
         if (PhotonNetwork.PlayerList.Length < 2) return;
 
         foreach (Player p in PhotonNetwork.PlayerList)
@@ -190,8 +189,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
             }
             else return;
         }
-
-        // Tất cả sẵn sàng -> Master ra lệnh đếm ngược
         photonView.RPC("RPC_StartCountdown", RpcTarget.All);
     }
 
@@ -215,53 +212,50 @@ public class CardGameController : MonoBehaviourPunCallbacks
         countdownText.gameObject.SetActive(false);
         loadingPanel.SetActive(false);
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            int gameSeed = UnityEngine.Random.Range(0, 999999);
-            int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)]
-                .ActorNumber;
 
-            // Gửi Seed và người đi trước cho cả 2 máy
+        int gameSeed = UnityEngine.Random.Range(1, 999999);
+        int startActor = PhotonNetwork.PlayerList[UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length)].ActorNumber;    
+        if (!BotMatchHelper.IsBotMatch && PhotonNetwork.IsMasterClient)
+        {
             photonView.RPC("RPC_SetupBoard", RpcTarget.AllBuffered, gameSeed, startActor);
+        }
+        else
+        {
+            bool playerGoFirst = (UnityEngine.Random.Range(0, 2) == 0);
+            startActor  = playerGoFirst ? PhotonNetwork.LocalPlayer.ActorNumber : BOT_ACTOR_NUMBER;
+            RPC_SetupBoard(gameSeed, startActor);
         }
     }
 
-    // --- 3. SETUP GAME (LOGIC RANDOM CARD) ---
+    // --- 3. SETUP GAME ---
     [PunRPC]
     void RPC_SetupBoard(int seed, int startTurnActor)
     {
         if (isGameStarted) return; 
         isGameStarted = true;
-        Debug.Log($"Setup Board với Seed: {seed}");
+        
         UnityEngine.Random.InitState(seed);
         rawCardData = rawCardData.OrderBy(item => item.id).ToList();
-        List<CardDataModel> poolData = new List<CardDataModel>(rawCardData);
         
-        poolData = poolData.OrderBy(x =>
-        {
-            int random = UnityEngine.Random.Range(1, seed);
-            return random;
-        }).ToList();
-
+        // Trộn và lấy thẻ
+        List<CardDataModel> poolData = new List<CardDataModel>(rawCardData);
+        poolData = poolData.OrderBy(x => UnityEngine.Random.Range(1, seed)).ToList();
         int countToTake = Mathf.Min(poolData.Count, maxPairsInGame);
         List<CardDataModel> selectedWords = poolData.Take(countToTake).ToList();
 
-        // Cập nhật điều kiện thắng
         targetPairsToWin = selectedWords.Count;
         totalPairsFound = 0;
 
-        // B. Nhân đôi thẻ (Tạo cặp)
+        // Nhân đôi thẻ
         List<DeckItem> deck = new List<DeckItem>();
         foreach (var item in selectedWords)
         {
             deck.Add(new DeckItem(item, true));
             deck.Add(new DeckItem(item, false));
         }
-
-        // C. Trộn lại lần nữa để rải ra bàn
         deck = deck.OrderBy(x => UnityEngine.Random.value).ToList();
 
-        // D. Spawn thẻ lên bàn
+        // Spawn thẻ
         foreach (Transform child in gridContainer) Destroy(child.gameObject);
         activeCards.Clear();
         playerScores.Clear();
@@ -272,48 +266,63 @@ public class CardGameController : MonoBehaviourPunCallbacks
             GameObject cardObj = Instantiate(cardPrefab, gridContainer);
             CardController controller = cardObj.GetComponent<CardController>();
             cardObj.SetActive(true);
-            
             controller.Init(data.id, i, data.englishWord, data.spriteName, this, deck[i].isTypeWorld);
             activeCards.Add(controller);
-        }  
+        }
+
         // Init điểm
-        foreach (Player p in PhotonNetwork.PlayerList)
+        if (BotMatchHelper.IsBotMatch)
         {
-            playerScores.Add(p.ActorNumber, 0);
+            playerScores.Add(PhotonNetwork.LocalPlayer.ActorNumber, 0);
+            playerScores.Add(BOT_ACTOR_NUMBER, 0);
+        }
+        else
+        {
+            foreach (Player p in PhotonNetwork.PlayerList) playerScores.Add(p.ActorNumber, 0);
         }
 
         currentTurnActorNumber = startTurnActor;
         UpdateTurnUI();
         UpdateScoreUI();
 
-        // Start Timer
         currentTimer = turnTimeLimit;
         isTimerRunning = true;
+        
+        // --- [BOT TRIGGER] ---
+        // Nếu Bot đi trước, gọi Bot chạy
+        if (BotMatchHelper.IsBotMatch && currentTurnActorNumber == BOT_ACTOR_NUMBER)
+        {
+            StartCoroutine(BotTurnRoutine());
+        }
     }
 
     // --- 4. GAMEPLAY LOGIC ---
 
-    // Được gọi từ CardController khi người chơi click
+    // Sự kiện CLICK của người chơi thật
     public void OnCardClicked(int cardIndex)
     {
         if(!canClick) return;
+        // Kiểm tra đúng lượt mình không
         if (PhotonNetwork.LocalPlayer.ActorNumber != currentTurnActorNumber) return;
-        if (isProcessingMatch) return; // Đang bận so sánh thẻ
+        if (isProcessingMatch) return; 
 
+        // Gửi RPC lên Master (Nếu đấu Bot thì mình là Master)
         photonView.RPC("RPC_RequestFlip", RpcTarget.MasterClient, cardIndex, PhotonNetwork.LocalPlayer.ActorNumber);
     }
 
     [PunRPC]
     void RPC_RequestFlip(int cardIndex, int senderActorNumber)
     {
+        // Chỉ Master xử lý logic
         if (!PhotonNetwork.IsMasterClient) return;
 
         // Validate
         if (activeCards[cardIndex].isFaceUp || activeCards[cardIndex].isLocked) return;
 
-        // Lật visual ngay lập tức
+        // 1. Lật visual lên
         photonView.RPC("RPC_FlipCardVisual", RpcTarget.All, cardIndex);
 
+        // 2. Xử lý Logic tìm cặp
         if (firstCardIndex == -1)
         {
             firstCardIndex = cardIndex;
@@ -327,26 +336,85 @@ public class CardGameController : MonoBehaviourPunCallbacks
             StartCoroutine(CheckMatchLogic(senderActorNumber));
         }
     }
+    
+    // --- [BOT LOGIC] ---
+    IEnumerator BotTurnRoutine()
+    {
+        Debug.Log("Bot đang suy nghĩ...");
+        // 1. Nghĩ 1-2s
+        yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 2f));
+        if (isGameOver) yield break;
+
+        // 2. Chọn thẻ thứ nhất (Chưa mở, chưa lock)
+        var availableCards = activeCards.Where(c => !c.isFaceUp && !c.isLocked).ToList();
+        if(availableCards.Count == 0) yield break;
+        
+        // Random thẻ đầu
+        CardController card1 = availableCards[UnityEngine.Random.Range(0, availableCards.Count)];
+        
+        // Gọi hàm RequestFlip (Giả lập click) - Gọi trực tiếp vì Bot là local
+        RPC_RequestFlip(card1.indexInGrid, BOT_ACTOR_NUMBER);
+        
+        // 3. Nghĩ tiếp 1s để chọn thẻ 2
+        yield return new WaitForSeconds(1f);
+        
+        // Refresh danh sách thẻ còn lại
+        availableCards = activeCards.Where(c => !c.isFaceUp && !c.isLocked).ToList(); // Card 1 đã faceUp rồi
+        if(availableCards.Count == 0) yield break;
+
+        CardController card2 = null;
+
+        // --- Logic thông minh của Bot ---
+        // Nếu may mắn (< Accuracy), Bot sẽ cố tìm thẻ trùng với Card 1
+        BotMatchHelper.BotAccuracy = 30;
+        bool isSmartMove = UnityEngine.Random.Range(0, 100) <= BotMatchHelper.BotAccuracy;
+        
+        if (isSmartMove)
+        {
+            // Tìm trong đống bài úp xem có con nào trùng ID với card1 không
+            // (Thực tế: Bot "nhìn xuyên bài" để fake trí nhớ)
+            card2 = availableCards.FirstOrDefault(c => c.cardId == card1.cardId);
+        }
+
+        // Nếu không thông minh hoặc không tìm thấy, chọn bừa
+        if(card2 == null)
+        {
+             card2 = availableCards[UnityEngine.Random.Range(0, availableCards.Count)];
+        }
+        
+        // Lật thẻ 2
+        RPC_RequestFlip(card2.indexInGrid, BOT_ACTOR_NUMBER);
+    }
 
     IEnumerator CheckMatchLogic(int playerID)
     {
-        yield return new WaitForSeconds(1.0f); // Đợi 1s
+        yield return new WaitForSeconds(1.0f); // Delay để người chơi xem thẻ
 
         bool isMatch = (activeCards[firstCardIndex].cardId == activeCards[secondCardIndex].cardId);
 
         if (isMatch)
         {
             totalPairsFound++;
-            photonView.RPC("RPC_SyncScore", RpcTarget.All, playerID);
+            // Cộng điểm
+            if (playerScores.ContainsKey(playerID)) playerScores[playerID]++;
+            // Không đổi lượt nếu đoán đúng (Tùy luật game, ở đây giữ nguyên luật cũ là đoán đúng đi tiếp?)
+            // À code cũ của bạn: Đoán đúng -> RPC_MatchResult -> UpdateScore.
+            // Nhưng code cũ: isMatch -> SyncScore. Else -> SwitchTurn. -> Luật là ĐÚNG ĐƯỢC ĐI TIẾP.
         }
         else
         {
             SwitchTurn();
         }
+        
+        // Sync kết quả xuống Client
+        photonView.RPC("RPC_MatchResult", RpcTarget.All, isMatch, currentTurnActorNumber, firstCardIndex, secondCardIndex);
+        
+        // Sync điểm số (Để đảm bảo UI chuẩn)
+        int[] actors = playerScores.Keys.ToArray();
+        int[] scores = playerScores.Values.ToArray();
+        photonView.RPC("RPC_SyncAllScores", RpcTarget.All, actors, scores);
 
-        photonView.RPC("RPC_MatchResult", RpcTarget.All, isMatch, currentTurnActorNumber, firstCardIndex,
-            secondCardIndex);
-
+        // Reset biến
         firstCardIndex = -1;
         secondCardIndex = -1;
         isProcessingMatch = false;
@@ -358,9 +426,46 @@ public class CardGameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            // Reset timer cho lượt tiếp theo
             photonView.RPC("RPC_ResetTimer", RpcTarget.All);
+            
+            // --- [BOT TRIGGER] ---
+            // Nếu vẫn là lượt Bot (do đoán đúng) hoặc vừa chuyển sang lượt Bot
+            if (BotMatchHelper.IsBotMatch && currentTurnActorNumber == BOT_ACTOR_NUMBER)
+            {
+                StartCoroutine(BotTurnRoutine());
+            }
         }
+    }
+    
+    void SwitchTurn()
+    {
+        if (BotMatchHelper.IsBotMatch)
+        {
+             if (currentTurnActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+                currentTurnActorNumber = BOT_ACTOR_NUMBER;
+            else
+                currentTurnActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+        else
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                if (p.ActorNumber != currentTurnActorNumber)
+                {
+                    currentTurnActorNumber = p.ActorNumber;
+                    break;
+                }
+            }
+        }
+        canClick = true;
+    }
+
+    [PunRPC]
+    void RPC_SyncAllScores(int[] actors, int[] scores)
+    {
+        playerScores.Clear();
+        for(int i=0; i<actors.Length; i++) playerScores.Add(actors[i], scores[i]);
+        UpdateScoreUI();
     }
 
     [PunRPC]
@@ -393,7 +498,6 @@ public class CardGameController : MonoBehaviourPunCallbacks
         {
             if (idx1 >= 0) activeCards[idx1].LockCard();
             if (idx2 >= 0) activeCards[idx2].LockCard();
-            UpdateScoreUI();
         }
         else
         {
@@ -414,12 +518,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
                 timerText.text = Mathf.CeilToInt(currentTimer).ToString();
             }
 
-            if (currentTimer < 1)
-            {
-                canClick = false;
-            }
+            if (currentTimer < 1) canClick = false;
 
-        // Logic Timeout (Chỉ Master check)
             if (PhotonNetwork.IsMasterClient && currentTimer <= 0)
             {
                 HandleTurnTimeout();
@@ -431,20 +531,24 @@ public class CardGameController : MonoBehaviourPunCallbacks
     {
         isTimerRunning = false;
         SwitchTurn();
-        // Gửi lệnh timeout, kèm theo thẻ đang mở (nếu có) để úp lại
+        // Timeout: Úp thẻ đang mở dở lại
         photonView.RPC("RPC_TimeoutTurnSwitch", RpcTarget.All, currentTurnActorNumber, firstCardIndex);
+        
+        // Nếu timeout sang lượt Bot -> Gọi Bot
+        if (BotMatchHelper.IsBotMatch && currentTurnActorNumber == BOT_ACTOR_NUMBER)
+        {
+            StartCoroutine(BotTurnRoutine());
+        }
     }
 
     [PunRPC]
     void RPC_TimeoutTurnSwitch(int nextTurnActor, int cardToCloseIndex)
     {
-        // Úp thẻ đang mở dở
         if (cardToCloseIndex != -1 && cardToCloseIndex < activeCards.Count)
         {
             activeCards[cardToCloseIndex].FlipClose();
         }
 
-        // Reset biến tạm
         firstCardIndex = -1;
         secondCardIndex = -1;
         isProcessingMatch = false;
@@ -455,20 +559,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
         RPC_ResetTimer();
     }
 
-    // --- 6. END GAME & UTILS ---
-    void SwitchTurn()
-    {
-        foreach (Player p in PhotonNetwork.PlayerList)
-        {
-            if (p.ActorNumber != currentTurnActorNumber)
-            {
-                currentTurnActorNumber = p.ActorNumber;
-                break;
-            }
-        }
-        canClick = true;
-    }
-
+    // --- 6. END GAME ---
     void CheckGameOver()
     {
         if (!PhotonNetwork.IsMasterClient) return;
@@ -482,22 +573,26 @@ public class CardGameController : MonoBehaviourPunCallbacks
         isTimerRunning = false;
         isGameOver = true;
 
-        int myScore = playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber)
-            ? playerScores[PhotonNetwork.LocalPlayer.ActorNumber]
-            : 0;
+        int myScore = 0;
         int enemyScore = 0;
+
+        if (playerScores.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber))
+            myScore = playerScores[PhotonNetwork.LocalPlayer.ActorNumber];
+            
+        // Tìm điểm đối thủ
         foreach (var kvp in playerScores)
         {
             if (kvp.Key != PhotonNetwork.LocalPlayer.ActorNumber) enemyScore = kvp.Value;
         }
+
         UpdateMissionState(GlobalData.MissionKeys.P2P);
+        
         if (myScore > enemyScore)
         {
             saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
             gameWinPanel.SetActive(true);
             gameWinPanel.GetComponent<GameOverPanelController>().Modegame = 2;
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
-
             UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         }
         else if (myScore < enemyScore)
@@ -509,12 +604,11 @@ public class CardGameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            saveMatchDatabase("WIN", EloCalculator.GameResult.Draw, otherPlayer.name);
-            gameWinPanel.SetActive(true);
+            saveMatchDatabase("DRAW", EloCalculator.GameResult.Draw, otherPlayer.name);
+            gameWinPanel.SetActive(true); // Hoặc Draw Panel
             gameWinPanel.GetComponent<GameOverPanelController>().Modegame = 2;
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver((int)(rankChange/2));
             UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
-
         }
 
         isGameStarted = false;
@@ -522,25 +616,14 @@ public class CardGameController : MonoBehaviourPunCallbacks
 
     void saveMatchDatabase(string resultState, EloCalculator.GameResult result, string otherName)
     {
-        // Giả định bạn có sẵn script RankDatabaseManager và EloCalculator
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
         if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
             rankChange = 0;
+            
         RankDatabaseManager.Instance.SaveMatchHistory(matchId, resultState, rankChange, otherName, "Lật thẻ");
     }
 
-
-
-// Thêm hàm Callback
-    public override void OnLeftRoom()
-    {
-        Debug.Log("Đã thoát phòng Card Game, về Home.");
-        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
-        SceneManager.LoadScene("HomeScene"); 
-    }
-    
-    
-
+    // --- UTILS ---
     void UpdateTurnUI()
     {
         bool isMyTurn = (PhotonNetwork.LocalPlayer.ActorNumber == currentTurnActorNumber);
@@ -548,15 +631,8 @@ public class CardGameController : MonoBehaviourPunCallbacks
         statusText.color = isMyTurn ? Color.green : Color.red;
     }
 
-    [PunRPC]
-    void RPC_SyncScore(int playerID)
+    void UpdateScoreUI()
     {
-        if (playerScores.ContainsKey(playerID)) playerScores[playerID]++;
-    }
-
-void UpdateScoreUI()
-    {
-        // Logic hiển thị điểm
         int myScore = 0;
         int enemyScore = 0;
 
@@ -579,10 +655,29 @@ void UpdateScoreUI()
         countdownText.gameObject.SetActive(false);
         loadingStatusText.text = "ĐANG TẢI DỮ LIỆU.....";
 
+        // Setup Player 1 (Mình)
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (player.IsLocal) UpdateSinglePlayerUI(player, player1Container);
-            else UpdateSinglePlayerUI(player, player2Container);
+            else if (!BotMatchHelper.IsBotMatch) UpdateSinglePlayerUI(player, player2Container);
+        }
+        
+        // Setup Player 2 (Bot)
+        if (BotMatchHelper.IsBotMatch)
+        {
+            otherPlayer.name = BotMatchHelper.BotName;
+            otherPlayer.rank = BotMatchHelper.BotRank;
+            
+            if(player2Container != null)
+            {
+                player2Container.SetActive(true);
+                 player2Container.GetComponent<FriendItemUI>().SetupUI(
+                    BotMatchHelper.BotName,
+                    BotMatchHelper.BotAvatarID,
+                    BotMatchHelper.BotBorderID,
+                    BotMatchHelper.BotRank.ToString()
+                );
+            }
         }
     }
 
@@ -610,6 +705,13 @@ void UpdateScoreUI()
         return defaultValue;
     }
     
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Đã thoát phòng Card Game, về Home.");
+        FirebaseDatabaseManager.Instance.SetUserStatus(GlobalData.STATUS.ONLINE);
+        SceneManager.LoadScene("HomeScene"); 
+    }
+    
     private async void UpdateMissionState(string nameMission)
     {
         await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
@@ -618,33 +720,22 @@ void UpdateScoreUI()
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if(isGameOver) return;
+        if(BotMatchHelper.IsBotMatch) return;
+
         Debug.Log("Người chơi " + otherPlayer.NickName + " đã thoát game.");
-
-        // 1. Dừng Timer ngay lập tức
         isGameStarted = false;
-
         statusText.text = "Đối thủ đã thoát! Bạn thắng!";
         
-        // Gọi hàm xử lý thắng giống như khi hết máu
-        // Lưu ý: Cần truyền ID của chính mình vào làm survivor
         int myActorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
-        
-        // Tái sử dụng logic thắng cuộc
-        // Gọi trực tiếp vì không còn ai để RPC nữa (hoặc RPC cũng được nếu muốn chuẩn flow)
         HandleOpponentLeftWin(myActorNumber);
     }
 
     void HandleOpponentLeftWin(int winnerActorNumber)
     {
-        // Tính điểm Elo (giả sử thắng thì cộng điểm)
-        // Lưu lại lịch sử đấu: "OPP_DISCONNECT" hoặc "WIN"
         saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
-        
-        // Cập nhật nhiệm vụ
         UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         UpdateMissionState(GlobalData.MissionKeys.P2P);
 
-        // Hiển thị Panel Thắng
         gameWinPanel.SetActive(true);
         if(gameWinPanel.GetComponent<GameOverPanelController>() != null)
         {
