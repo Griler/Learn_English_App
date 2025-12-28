@@ -25,7 +25,6 @@ public class LobbyController : MonoBehaviourPunCallbacks
 
     // --- BIẾN STATIC ĐỂ XỬ LÝ 'CHƠI TIẾP' ---
     // Biến này được gọi từ GameOverController để báo hiệu cần tìm trận ngay
-    public static int AutoJoinMode = 0; 
 
     // Biến nội bộ
     private int selectedMode = 0;   
@@ -39,7 +38,6 @@ public class LobbyController : MonoBehaviourPunCallbacks
     public override void OnEnable()
     {
         base.OnEnable();
-
         // 1. Setup UI ban đầu
         searchingPanel.SetActive(false);
         if(hoverBlocker) hoverBlocker.SetActive(false);
@@ -53,23 +51,8 @@ public class LobbyController : MonoBehaviourPunCallbacks
         btnMode3.onClick.AddListener(() => OnStartSearch(3, "Đang tìm trận: Nghe Chọn Ảnh..."));
 
         btnCancel.onClick.AddListener(OnCancelSearch);
-
-        // 3. Kết nối Photon nếu chưa
-        if (PhotonNetwork.IsConnectedAndReady)
-        {
-            // Nếu chưa vào Lobby thì vào
-            if (!PhotonNetwork.InLobby)
-            {
-                PhotonNetwork.JoinLobby();
-            }
-            else
-            {
-                // Nếu lỡ đang ở trong Lobby rồi thì cập nhật UI luôn
-                OnJoinedLobby(); 
-            }
-        }
-        // Trường hợp 2: Mất mạng hẳn
-        else if (!PhotonNetwork.IsConnected)
+        
+        if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
         }
@@ -90,19 +73,19 @@ public class LobbyController : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Lobby: Đã kết nối Master. Đang vào Lobby...");
-        //PhotonNetwork.JoinLobby();
+        PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedLobby()
     {
         Debug.Log("Lobby: Đã vào Lobby.");
         SetModeButtonsInteractable(true);
-
         // --- KIỂM TRA LOGIC AUTO JOIN (CHƠI TIẾP) ---
-        if (AutoJoinMode > 0)
+        if (GlobalData.AutoJoinMode > 0)
         {
-            int mode = AutoJoinMode;
-            AutoJoinMode = 0; // Reset ngay để tránh lặp vô hạn
+            if(NetworkGameState.CurrentJoinType != NetworkGameState.JoinType.RandomMatchmaking) return;
+            int mode = GlobalData.AutoJoinMode;
+            GlobalData.AutoJoinMode = 0; // Reset ngay để tránh lặp vô hạn
 
             Debug.Log($"Phát hiện yêu cầu Chơi Tiếp -> Auto tìm Mode {mode}");
             
@@ -123,6 +106,7 @@ public class LobbyController : MonoBehaviourPunCallbacks
 
     void OnStartSearch(int mode, string msg)
     {
+        NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.RandomMatchmaking;
         selectedMode = mode;
         isCanceling = false;
         joinAttempt = 0; // Reset số lần thử
@@ -219,6 +203,10 @@ public class LobbyController : MonoBehaviourPunCallbacks
             PhotonNetwork.LeaveRoom();
             return;
         }
+        if (NetworkGameState.CurrentJoinType != NetworkGameState.JoinType.RandomMatchmaking)
+        {
+            return;
+        }
 
         Debug.Log("Đã vào phòng thành công -> Chuyển sang WaitingRoom");
         PhotonNetwork.LoadLevel(waitingRoomScene);
@@ -233,7 +221,7 @@ public class LobbyController : MonoBehaviourPunCallbacks
         StopAllCoroutines(); // Dừng việc retry
         
         // Đảm bảo xóa cờ AutoJoin để không bị lặp lại nếu quay lại Lobby
-        AutoJoinMode = 0; 
+        GlobalData.AutoJoinMode = 0; 
 
         if (PhotonNetwork.InRoom)
         {

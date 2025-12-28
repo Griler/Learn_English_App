@@ -106,6 +106,8 @@ public static class GlobalData
         "FUTURE_PERFECT_CONTINUOUS"
     };
     
+    public static int AutoJoinMode = 0; 
+
 }
 
 // PVPRandom.cs - Không cần gắn vào GameObject

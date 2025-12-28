@@ -411,6 +411,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         {
             saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
             gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().Modegame = 3;
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
             UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         }
@@ -418,6 +419,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
         {
             saveMatchDatabase("LOSE", EloCalculator.GameResult.Loss, otherPlayer.name);
             gameLosePanel.SetActive(true);
+            gameLosePanel.GetComponent<GameOverPanelController>().Modegame = 3;
             gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
 
@@ -494,7 +496,6 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     
     private async void UpdateMissionState(string nameMission)
     {
-     
         await FirebaseDatabaseManager.Instance.CompleteMissionById(nameMission);
     }
     

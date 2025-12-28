@@ -536,6 +536,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         {
             saveMatchDatabase("WIN",EloCalculator.GameResult.Win,otherPlayer.name);
             gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().Modegame = 1;
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
             UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
         }
@@ -543,6 +544,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
         {
             saveMatchDatabase("LOSE",EloCalculator.GameResult.Loss,otherPlayer.name);
             gameLosePanel.SetActive(true);
+            gameLosePanel.GetComponent<GameOverPanelController>().Modegame = 1;
             gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
         isTimerRunning = false;

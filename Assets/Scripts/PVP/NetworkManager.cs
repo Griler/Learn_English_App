@@ -107,12 +107,7 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
 }
 
     // --- CÁC CALLBACK CỦA PHOTON ---
-
-    public override void OnConnectedToMaster()
-    {
-        Debug.Log("vào conect netWork");
-        PhotonNetwork.JoinLobby();
-    }
+    
     public override void OnJoinedRoom()
     {
         if (NetworkGameState.CurrentJoinType != NetworkGameState.JoinType.FriendInvite)

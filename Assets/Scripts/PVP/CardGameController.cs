@@ -495,6 +495,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
         {
             saveMatchDatabase("WIN", EloCalculator.GameResult.Win, otherPlayer.name);
             gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().Modegame = 2;
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
 
             UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
@@ -503,12 +504,14 @@ public class CardGameController : MonoBehaviourPunCallbacks
         {
             saveMatchDatabase("LOSE", EloCalculator.GameResult.Loss, otherPlayer.name);
             gameLosePanel.SetActive(true);
+            gameLosePanel.GetComponent<GameOverPanelController>().Modegame = 2;
             gameLosePanel.GetComponent<GameOverPanelController>().ShowGameOver(rankChange);
         }
         else
         {
             saveMatchDatabase("WIN", EloCalculator.GameResult.Draw, otherPlayer.name);
             gameWinPanel.SetActive(true);
+            gameWinPanel.GetComponent<GameOverPanelController>().Modegame = 2;
             gameWinPanel.GetComponent<GameOverPanelController>().ShowGameOver((int)(rankChange/2));
             UpdateMissionState(GlobalData.MissionKeys.WIN_P2P);
 
