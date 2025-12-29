@@ -200,7 +200,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             if(player2TextStatus)
             {
                 player2TextStatus.gameObject.SetActive(true);
-                player2TextStatus.text = "Đang Tìm Đối Thủ ...";
+                player2TextStatus.text = "Trống";
             }
         }
         dropdownModeGame.interactable = PhotonNetwork.IsMasterClient;
@@ -267,6 +267,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     {
         UpdatePlayerListUI();
         readyButton.gameObject.SetActive(true);
+        findMatchButton.gameObject.SetActive(false);
         botModeButton.interactable = false;
         GetAndShowGameMode(); 
     }
@@ -347,6 +348,11 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             isTimerRunning = true;
             currentWaitTimer = 0;
         }
+
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+        {
+            NetworkGameState.CurrentJoinType = NetworkGameState.JoinType.RandomMatchmaking;
+        }
     }
 
     void ResetMyReadyState()
@@ -420,7 +426,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             }
             player2Container.SetActive(false);
             botAddButton.gameObject.SetActive(false);
-            player2TextStatus.text = "Đang Tìm Đối Thủ ....";
+            player2TextStatus.text = "Trống";
             readyButton.gameObject.SetActive(false);
             findMatchButton.gameObject.SetActive(true);
         }

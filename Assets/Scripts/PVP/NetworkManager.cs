@@ -1,4 +1,5 @@
 using System;
+using ExitGames.Client.Photon;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -84,6 +85,8 @@ public class MyNetworkManager : MonoBehaviourPunCallbacks
             RoomOptions roomOptions = new RoomOptions();
             roomOptions.MaxPlayers = 2;
             roomOptions.IsVisible = false;
+            roomOptions.CustomRoomProperties = new Hashtable() { { "gm", 1 } };
+            roomOptions.CustomRoomPropertiesForLobby = new string[] { "gm" };
             PhotonNetwork.JoinOrCreateRoom(roomCode, roomOptions, TypedLobby.Default);
         }
         // Nếu đã kết nối Master nhưng chưa vào Lobby -> Vào Lobby
