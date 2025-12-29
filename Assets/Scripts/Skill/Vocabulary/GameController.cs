@@ -20,6 +20,8 @@ public class GameController : MonoBehaviour
     private WordData currentWordData;
 
     [SerializeField] private Button backButton;
+    [SerializeField] private GameObject panelNext;
+    [SerializeField] private GameObject panelEnd;
     private string topic = "";
     private string subCategrgy = "";
 
@@ -106,7 +108,7 @@ public class GameController : MonoBehaviour
         ShowFlashcard();
     }
 
-    void onClickBackButton()
+    public void onClickBackButton()
     {
         SceneManager.LoadSceneAsync("HomeScene");
     }
@@ -124,24 +126,26 @@ public class GameController : MonoBehaviour
         {
             GameEvents.ShowNotifcation("Bạn đã hoàn thành bài học.\n Bạn có muốn làm bài tập khác không ?",
                 Color.black);
+            panelNext.SetActive(true);
         }
         else
         {
             GameEvents.ShowNotifcation("Bạn đã hoàn thành chủ đề học.\n Trở Về Trang Chủ chọn chủ đề khác",
                 Color.black);
+            panelEnd.SetActive(true);
         }
     }
 
     void onClickNextButton()
     {
         int currentIndex = GameSessionData.mapSubTopics[subCategrgy];
-        int nextCurrentIndex = currentIndex++;
+        int nextCurrentIndex = currentIndex + 1;
         if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
         {
             string nextSubtopic = GlobalData.GetKeyByValue(GameSessionData.mapSubTopics, nextCurrentIndex);
-            PlayerPrefs.SetString("SelectedSubCategory", nextSubtopic);
-
-        }
+            PlayerPrefs.SetString("CurrentSpeakingTopic", nextSubtopic);
+            SceneManager.LoadScene(GlobalData.flashCardScene);
+        }   
         else
         {
             SceneManager.LoadScene("HomeScene");

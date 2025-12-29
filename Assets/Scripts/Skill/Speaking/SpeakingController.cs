@@ -10,17 +10,18 @@ public class SpeakingController : MonoBehaviour
 {
     [Header("UI Components")]
     [SerializeField] private Button recordButton;
-    [SerializeField] private Button speakButton; // Button to hear the reference text
+    [SerializeField] private Button speakButton; 
     [SerializeField] private Button replayButton;
     [SerializeField] private Button nextButton;
     [SerializeField] private Button prevButton;
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI transcriptText;
     [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private TextMeshProUGUI referenceTextInputEN; // Câu mẫu
-    [SerializeField] private TextMeshProUGUI referenceTextInputVI; // Câu mẫu
-    [SerializeField] private TextMeshProUGUI ttsTextInput; // Text để đọc
-    [SerializeField] private TextMeshProUGUI highScore; // Text để đọc
+    [SerializeField] private TextMeshProUGUI referenceTextInputEN;
+    [SerializeField] private TextMeshProUGUI referenceTextInputVI; 
+    [SerializeField] private TextMeshProUGUI ttsTextInput; 
+    [SerializeField] private TextMeshProUGUI highScore; 
+    [SerializeField] private TextMeshProUGUI title; 
     [SerializeField] private Slider volumeSlider;
     [SerializeField] private Slider progressBar;
 
@@ -44,6 +45,7 @@ public class SpeakingController : MonoBehaviour
     public GameObject panelNotice;
     public Button confirmButton;
     public Button cancelNotice;
+    public TextMeshProUGUI textNotice;
     void Start()
     {
         // Setup AudioSource
@@ -59,9 +61,14 @@ public class SpeakingController : MonoBehaviour
         if (confirmButton) confirmButton.onClick.AddListener(()=>
         {
             UpdateMissionState();
-            OnClickHomeButton();
+            onClickNextButton();
         });
-        if (cancelNotice) cancelNotice.onClick.AddListener((() => {panelNotice.SetActive(false);}));
+        if (cancelNotice) cancelNotice.onClick.AddListener((() =>
+        {
+            UpdateMissionState();
+            OnClickHomeButton();
+            
+        }));
         string currentTopic = PlayerPrefs.GetString("CurrentSpeakingTopic");
         
         panelNotice.SetActive(false);
@@ -145,12 +152,27 @@ public class SpeakingController : MonoBehaviour
 
         // Update button states
         if (prevButton) prevButton.interactable = (currentQuestionIndex > 0);
+        string topicKey = PlayerPrefs.GetString("CurrentSpeakingTopic");
+        title.text = topicKey;
+        nextButton.interactable = true;
     }
 
     public void OnClickNextBtn()
     {
         if (currentQuestionIndex == listSentences.Count-1)
         {
+            string topicKey = PlayerPrefs.GetString("CurrentSpeakingTopic");
+            int currentIndex = GameSessionData.mapSubTopics[topicKey];
+            int nextCurrentIndex = currentIndex + 1;
+            if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
+            {
+            }   
+            else
+            {
+                textNotice.text = "Bạn đã học hết chủ đề \n Vui lòng trở lại trang chính";
+                confirmButton.gameObject.SetActive(false);
+                cancelNotice.GetComponentInChildren<TextMeshProUGUI>().text = "Có";
+            }
             panelNotice.SetActive(true);
             return;
         }
@@ -420,5 +442,22 @@ public class SpeakingController : MonoBehaviour
     {
         float incrementValue = (progressBar.maxValue / listSentences.Count);
         progressBar.value = progressBar.value + incrementValue;
+    }
+    
+    void onClickNextButton()
+    {
+        string topicKey = PlayerPrefs.GetString("CurrentSpeakingTopic");
+        int currentIndex = GameSessionData.mapSubTopics[topicKey];
+        int nextCurrentIndex = currentIndex + 1;
+        if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
+        {
+            string nextSubtopic = GlobalData.GetKeyByValue(GameSessionData.mapSubTopics, nextCurrentIndex);
+            PlayerPrefs.SetString("CurrentSpeakingTopic", nextSubtopic);
+            SceneManager.LoadScene("speakingScene");
+        }   
+        else
+        {
+            SceneManager.LoadScene("HomeScene");
+        }
     }
 }

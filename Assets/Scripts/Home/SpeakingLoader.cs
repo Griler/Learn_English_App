@@ -92,7 +92,7 @@ public class SpeakingLoader : MonoBehaviour
     void LoadItem(DataSnapshot userProgress)
     {
         foreach (Transform c in container) Destroy(c.gameObject);
-        
+        int index = 0;
         for (int i = 0; i < key.Count; i++)
         {
             GameObject go = Instantiate(item, container);
@@ -102,6 +102,7 @@ public class SpeakingLoader : MonoBehaviour
             
             // Xử lý tên hiển thị (bỏ dấu gạch dưới nếu có)
             string currentKey = key[i];
+            GameSessionData.mapSubTopics[currentKey] = index;
             string displayName = currentKey.Split('_')[0]; 
             
             go.GetComponent<SpeakingItem>().setName(displayName);
@@ -130,6 +131,7 @@ public class SpeakingLoader : MonoBehaviour
                 go.GetComponentsInChildren<Image>()[0].color = Color.gray;
 
             }
+            index = index + 1;
         }
     }
 

@@ -4617,6 +4617,7 @@ MonoBehaviour:
   referenceTextInputVI: {fileID: 2100447712}
   ttsTextInput: {fileID: 1036713123}
   highScore: {fileID: 1589982688}
+  title: {fileID: 413284407}
   volumeSlider: {fileID: 418871908}
   progressBar: {fileID: 52789421}
   recordingLength: 5
@@ -4626,6 +4627,7 @@ MonoBehaviour:
   panelNotice: {fileID: 5874487329305465514}
   confirmButton: {fileID: 3604843775557477612}
   cancelNotice: {fileID: 9005299506091812104}
+  textNotice: {fileID: 6841458490359110012}
 --- !u!4 &1811053496
 Transform:
   m_ObjectHideFlags: 0
@@ -6016,7 +6018,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &6647390321823447790
 GameObject:
   m_ObjectHideFlags: 0
@@ -6057,8 +6059,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "B\u1EA1n c\xF3 ho\xE0n th\xE0nh kho\xE1 h\u1ECDc. \nV\xE0 quay v\u1EC1
-    trang ch\u1EE7 !!"
+  m_text: "B\u1EA1n c\xF3 ho\xE0n th\xE0nh kho\xE1 h\u1ECDc. \nB\u1EA1n c\xF3 mu\u1ED1n
+    h\u1ECDc ti\u1EBFp t\u1EE5c kh\xF4ng?"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
   m_sharedMaterial: {fileID: 8581698275949360407, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
@@ -6085,8 +6087,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 38
-  m_fontSizeBase: 38
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
