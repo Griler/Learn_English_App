@@ -21,6 +21,9 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     [Header("UI References Room")]
     public Button readyButton;
     public Button outButton;
+    public Button botModeButton;
+    public Button botAddButton;
+    public Button findMatchButton;
     public TextMeshProUGUI readyButtonText;
     public TextMeshProUGUI roomName;
     public TextMeshProUGUI statusText;
@@ -30,18 +33,22 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     private const string MODE_KEY = "gm";
 
     [Header("Bot Settings")]
-    public float maxWaitTime = 5f; // Chờ 15s không có ai thì gọi Bot
+    public float maxWaitTime = 10f; // Chờ 15s không có ai thì gọi Bot
     private float currentWaitTimer;
     private bool isTimerRunning = false;
-    
+    private bool isBotMode = false;
     private void Start()
     {
         BotMatchHelper.Reset(); // Reset trạng thái Bot mỗi khi vào Room
 
         if (readyButton) readyButton.onClick.AddListener(OnClick_ToggleReady);
         if (outButton) outButton.onClick.AddListener(onClickOutRoom);    
+        if (botAddButton) botAddButton.onClick.AddListener(addBot);    
+        if (botModeButton) botModeButton.onClick.AddListener(modeBot);    
+        if (findMatchButton) findMatchButton.onClick.AddListener(findMatch);    
         dropdownModeGame.onValueChanged.AddListener(OnDropdownChanged);
-
+        botAddButton.gameObject.SetActive(false);
+        readyButton.gameObject.SetActive(false);
         UpdatePlayerListUI();
         
         // Reset trạng thái nút bấm
@@ -50,13 +57,16 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         UpdateReadyButtonUI(isReady);
         UpdateRoomInfo();
         GetAndShowGameMode();
-
-        // BẮT ĐẦU ĐẾM NGƯỢC NẾU LÀ CHỦ PHÒNG VÀ CHƯA CÓ AI
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 1)
+        
+        if(PhotonNetwork.CurrentRoom != null) {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.CurrentRoom.IsVisible = false;
+        }
+        if (!PhotonNetwork.IsMasterClient)
         {
-            currentWaitTimer = maxWaitTime;
-            isTimerRunning = true;
-            if(statusText) statusText.text = $"Đang tìm đối thủ... ({Mathf.Ceil(currentWaitTimer)})";
+            findMatchButton.gameObject.SetActive(false);
+            readyButton.gameObject.SetActive(true);
+            botModeButton.interactable = false;
         }
     }
 
@@ -71,14 +81,8 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
                 return;
             }
 
-            currentWaitTimer -= Time.deltaTime;
+            currentWaitTimer += Time.deltaTime;
             if(statusText) statusText.text = $"Đang tìm đối thủ... ({Mathf.Ceil(currentWaitTimer)})";
-
-            if (currentWaitTimer <= 0)
-            {
-                isTimerRunning = false;
-                StartBotMatch();
-            }
         }
     }
 
@@ -86,9 +90,10 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     void StartBotMatch()
     {
-        readyButton.interactable = false;
+        readyButton.interactable = true;
         Debug.Log("Hết giờ chờ! Hệ thống tự tạo Bot.");
-        if(statusText) statusText.text = "Đã tìm thấy đối thủ!";
+        statusText.gameObject.SetActive(true);
+        if(statusText) statusText.text = "Đã tạo bot";
 
         // 1. Đóng phòng (Fake full room)
         if(PhotonNetwork.CurrentRoom != null) {
@@ -116,11 +121,11 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         if (player2TextStatus != null) player2TextStatus.gameObject.SetActive(false);
 
         // 4. Delay 2 giây để người chơi kịp nhìn thấy đối thủ trước khi vào game
-        StartCoroutine(DelayStartGame());
     }
 
     IEnumerator DelayStartGame()
     {
+        if(statusText) statusText.text = "Đang vào game...";
         yield return new WaitForSeconds(2.0f); // Chờ 2 giây
         StartGame();
     }    
@@ -195,7 +200,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             if(player2TextStatus)
             {
                 player2TextStatus.gameObject.SetActive(true);
-                player2TextStatus.text = "Waiting for opponent...";
+                player2TextStatus.text = "Đang Tìm Đối Thủ ...";
             }
         }
         dropdownModeGame.interactable = PhotonNetwork.IsMasterClient;
@@ -227,18 +232,27 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
 
     public void OnClick_ToggleReady()
     {
-        // Nếu đang countdown Bot mà bấm Ready thì kệ nó, hoặc logic tùy bạn
-        object isReadyObj;
-        bool currentReady = false;
-        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsReady", out isReadyObj))
+        if (isBotMode)
         {
-            currentReady = (bool)isReadyObj;
+            readyButton.interactable = false;
+            botModeButton.interactable = false;
+            UpdateReadyButtonUI(true);
+            StartCoroutine(DelayStartGame());
         }
-        bool newReadyState = !currentReady;
-        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
-        props["IsReady"] = newReadyState;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-        UpdateReadyButtonUI(newReadyState);
+        else
+        {
+            object isReadyObj;
+            bool currentReady = false;
+            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsReady", out isReadyObj))
+            {
+                currentReady = (bool)isReadyObj;
+            }
+            bool newReadyState = !currentReady;
+            ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
+            props["IsReady"] = newReadyState;
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            UpdateReadyButtonUI(newReadyState);
+        }
     }
 
     void UpdateReadyButtonUI(bool isReady)
@@ -252,6 +266,8 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdatePlayerListUI();
+        readyButton.gameObject.SetActive(true);
+        botModeButton.interactable = false;
         GetAndShowGameMode(); 
     }
 
@@ -317,8 +333,10 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        readyButton.gameObject.SetActive(false);
         ResetMyReadyState();
         UpdatePlayerListUI();
+        botModeButton.interactable = true;
         if (statusText) statusText.text = "Đối thủ đã thoát. Đang tìm người mới...";
         
         if (PhotonNetwork.IsMasterClient)
@@ -326,10 +344,8 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.IsOpen = true; 
             PhotonNetwork.CurrentRoom.IsVisible = true;
             dropdownModeGame.interactable = true;
-            
-            // Kích hoạt lại timer chờ Bot
             isTimerRunning = true;
-            currentWaitTimer = maxWaitTime;
+            currentWaitTimer = 0;
         }
     }
 
@@ -349,5 +365,64 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         SceneManager.LoadScene("HomeScene");
+    }
+
+    void findMatch()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = true;
+            PhotonNetwork.CurrentRoom.IsVisible = true;
+        }
+        
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 1)
+        {
+            currentWaitTimer = 0;
+            isTimerRunning = true;
+            statusText.gameObject.SetActive(true);
+            if(statusText) statusText.text = $"Đang tìm đối thủ... ({Mathf.Ceil(currentWaitTimer)})";
+        }
+        findMatchButton.gameObject.SetActive(false);
+    }
+
+    void addBot()
+    {
+        botAddButton.gameObject.SetActive(false);
+        readyButton.gameObject.SetActive(true);
+        StartBotMatch();
+    }
+
+    void modeBot()
+    {
+        if (isBotMode == false)
+        {
+            isBotMode = true;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.CurrentRoom.IsOpen = false;
+                PhotonNetwork.CurrentRoom.IsVisible = false;
+            }
+            botAddButton.gameObject.SetActive(true);
+            player2TextStatus.text = "";
+            isTimerRunning = false;
+            statusText.gameObject.SetActive(false);
+            botAddButton.gameObject.SetActive(true);
+            findMatchButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            isBotMode = false;
+            BotMatchHelper.IsBotMatch = false;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.CurrentRoom.IsOpen = true;
+                PhotonNetwork.CurrentRoom.IsVisible = true;
+            }
+            player2Container.SetActive(false);
+            botAddButton.gameObject.SetActive(false);
+            player2TextStatus.text = "Đang Tìm Đối Thủ ....";
+            readyButton.gameObject.SetActive(false);
+            findMatchButton.gameObject.SetActive(true);
+        }
     }
 }
