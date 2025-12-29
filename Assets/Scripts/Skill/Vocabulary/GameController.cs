@@ -8,14 +8,17 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    [Header("UI Panels")]
-    public GameObject flashcardPanel;
+    [Header("UI Panels")] public GameObject flashcardPanel;
     public GameObject container;
     public GameObject quizPanel;
+    public Button nextButton;
     private List<WordData> listAnimals = new List<WordData>();
     [SerializeField] private int currentAnimalIndex = 0;
     [SerializeField] private int currentQuiz = 0;
-    [FormerlySerializedAs("currentAnimalData")] [SerializeField] private WordData currentWordData;
+
+    [FormerlySerializedAs("currentAnimalData")] [SerializeField]
+    private WordData currentWordData;
+
     [SerializeField] private Button backButton;
     private string topic = "";
     private string subCategrgy = "";
@@ -28,12 +31,13 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         backButton.onClick.AddListener(onClickBackButton);
+        nextButton.onClick.AddListener(onClickNextButton);
         currentAnimalIndex = 0;
         setUpData();
     }
-    
+
     public void ShowFlashcard()
-    {   
+    {
         if (listAnimals == null || listAnimals.Count == 0) return;
 
         flashcardPanel.SetActive(true);
@@ -53,10 +57,12 @@ public class GameController : MonoBehaviour
         {
             ShowFinishPanel();
             return;
-        }    
+        }
+
         StartCoroutine(showNextFlashCard());
     }
-    IEnumerator showNextFlashCard() 
+
+    IEnumerator showNextFlashCard()
     {
         yield return new WaitForSeconds(0.75f);
         ShowFlashcard();
@@ -69,12 +75,15 @@ public class GameController : MonoBehaviour
         quizPanel.SetActive(true);
         quizPanel.GetComponent<QuizManager>().UpdateUI(currentWordData);
     }
-    
+
     private void setUpData()
     {
-         subCategrgy = PlayerPrefs.GetString("SelectedSubCategory");
-         string mainCategory =  PlayerPrefs.GetString("SelectedMainCategoryId");
-         FirebaseDatabaseManager.Instance.LoadWords(mainCategory,subCategrgy, OnWordsLoaded);
+        subCategrgy = PlayerPrefs.GetString("SelectedSubCategory");
+        string mainCategory = PlayerPrefs.GetString("SelectedMainCategoryId");
+        Debug.Log("index" + GameSessionData.mapSubTopics[subCategrgy]);
+        Debug.Log("test" + GameSessionData.mapSubTopics.ContainsValue(10));
+        Debug.Log("test" + GameSessionData.mapSubTopics.ContainsValue(1));
+        FirebaseDatabaseManager.Instance.LoadWords(mainCategory, subCategrgy, OnWordsLoaded);
     }
 
     void OnWordsLoaded(List<WordData> words)
@@ -90,24 +99,52 @@ public class GameController : MonoBehaviour
         {
             Debug.Log($"{w.nameEn} - {w.nameVi}");
         }
+
         listAnimals.AddRange(words);
         quizPanel.GetComponent<QuizManager>().initQuiz(listAnimals);
         container.SetActive(true);
         ShowFlashcard();
     }
-    
+
     void onClickBackButton()
     {
         SceneManager.LoadSceneAsync("HomeScene");
     }
-    
+
     async void ShowFinishPanel()
     {
         string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         //ApiController.Instance.SaveUserCategoryHistory(userId, catogeryId, ApiController.CategoryType.Vocabulary);
         string mainTopic = PlayerPrefs.GetString("SelectedMainCategoryId");
-        FirebaseDatabaseManager.Instance.SaveUserProgress(mainTopic,subCategrgy, GameSessionData.CurrentSubTopics);
+        FirebaseDatabaseManager.Instance.SaveUserProgress(mainTopic, subCategrgy, GameSessionData.CurrentSubTopics);
         await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_VOCA);
-        GameEvents.ShowNotifcation("Bạn đã hoàn thành khoá học.\n Sẽ Trở Về Trang Chủ",Color.black);
+        int currentIndex = GameSessionData.mapSubTopics[subCategrgy];
+        int nextCurrentIndex = currentIndex + 1;
+        if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
+        {
+            GameEvents.ShowNotifcation("Bạn đã hoàn thành bài học.\n Bạn có muốn làm bài tập khác không ?",
+                Color.black);
+        }
+        else
+        {
+            GameEvents.ShowNotifcation("Bạn đã hoàn thành chủ đề học.\n Trở Về Trang Chủ chọn chủ đề khác",
+                Color.black);
+        }
+    }
+
+    void onClickNextButton()
+    {
+        int currentIndex = GameSessionData.mapSubTopics[subCategrgy];
+        int nextCurrentIndex = currentIndex++;
+        if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
+        {
+            string nextSubtopic = GlobalData.GetKeyByValue(GameSessionData.mapSubTopics, nextCurrentIndex);
+            PlayerPrefs.SetString("SelectedSubCategory", nextSubtopic);
+
+        }
+        else
+        {
+            SceneManager.LoadScene("HomeScene");
+        }
     }
 }

@@ -108,6 +108,18 @@ public static class GlobalData
     
     public static int AutoJoinMode = 0; 
 
+    public static string GetKeyByValue(Dictionary<string, int> dict, int val)
+    {
+        // Duyệt qua từng cặp, không tạo bộ nhớ thừa
+        foreach (KeyValuePair<string, int> pair in dict)
+        {
+            if (pair.Value == val)
+            {
+                return pair.Key; // Trả về ngay khi tìm thấy
+            }
+        }
+        return ""; // Trả về giá trị báo lỗi nếu không tìm thấy
+    }
 }
 
 // PVPRandom.cs - Không cần gắn vào GameObject
@@ -141,10 +153,12 @@ public class PVPRandom
         // Dùng toán học thuần túy để chia lấy dư
         return min + (Next() % (max - min));
     }
+    
 }
 
 public static class GameSessionData
 {
     // Lưu danh sách các SubTopic của chủ đề hiện tại (ví dụ: ["Farm Animal", "Pet", "Wild Animal"...])
     public static List<string> CurrentSubTopics = new List<string>();
+    public static Dictionary<string, int> mapSubTopics = new Dictionary<string, int>();
 }
