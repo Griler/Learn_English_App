@@ -637,7 +637,7 @@ public class GamePlayController : MonoBehaviourPunCallbacks
     {
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
         // Nếu đấu Bot hoặc đấu Friend thì có thể ko tính rank (tùy logic game bạn)
-        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite || BotMatchHelper.IsBotMatch)
         {
             rankChange = 0;
         }

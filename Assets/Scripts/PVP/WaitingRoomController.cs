@@ -58,7 +58,7 @@ public class WaitingRoomController : MonoBehaviourPunCallbacks
         UpdateRoomInfo();
         GetAndShowGameMode();
         
-        if(PhotonNetwork.CurrentRoom != null) {
+        if(PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom != null) {
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
         }

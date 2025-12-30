@@ -631,7 +631,7 @@ public class SoundGameController : MonoBehaviourPunCallbacks
     void saveMatchDatabase(string state, EloCalculator.GameResult res, string oName)
     {
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, res);
-        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite || BotMatchHelper.IsBotMatch)
             rankChange = 0;
         RankDatabaseManager.Instance.SaveMatchHistory(matchId, state, rankChange, oName, "Nghe Từ");
     }

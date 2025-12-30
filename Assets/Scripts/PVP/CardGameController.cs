@@ -617,7 +617,7 @@ public class CardGameController : MonoBehaviourPunCallbacks
     void saveMatchDatabase(string resultState, EloCalculator.GameResult result, string otherName)
     {
         rankChange = EloCalculator.CalculateRatingChange(myPlayer.rank, otherPlayer.rank, result);
-        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite)
+        if (NetworkGameState.CurrentJoinType == NetworkGameState.JoinType.FriendInvite || BotMatchHelper.IsBotMatch )
             rankChange = 0;
             
         RankDatabaseManager.Instance.SaveMatchHistory(matchId, resultState, rankChange, otherName, "Lật thẻ");

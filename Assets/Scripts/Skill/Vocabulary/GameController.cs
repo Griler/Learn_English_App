@@ -143,7 +143,7 @@ public class GameController : MonoBehaviour
         if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
         {
             string nextSubtopic = GlobalData.GetKeyByValue(GameSessionData.mapSubTopics, nextCurrentIndex);
-            PlayerPrefs.SetString("CurrentSpeakingTopic", nextSubtopic);
+            PlayerPrefs.SetString("SelectedSubCategory", nextSubtopic);
             SceneManager.LoadScene(GlobalData.flashCardScene);
         }   
         else
