@@ -105,7 +105,7 @@ public class FirebaseLogin : MonoBehaviour
                     break;
                 case AuthError.UserNotFound:
                     message += "Không tìm thấy người dùng.";
-                    break;
+                    break; ;
                 default:
                     message += "Lỗi không xác định.";
                     break;
@@ -117,6 +117,11 @@ public class FirebaseLogin : MonoBehaviour
         else
         {
             user = loginTask.Result.User;
+            if (user.IsEmailVerified) {
+                Debug.Log("Login thành công & Đã verify.");
+            } else {
+                Debug.Log("Login đúng pass nhưng chưa verify email.");
+            }
             popupNotification.ShowNotification(" Đăng nhập thành công!");
             FirebaseDatabaseManager.Instance.currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
             loadNextScene();
@@ -181,21 +186,30 @@ public class FirebaseLogin : MonoBehaviour
             .SetRawJsonValueAsync(json);
 
         var allTasks = Task.WhenAll(task1, task2);
-
         yield return new WaitUntil(() => allTasks.IsCompleted);
 
         if (allTasks.Exception != null)
         {
-            // Nếu 1 trong 2 cái fail, nó sẽ nhảy vào đây
-            statusTextResigterForm.text = "Đăng ký Auth xong nhưng lỗi lưu Database!";
+            statusTextResigterForm.text = "Lỗi lưu Database!";
             Debug.LogError(allTasks.Exception.ToString());
         }
         else
         {
-            // Cả 2 đều thành công
             user = newUser;
-            ToastSystem.Instance.ShowToast("Đăng ký thành công!");
-            onMovetoLoginForm();
+            Debug.Log("Bắt đầu gửi email xác thực...");
+            var sendEmailTask = user.SendEmailVerificationAsync();
+            yield return new WaitUntil(() => sendEmailTask.IsCompleted);
+            if (sendEmailTask.Exception != null)
+            {
+                Debug.LogError("Gửi mail thất bại: " + sendEmailTask.Exception.GetBaseException().Message);
+                ToastSystem.Instance.ShowToast("Lỗi gửi mail: " + sendEmailTask.Exception.GetBaseException().Message);
+            }
+            else
+            {
+                Debug.Log("Đã gửi email thành công!");
+                ToastSystem.Instance.ShowToast("Đăng ký thành công! Vui lòng check mail.");
+                onMovetoLoginForm();
+            }
         }
     }
 
@@ -250,5 +264,31 @@ public class FirebaseLogin : MonoBehaviour
         int randomSuffix = Random.Range(100, 9999);
 
         return $"{localPart}_{randomSuffix}";
+    }
+
+    public void SendVerificationEmail()
+    {
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
+
+        if (user != null)
+        {
+            user.SendEmailVerificationAsync().ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                {
+                    Debug.LogError("Gửi email bị hủy.");
+                    return;
+                }
+
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("Lỗi gửi email: " + task.Exception);
+                    return;
+                }
+
+                Debug.Log("Đã gửi email xác thực thành công!");
+                // Hiển thị UI thông báo: "Đã gửi mail, vui lòng kiểm tra hòm thư"
+            });
+        }
     }
 }
