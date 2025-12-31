@@ -110,10 +110,8 @@ public class ShopLoader : MonoBehaviour
     // ===============================
     public void LoadShopBorders()
     {
-        foreach (GameObject child in contanierBorder)
-        {
-            Destroy(child);
-        }
+        foreach (Transform c in contanierBorder) Destroy(c.gameObject);
+
         dbRef = FirebaseDatabaseManager.Instance.dbReference;
         userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
         dbRef.Child("shop").Child("borders").GetValueAsync()

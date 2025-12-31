@@ -63,12 +63,15 @@ public class ShopItemUI : BaseCode
             lockOverlay.SetActive(false);
             buyButton.gameObject.SetActive(false);
             useButton.gameObject.SetActive(true);
+            useButton.GetComponentInChildren<TextMeshProUGUI>().text = 
+                FirebaseDatabaseManager.Instance.userProfileSO.userInfo.avatar == itemId ? "Đang dùng" : "Dùng";
         }
         else
         {
             lockOverlay.SetActive(true);
             buyButton.gameObject.SetActive(true);
             useButton.gameObject.SetActive(false);
+            buyButton.GetComponentInChildren<TextMeshProUGUI>().text = "Mua";
         }
     }
 

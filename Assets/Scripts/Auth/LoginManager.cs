@@ -100,7 +100,6 @@ public class LoginManager : MonoBehaviour
                 case AuthError.UserNotFound:
                     message += "Không tìm thấy người dùng.";
                     break;
-                    ;
                 default:
                     message += "Vui lòng thử lại";
                     break;
@@ -163,7 +162,12 @@ public class LoginManager : MonoBehaviour
     // Hàm này gắn vào nút bấm Button
     public void SignInAnonymously()
     {
-        StartCoroutine(SignInAnonymouslyCoroutine());
+        Action callback = () =>
+        {
+            StartCoroutine(SignInAnonymouslyCoroutine());
+        };
+        noticeLogin.showNotice("Tài khoản khách sẽ mất khi bạn đổi thiết bị hoặc xoá dữ liệu.\n" +
+                               " Bạn có thể liên kết email để không mất dữ liệu", callback);
     }
 
     private IEnumerator SignInAnonymouslyCoroutine()
@@ -230,13 +234,8 @@ public class LoginManager : MonoBehaviour
         else
         {
             Debug.Log("Đăng nhập khách và tạo dữ liệu thành công!");
-            Action callback = () =>
-            {
-                FirebaseDatabaseManager.Instance.currentUser = newUser;
-                loadNextScene();
-            };
-            noticeLogin.showNotice("Tài khoản khách sẽ mất khi bạn đổi thiết bị hoặc xoá dữ liệu.\n" +
-                                   " Bạn có thể liên kết email để không mất dữ liệu", callback);
+            ToastSystem.Instance.ShowToast("Đăng nhập khách và tạo dữ liệu thành công!");
+            loadNextScene();
         }
     }
 
