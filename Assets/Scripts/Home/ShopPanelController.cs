@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ public class ShopPanelController : MonoBehaviour
     public Button overlay;
 
     public ShopLoader ShopLoader;
-    public Text nameTitle;
+    public TextMeshProUGUI nameTitle;
     void Start()
     {
         if (avatarShopButton)

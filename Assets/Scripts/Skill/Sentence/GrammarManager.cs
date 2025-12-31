@@ -11,6 +11,7 @@ public class GrammarManager : MonoBehaviour
     public List<GrammarFlashcardExmpale> listExample;
     [SerializeField] private GrammarData loaded;
     [SerializeField] FlashcardUIExampleController exampleController;
+    [SerializeField] FlashcardUIExerciseController exerciseController;
     private string pathLoad = $"{GlobalData.pathData}/{GlobalData.pathGramaData}";
 
     // Dictionary để theo dõi điểm yếu
@@ -90,7 +91,20 @@ public class GrammarManager : MonoBehaviour
         loaded = grammar;
         listExample.AddRange(grammar.examples);
         listExercise.AddRange(grammar.miniExercises);
-        exampleController.initUI();
+        if (GameSessionData.isShowLearn)
+        {
+            exampleController.initUI();
+            exerciseController.setActiveFlashCard(false);
+            exampleController.setActiveFlashCard(true);
+            return;
+        }
+
+        if (GameSessionData.isShowPratice)
+        {
+            exerciseController.showExerciseUI();
+            exerciseController.setActiveFlashCard(true);
+            exampleController.setActiveFlashCard(false);
+        }
     }
     
     public List<GrammarFlashcardExercise> FromGrammarData(GrammarData grammarData)

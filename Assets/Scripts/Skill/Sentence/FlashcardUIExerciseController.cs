@@ -33,6 +33,7 @@ public class FlashcardUIExerciseController : FlashcardUIController
             }
             else
             {
+                updateProgressBar();
                 ShowFinishPanel();
             }
         });
@@ -45,7 +46,7 @@ public class FlashcardUIExerciseController : FlashcardUIController
     }
      
         
-    private void showExerciseUI()
+    public void showExerciseUI()
     {
        setActiveFlashCard(true);
        initUI();

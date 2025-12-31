@@ -11,8 +11,9 @@ public class UserInfoData
     public string name;
     public int rankPoint;
     public string status;
+    public string username;
 
-    public UserInfoData(string avatar,string border,string email, string name, int coin, int rank)
+    public UserInfoData(string avatar,string border,string email, string name, string username, int coin, int rank)
     {
         this.avatar = avatar;
         this.border = border;
@@ -20,6 +21,7 @@ public class UserInfoData
         this.coin = coin;
         this.name = name;
         this.rankPoint = rank;
+        this.username = username;
     }
 }
 

@@ -47,7 +47,7 @@ public class FriendAddPanel : MonoBehaviour
     void OnSearchClicked()
     {
         string searchId = searchInputField.text.Trim();
-        string currentUserId = FirebaseDatabaseManager.Instance.currentUser.UserId;
+        string currentUserId = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.username;
         
         // Validate cơ bản
         if (string.IsNullOrEmpty(searchId))
@@ -67,39 +67,51 @@ public class FriendAddPanel : MonoBehaviour
         }
 
         // Check Firebase xem User có tồn tại không
-        _dbRef.Child("users").Child(searchId).GetValueAsync().ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted || task.IsCanceled)
+        // Giả sử searchId là cái người dùng nhập vào (VD: "User_Dragon")
+        _dbRef.Child("users")
+            .OrderByChild("userInfo/username") // HOẶC "userInfo/searchID" tùy field bạn muốn tìm
+            .EqualTo(searchId)
+            .GetValueAsync()
+            .ContinueWithOnMainThread(task =>
             {
-                statusText.text = "Lỗi kết nối.";
-                return;
-            }
-
-            DataSnapshot snapshot = task.Result;
-            if (snapshot.Exists)
-            {
-                // Tìm thấy User!
-                string userName = "Unknown";
-                // Giả sử node userInfo nằm trong users/userID/userInfo/name hoặc users/userID/name
-                // Bạn chỉnh lại đường dẫn cho khớp database nhé
-                if (snapshot.Child("userInfo").Child("name").Exists)
+                if (task.IsFaulted || task.IsCanceled)
                 {
-                    userName = snapshot.Child("userInfo").Child("name").Value.ToString();
-                }
-                else if (snapshot.Child("name").Exists)
-                {
-                    userName = snapshot.Child("name").Value.ToString();
+                    Debug.LogError("Lỗi tìm kiếm: " + task.Exception);
+                    statusText.text = "Lỗi kết nối.";
+                    return;
                 }
 
-                AddUserToTempList(searchId);
-                statusText.text = ""; // Xóa thông báo lỗi
-                searchInputField.text = ""; // Xóa input để nhập người tiếp theo
-            }
-            else
-            {
-                statusText.text = $"Không tìm thấy người chơi có ID: {searchId}";
-            }
-        });
+                DataSnapshot snapshot = task.Result;
+
+                // LƯU Ý: Với Query, snapshot trả về là một DANH SÁCH (kể cả chỉ tìm thấy 1 người)
+                if (snapshot.Exists && snapshot.ChildrenCount > 0)
+                {
+                    // Phải dùng vòng lặp để lấy user ra
+                    foreach (DataSnapshot userSnapshot in snapshot.Children)
+                    {
+                        // userSnapshot chính là cái node: users/UID_CUA_USER
+                        string foundName = "Unknown";
+            
+                        if (userSnapshot.Child("userInfo").Child("name").Exists)
+                        {
+                            foundName = userSnapshot.Child("userInfo").Child("name").Value.ToString();
+                        }
+                        else if (userSnapshot.Child("name").Exists)
+                        {
+                            foundName = userSnapshot.Child("name").Value.ToString();
+                        }
+                        Debug.Log("Tìm thấy: " + foundName);
+                        AddUserToTempList(userSnapshot.Key); 
+                    }
+
+                    statusText.text = ""; 
+                    searchInputField.text = ""; 
+                }
+                else
+                {
+                    statusText.text = $"Không tìm thấy người chơi: {searchId}";
+                }
+            });
     }
 
     // Thêm vào list tạm và hiển thị lên UI

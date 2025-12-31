@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Text.RegularExpressions;
+using Firebase;
+using Firebase.Auth;
+using Firebase.Extensions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,20 +13,26 @@ public class SettingView : MonoBehaviour
 {
     public TextMeshProUGUI userId;
     public TextMeshProUGUI nameUser;
-    public TextMeshProUGUI nameInputField;
+    public TMP_InputField nameInputField;
+    public TextMeshProUGUI emailText;
     public Button saveButton;
     public Button cancelButton;
-    public Button changeButton;
+    public Button changeNameButton;
+    public Button changeMailButton;
     public GameObject panelInputName;
     public Button coppyButton;
     public Button signOutButton;
-
+    public Button linkEmailButton;
+    public Button saveEmailButton;
+    public string typeChange = "";
     private string USER_ID = "";
     private void OnEnable()
     {
         USER_ID = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        userId.text = USER_ID.Substring(0,5) + "....." + USER_ID.Substring(USER_ID.Length - 5);
+        userId.text = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.username;
         nameUser.text = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.name;
+        emailText.text = FirebaseDatabaseManager.Instance.currentUser.Email;
+        
         coppyButton.onClick.AddListener(()=>
         {
             CopyToClipboard();
@@ -33,8 +43,14 @@ public class SettingView : MonoBehaviour
             SceneManager.LoadScene("LoginScene");
         }));
         
-        changeButton.onClick.AddListener(() =>
+        changeNameButton.onClick.AddListener(() =>
         {
+            typeChange = "name";
+            panelInputName.SetActive(true);
+        });   
+        changeMailButton.onClick.AddListener(() =>
+        {
+            typeChange = "email";
             panelInputName.SetActive(true);
         });
         
@@ -46,15 +62,34 @@ public class SettingView : MonoBehaviour
         
         saveButton.onClick.AddListener((() =>
         {
-            StartCoroutine(saveName());
+            if (typeChange == "name")
+            {
+                StartCoroutine(saveName());
+            }
+            else if (typeChange == "email")
+            {
+                saveNewEmail();
+            }
         }));
+        if (FirebaseDatabaseManager.Instance.fireAuthReference.CurrentUser != null 
+            && FirebaseDatabaseManager.Instance.fireAuthReference.CurrentUser.IsAnonymous)
+        {
+            linkEmailButton.interactable = true;
+            changeMailButton.interactable = false;
+        }
+        else
+        {
+            linkEmailButton.interactable = false;
+            changeMailButton.interactable = true;
+        }
     }
 
     private void OnDisable()
     {
         coppyButton.onClick.RemoveAllListeners();
         signOutButton.onClick.RemoveAllListeners();
-        changeButton.onClick.RemoveAllListeners();
+        changeMailButton.onClick.RemoveAllListeners();
+        changeNameButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
         saveButton.onClick.RemoveAllListeners();
         panelInputName.SetActive(false);
@@ -94,4 +129,46 @@ public class SettingView : MonoBehaviour
             panelInputName.SetActive(false);
         }
     }
+    
+    public void saveNewEmail()
+    {
+        var user = FirebaseAuth.DefaultInstance.CurrentUser;
+        if (user == null) return;
+        string correctedEmail = nameInputField.text.Trim(); 
+        
+        if (correctedEmail == user.Email)
+        {
+            ToastSystem.Instance.ShowToast("Email này y hệt cái cũ mà?");
+            return;
+        }
+
+        user.SendEmailVerificationBeforeUpdatingEmailAsync(correctedEmail).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled) return;
+
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Lỗi update mail: " + task.Exception);
+                FirebaseException firebaseEx = (FirebaseException)task.Exception.GetBaseException();
+                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+                string message = "Cập nhật thất bại: ";
+                switch (errorCode)
+                {
+                    case AuthError.InvalidEmail:
+                        message += "Email không hợp lệ.";
+                        break;
+                    case AuthError.EmailAlreadyInUse:
+                        message += "Email đã được dùng";
+                        break;
+                }
+                ToastSystem.Instance.ShowToast(message);
+                return;
+            }
+            Debug.Log("Đã sửa lại email thành công: " + correctedEmail);
+            user.ReloadAsync();
+            ToastSystem.Instance.ShowToast("Vui lòng kiểm tra mail và xác nhận để hoàn thành");
+        });
+    }
+    
 }

@@ -14,7 +14,7 @@ public class ReviewManager : MonoBehaviour
     public GameObject historyView;
     public GameObject rankingView;
 
-    public Text nameTitle;
+    public TextMeshProUGUI nameTitle;
     void Start()
     {
         if (gameButton)

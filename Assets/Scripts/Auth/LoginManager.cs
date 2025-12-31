@@ -1,27 +1,32 @@
+using System;
 using System.Collections;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Firebase;
 using Firebase.Auth;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class LoginManager : MonoBehaviour
 {
     [Header("Firebase")] private FirebaseAuth auth;
-    [Header("UI References Login")] 
-    public TMP_InputField emailInputLogin;
+    [Header("UI References Login")] public TMP_InputField emailInputLogin;
     public TMP_InputField passwordInputLogin;
-    public TMP_Text statusTextLoginForm;
+    public GameObject statusTextLoginForm;
     public GameObject registerForm;
     public GameObject mainForm;
     public GameObject loginForm;
+    public NoticeLogin noticeLogin;
 
     private void Start()
     {
         loginForm.SetActive(false);
         mainForm.SetActive(true);
         registerForm.SetActive(false);
-        
+
         if (FirebaseDatabaseManager.Instance.IsReady)
         {
             setUserAuth();
@@ -35,7 +40,7 @@ public class LoginManager : MonoBehaviour
 
     private void OnDisable()
     {
-        FirebaseDatabaseManager.Instance.OnFirebaseInitialized += setUserAuth;
+        FirebaseDatabaseManager.Instance.OnFirebaseInitialized -= setUserAuth;
     }
 
     void setUserAuth()
@@ -55,8 +60,10 @@ public class LoginManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            statusTextLoginForm.text = "Vui lòng nhập đầy đủ email và mật khẩu.";
-            statusTextLoginForm.color = new Color32(220, 20, 60, 255);
+            statusTextLoginForm.SetActive(true);
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text =
+                "Vui lòng nhập đầy đủ email và mật khẩu.";
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().color = new Color32(220, 20, 60, 255);
             return;
         }
 
@@ -95,56 +102,144 @@ public class LoginManager : MonoBehaviour
                     break;
                     ;
                 default:
-                    message += "Vui lòng thử lại.";
+                    message += "Vui lòng thử lại";
                     break;
             }
 
-            statusTextLoginForm.text = message;
-            statusTextLoginForm.color = new Color32(220, 20, 60, 255);
+            statusTextLoginForm.SetActive(true);
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text = message;
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().color = new Color32(220, 20, 60, 255);
         }
         else
         {
             FirebaseUser user = loginTask.Result.User;
             if (user.IsEmailVerified)
             {
-                Debug.Log("Login thành công & Đã verify.");
+                noticeLogin.showNotice("Đăng nhập thành công vui lòng chờ ...");
+                FirebaseDatabaseManager.Instance.currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
+                loadNextScene();
             }
             else
             {
                 Debug.Log("Login đúng pass nhưng chưa verify email.");
+                Action callback = () => { noticeLogin.container.SetActive(false); };
+                noticeLogin.showNotice("Vui lòng check mail. \nXác thực người dùng", callback);
+                noticeLogin.sendMailButton.gameObject.SetActive(true);
+                noticeLogin.sendMailButton.onClick.AddListener(() =>
+                {
+                    StartCoroutine(sendMailButton(user));
+                    noticeLogin.sendMailButton.onClick.RemoveAllListeners();
+                    noticeLogin.sendMailButton.gameObject.SetActive(false);
+                });
             }
-
-            FirebaseDatabaseManager.Instance.currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
-            loadNextScene();
         }
     }
 
-    private void loadNextScene()
+    IEnumerator sendMailButton(FirebaseUser newUser)
+    {
+        var sendEmailTask = newUser.SendEmailVerificationAsync();
+        yield return new WaitUntil(() => sendEmailTask.IsCompleted);
+
+        if (sendEmailTask.Exception != null)
+        {
+            Debug.LogError("Lỗi gửi mail: " + sendEmailTask.Exception.GetBaseException().Message);
+        }
+        else
+        {
+            Debug.Log("Đã gửi email thành công!");
+            statusTextLoginForm.SetActive(true);
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text = "Gửi thành công! \nVui lòng check mail.";
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().color = Color.green;
+            noticeLogin.container.SetActive(false);
+        }
+    }
+
+    public void loadNextScene()
     {
         // Ví dụ: load scene có tên "GameScene"
         SceneManager.LoadSceneAsync("HomeScene");
     }
 
+    // Hàm này gắn vào nút bấm Button
     public void SignInAnonymously()
     {
-        auth.SignInAnonymouslyAsync().ContinueWith(task =>
-        {
-            if (task.IsCanceled)
-            {
-                Debug.LogError("Đăng nhập khách bị hủy.");
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Lỗi đăng nhập khách: " + task.Exception);
-                return;
-            }
-            FirebaseUser newUser = task.Result.User;
-            Debug.LogFormat("Đăng nhập khách thành công: {0} ({1})",
-                newUser.DisplayName, newUser.UserId);
-        });
+        StartCoroutine(SignInAnonymouslyCoroutine());
     }
-    
+
+    private IEnumerator SignInAnonymouslyCoroutine()
+    {
+        // --- BƯỚC 1: Đăng nhập Auth ---
+        Debug.Log("Đang đăng nhập chế độ khách...");
+        var authTask = auth.SignInAnonymouslyAsync();
+        yield return new WaitUntil(() => authTask.IsCompleted);
+
+        if (authTask.Exception != null)
+        {
+            Debug.LogError("Lỗi đăng nhập khách: " + authTask.Exception.GetBaseException().Message);
+            yield break;
+        }
+
+        FirebaseUser newUser = authTask.Result.User;
+        Debug.LogFormat("Auth thành công: {0}", newUser.UserId);
+
+        // --- BƯỚC 2: Tạo Username ngẫu nhiên ---
+        // Khách cũng cần 1 cái tên định danh (VD: User_XyZ)
+        var usernameTask = FirebaseDatabaseManager.Instance.GetUniqueUsernameAsync();
+        yield return new WaitUntil(() => usernameTask.IsCompleted);
+
+        if (usernameTask.Exception != null)
+        {
+            Debug.LogError("Lỗi tạo tên: " + usernameTask.Exception.ToString());
+            yield break;
+        }
+
+        string uniqueUserName = usernameTask.Result;
+
+        // --- BƯỚC 3: Chuẩn bị dữ liệu ---
+        // Với khách: Email rỗng, Tên hiển thị đặt tạm là "Guest" hoặc lấy luôn ID
+        UserInfoData userData = new UserInfoData(
+            "avatar_1", // Avatar mặc định
+            "border_0", // Border mặc định
+            "", // Email: Không có
+            "Khách", // DisplayName: Để là Khách
+            uniqueUserName, // Username: Cái tên User_xxx vừa tạo -> QUAN TRỌNG
+            0, // Coin
+            0 // RankPoint
+        );
+
+        string json = JsonUtility.ToJson(userData);
+
+        // --- BƯỚC 4: Lưu vào Database ---
+        var task1 = FirebaseDatabaseManager.Instance.dbReference
+            .Child("users").Child(newUser.UserId)
+            .Child("items").Child("avatars").Child("avatar_1")
+            .SetValueAsync(true);
+
+        var task2 = FirebaseDatabaseManager.Instance.dbReference
+            .Child("users").Child(newUser.UserId)
+            .Child("userInfo")
+            .SetRawJsonValueAsync(json);
+
+        var allTasks = Task.WhenAll(task1, task2);
+        yield return new WaitUntil(() => allTasks.IsCompleted);
+
+        if (allTasks.Exception != null)
+        {
+            Debug.LogError("Lỗi lưu DB: " + allTasks.Exception.ToString());
+        }
+        else
+        {
+            Debug.Log("Đăng nhập khách và tạo dữ liệu thành công!");
+            Action callback = () =>
+            {
+                FirebaseDatabaseManager.Instance.currentUser = newUser;
+                loadNextScene();
+            };
+            noticeLogin.showNotice("Tài khoản khách sẽ mất khi bạn đổi thiết bị hoặc xoá dữ liệu.\n" +
+                                   " Bạn có thể liên kết email để không mất dữ liệu", callback);
+        }
+    }
+
     public void onMovetoRegisterForm()
     {
         loginForm.SetActive(false);
@@ -158,7 +253,7 @@ public class LoginManager : MonoBehaviour
         registerForm.SetActive(false);
         resetDataInput();
     }
-    
+
     public void onMovetoMainForm()
     {
         loginForm.SetActive(false);
@@ -166,10 +261,87 @@ public class LoginManager : MonoBehaviour
         mainForm.SetActive(true);
         resetDataInput();
     }
-    
+
     private void resetDataInput()
     {
         emailInputLogin.text = "";
         passwordInputLogin.text = "";
+        statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text = "";
+        statusTextLoginForm.SetActive(false);
+    }
+
+    public void onClickForgotPassword()
+    {
+        string email = emailInputLogin.text;
+        
+        if (string.IsNullOrEmpty(email))
+        {
+            statusTextLoginForm.SetActive(true);
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text =
+                "Vui lòng nhập email bạn muốn đổi mật khẩu";
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().color = new Color32(220, 20, 60, 255);
+            return;
+        }
+        StartCoroutine(SendResetPasswordEmail(email));
+    }
+    
+    private IEnumerator SendResetPasswordEmail(string email)
+    {
+        Debug.Log($"Đang gửi yêu cầu reset password tới: {email}");
+
+        // 2. Gọi hàm của Firebase
+        var task = auth.SendPasswordResetEmailAsync(email);
+
+        // 3. Đợi tác vụ hoàn thành
+        yield return new WaitUntil(() => task.IsCompleted);
+
+        // 4. Kiểm tra kết quả
+        if (task.Exception != null)
+        {
+            // Lấy lỗi gốc
+            FirebaseException firebaseEx = task.Exception.GetBaseException() as FirebaseException;
+            if (firebaseEx != null)
+            {
+                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+                string message = "";
+                switch (errorCode)
+                {
+                    case AuthError.InvalidEmail:
+                        message = "Email sai định dạng.";
+                        break;
+                    case AuthError.UserNotFound:
+                        message = "Email này chưa từng đăng ký tài khoản!";
+                        break;
+                    case AuthError.NetworkRequestFailed:
+                        message = "Lỗi mạng. Vui lòng kiểm tra Wifi/4G.";
+                        break;
+                    default:
+                        message = "Lỗi: " + "Không tìm thấy tài khoản";
+                        break;
+                }
+                statusTextLoginForm.SetActive(true);
+                statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text = message; 
+                statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().color = new Color32(220, 20, 60, 255);
+            }
+        }
+        else
+        {
+            // THÀNH CÔNG
+            Debug.Log("Gửi mail reset thành công!");
+            string msg = ""; // Xóa thông báo lỗi cũ
+            statusTextLoginForm.SetActive(true);
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().text = "Gửi mail reset thành công!"; 
+            statusTextLoginForm.GetComponentInChildren<TextMeshProUGUI>().color = Color.green;
+            Action callback = () =>
+            {
+                noticeLogin.container.SetActive(false);
+            };
+            noticeLogin.showNotice("Đã gửi link đổi mật khẩu! \nHãy kiểm tra Email.", callback);
+        }
+    }
+    private bool IsEmailValid(string email)
+    {
+        string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        return Regex.IsMatch(email, pattern);
     }
 }

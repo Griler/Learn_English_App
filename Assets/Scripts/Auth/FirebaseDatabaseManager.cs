@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Firebase.Auth;
 using Newtonsoft.Json;
 using UnityEditor;
+using Random = UnityEngine.Random;
 
 public partial class FirebaseDatabaseManager : MonoBehaviour
 {
@@ -158,5 +159,38 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
         {
             HandleUserOfflineUI();
         }
+    }
+    
+    public async Task<string> GetUniqueUsernameAsync()
+    {
+
+        string randomName = GetRandomUserName();
+        Query usernameQuery = dbReference.Child("users")
+            .OrderByChild("userInfo/username")
+            .EqualTo(randomName);
+
+        try
+        {
+            DataSnapshot snapshot = await usernameQuery.GetValueAsync();
+            if (snapshot.Exists)
+            {
+                Debug.LogWarning($"Username '{randomName}' đã tồn tại. Đang thử lại...");
+                return await GetUniqueUsernameAsync();
+            }
+            else
+            {
+                return randomName;
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Lỗi Firebase: " + e.Message);
+            return null;
+        }
+    }
+    
+    public string GetRandomUserName()
+    {
+        return "UserId_" + Random.Range(1000, 99999);
     }
 }

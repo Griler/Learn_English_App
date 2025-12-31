@@ -15,8 +15,24 @@ public class GrammarLoader : MonoBehaviour
     public List<GrammarTopic> loadedTopics = new List<GrammarTopic>();
     [SerializeField] Transform contentParent;
     [SerializeField] GameObject topicPrefab;
+    [SerializeField] Dictionary<string, bool> userProgressMap = new Dictionary<string, bool>();
+    public GameObject overlay;
+    public GameObject panel;
+    public Button learningButton;
+    public Button practiceButton;
 
-    
+    private string topicClick = "";
+    private void Start()
+    {
+        overlay.GetComponent<Button>().onClick.AddListener((() =>
+        {
+            panel.SetActive(false);
+            overlay.SetActive(false);
+        }));
+        learningButton.onClick.AddListener(onLearnClick);
+        practiceButton.onClick.AddListener(onPraticeClick);
+    }
+
     void OnEnable()
     { 
         foreach (Transform c in contentParent)
@@ -135,9 +151,8 @@ public class GrammarLoader : MonoBehaviour
                 else
                 {
                     topicChild.GetComponentsInChildren<Image>()[0].color = Color.gray;
-
                 }
-
+                userProgressMap[topic.grammarPointID] = (bool)isCompleted;
                 topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(topic.grammarPointID));
             }
             catch (Exception e)
@@ -149,7 +164,34 @@ public class GrammarLoader : MonoBehaviour
 
     void OnTopicSelected(string topicId)
     {
-        PlayerPrefs.SetString("SelectedGrammarTopic", topicId);
+        if (!userProgressMap[topicId])
+        {
+            GameSessionData.isShowLearn = true;
+            GameSessionData.isShowPratice = false;
+            PlayerPrefs.SetString("SelectedGrammarTopic", topicId);
+            SceneManager.LoadScene("SentenceBuildingScene");
+        }
+        else
+        {
+            topicClick = topicId;
+            overlay.SetActive(true);
+            panel.SetActive(true);
+        }
+    }
+
+    void onLearnClick()
+    {
+        GameSessionData.isShowLearn = true;
+        GameSessionData.isShowPratice = false;
+        PlayerPrefs.SetString("SelectedGrammarTopic", topicClick);
+        SceneManager.LoadScene("SentenceBuildingScene");
+    }
+
+    void onPraticeClick()
+    {
+        GameSessionData.isShowPratice = true;
+        GameSessionData.isShowLearn = false;
+        PlayerPrefs.SetString("SelectedGrammarTopic", topicClick);
         SceneManager.LoadScene("SentenceBuildingScene");
     }
 

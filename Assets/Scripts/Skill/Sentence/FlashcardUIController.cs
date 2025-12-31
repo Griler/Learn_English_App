@@ -102,7 +102,7 @@ public class FlashcardUIController : BaseCode
         progressBar.value = progressBar.value + incrementValue;
     }
     
-    protected void setActiveFlashCard(bool active = true)
+    public void setActiveFlashCard(bool active = true)
     {
         flashCardContainer.SetActive(active);  
     }

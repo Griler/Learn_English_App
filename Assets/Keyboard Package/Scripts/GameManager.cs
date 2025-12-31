@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
         Instance = this;
         if(inputField)
             inputField.text = "";
+        if(textInputField)
+            textInputField.text = "";
     }
 
     public void setInputField(TMP_InputField inputField)
@@ -22,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     public void DeleteLetter()
     {
-        if(inputField.text.Length != 0) {
+        if(inputField && inputField.text.Length != 0) {
             inputField.text = inputField.text.Remove(inputField.text.Length - 1, 1);
         }
 
