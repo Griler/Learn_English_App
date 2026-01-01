@@ -14336,7 +14336,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 16.570007, y: -10.130005}
+  m_AnchoredPosition: {x: 16.570068, y: -10.129883}
   m_SizeDelta: {x: -154.94678, y: -1222.51}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &858751903
@@ -36794,7 +36794,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   contentParent: {fileID: 3777147898761148579}
   topicButtonPrefab: {fileID: 6086705797488404038, guid: 4f5b40912d55d494f97658ad83f915ea, type: 3}
+  subTopicPrefab: {fileID: 6086705797488404038, guid: 6c4b14033afa2174d810176ffd619827, type: 3}
   viewSubTopic: {fileID: 4585617293302844320}
+  contentParentSub: {fileID: 5908346916123124533}
 --- !u!222 &642830704953838131
 CanvasRenderer:
   m_ObjectHideFlags: 0

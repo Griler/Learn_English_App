@@ -11,81 +11,90 @@ using UnityEditor;
 
 public partial class FirebaseDatabaseManager : MonoBehaviour
 {
-    public void LoadMainTopics(Action<Dictionary<string, bool>> onComplete)
+    public async Task<Dictionary<string, bool>> GetUserProgress()
     {
         // 1. Kiểm tra User đã đăng nhập chưa để lấy UserID
         var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
-        if (currentUser == null)
+        var topicsSnapshot = await dbReference
+            .Child($"users/{currentUser.UserId}/learning_progress/vocab_topics")
+            .GetValueAsync();
+
+        if (!topicsSnapshot.Exists)
         {
-            Debug.LogError("User chưa đăng nhập!");
-            return;
+            Debug.LogWarning("No learn topics found");
+            ToastSystem.Instance.ShowToast("Lỗi tải chủ đề học vui lòng thử lại");
+            return null;
         }
 
-        string userId = currentUser.UserId;
+        Dictionary<string, bool> result = new Dictionary<string, bool>();
 
-        // 2. Lấy danh sách Topics từ "vocab_topics"
-        FirebaseDatabase.DefaultInstance
-            .GetReference("vocab_topics")
-            .GetValueAsync()
-            .ContinueWithOnMainThread(taskTopics =>
+        // 4. Duyệt qua từng Topic và map với dữ liệu User
+        foreach (var child in topicsSnapshot.Children)
+        {
+            string topicKey = child.Key;
+            bool isComplete = false;
+
+            var userTopicData = child.Child(topicKey);
+
+            if (userTopicData.HasChild("isCompleted"))
             {
-                if (taskTopics.IsFaulted || taskTopics.IsCanceled)
-                {
-                    ToastNetwork.Instance.actionOnClickButton = () => LoadMainTopics(onComplete);
-                    ToastNetwork.Instance.showDisconnect();
-                    Debug.LogError("Lỗi tải vocab_topics: " + taskTopics.Exception);
-                    return;
-                }
+                bool.TryParse(userTopicData.Child("isCompleted").Value.ToString(), out isComplete);
+            }
+            result.Add(topicKey, isComplete);
+        }
 
-                DataSnapshot topicsSnapshot = taskTopics.Result;
-
-                // 3. Sau khi có Topics, lấy tiếp dữ liệu tiến độ của User
-                // Giả sử cấu trúc data user là: users/{userId}/topics/{topicKey}/isComplete
-                FirebaseDatabase.DefaultInstance
-                    .GetReference($"users/{userId}/learning_progress/vocab_topics")
-                    .GetValueAsync()
-                    .ContinueWithOnMainThread(taskUser =>
-                    {
-                        if (taskUser.IsFaulted || taskUser.IsCanceled)
-                        {
-                            Debug.LogError("Lỗi tải user data: " + taskUser.Exception);
-                            ToastNetwork.Instance.actionOnClickButton = () => LoadMainTopics(onComplete);
-                            ToastNetwork.Instance.showDisconnect();
-                            return;
-                        }
-
-                        DataSnapshot userSnapshot = taskUser.Result;
-                        Dictionary<string, bool> result = new Dictionary<string, bool>();
-
-                        // 4. Duyệt qua từng Topic và map với dữ liệu User
-                        foreach (var child in topicsSnapshot.Children)
-                        {
-                            string topicKey = child.Key;
-                            bool isComplete = false;
-
-                            // Kiểm tra xem User có dữ liệu về topic này không
-                            if (userSnapshot.HasChild(topicKey))
-                            {
-                                var userTopicData = userSnapshot.Child(topicKey);
-
-                                // Lấy giá trị isComplete (mặc định false nếu không tìm thấy)
-                                if (userTopicData.HasChild("isCompleted"))
-                                {
-                                    // Parse giá trị sang bool an toàn
-                                    bool.TryParse(userTopicData.Child("isCompleted").Value.ToString(), out isComplete);
-                                }
-                            }
-
-                            // Thêm vào Dictionary kết quả
-                            result.Add(topicKey, isComplete);
-                        }
-
-                        // Trả về kết quả
-                        ToastNetwork.Instance.hideDisconnect();
-                        onComplete?.Invoke(result);
-                    });
-            });
+        return result;
     }
+
+
+    public async Task<List<LearnTopic>> GetAllLearnTopicsAsync()
+    {
+        var snapshot = await dbReference.Child("learn_topics").GetValueAsync();
+
+        if (!snapshot.Exists)
+        {
+            Debug.LogWarning("No learn topics found");
+            ToastSystem.Instance.ShowToast("Lỗi tải chủ đề học vui lòng thử lại");
+            return null;
+        }
+
+        List<LearnTopic> topics = new List<LearnTopic>();
+
+        foreach (DataSnapshot topicSnapshot in snapshot.Children)
+        {
+            LearnTopic topic = new LearnTopic
+            {
+                key = topicSnapshot.Key,
+                label = new Localization()
+                {
+                    en = topicSnapshot.Child("label").Child("en").Value?.ToString(),
+                    vi = topicSnapshot.Child("label").Child("vi").Value?.ToString()
+                },
+                subs = new Dictionary<string,Localization>()
+            };
+
+            // Lấy subtopics
+            if (topicSnapshot.Child("subs").Exists)
+            {
+                foreach (DataSnapshot subSnapshot in topicSnapshot.Child("subs").Children)
+                {
+                    Dictionary<string, Localization> subTopic = new Dictionary<string, Localization>();
+                    Localization  label = new Localization()
+                    {
+                        en = subSnapshot.Child("label").Child("en").Value?.ToString(),
+                        vi = subSnapshot.Child("label").Child("vi").Value?.ToString()
+                    };
+                    topic.subs[subSnapshot.Key] = label;
+                }
+            }
+
+            topics.Add(topic);
+        }
+
+        Debug.Log($"Successfully loaded {topics.Count} learn topics");
+        return topics;
+    }
+
 
     public void LoadWords(string mainTopic, string category, Action<List<WordData>> onComplete)
     {
@@ -132,7 +141,7 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
                     onComplete?.Invoke(null);
                     return;
                 }
-                
+
                 if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
