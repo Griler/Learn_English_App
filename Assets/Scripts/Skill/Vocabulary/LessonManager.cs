@@ -6,24 +6,25 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class GameController : MonoBehaviour
+public class LessonManager : MonoBehaviour
 {
     [Header("UI Panels")] public GameObject flashcardPanel;
     public GameObject container;
     public GameObject quizPanel;
     public Button nextButton;
-    private List<WordData> listAnimals = new List<WordData>();
+    private List<VocabItem>  listAnimals = new List<VocabItem> ();
     [SerializeField] private int currentAnimalIndex = 0;
     [SerializeField] private int currentQuiz = 0;
 
     [FormerlySerializedAs("currentAnimalData")] [SerializeField]
-    private WordData currentWordData;
+    private VocabItem currentLessonItem;
 
     [SerializeField] private Button backButton;
     [SerializeField] private GameObject panelNext;
     [SerializeField] private GameObject panelEnd;
     private string topic = "";
     private string subCategrgy = "";
+    public VocabularyDatabase vocabDatabase;
 
     private void Awake()
     {
@@ -35,7 +36,7 @@ public class GameController : MonoBehaviour
         backButton.onClick.AddListener(onClickBackButton);
         nextButton.onClick.AddListener(onClickNextButton);
         currentAnimalIndex = 0;
-        setUpData();
+        LoadData();
     }
 
     public void ShowFlashcard()
@@ -46,64 +47,37 @@ public class GameController : MonoBehaviour
         quizPanel.SetActive(false);
 
         // Lấy data theo index hiện tại chứ không lấy [0] nữa
-        currentWordData = listAnimals[currentAnimalIndex];
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentWordData);
+        currentLessonItem = listAnimals[currentAnimalIndex];
+        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentLessonItem);
+        flashcardPanel.GetComponent<FlashCardSceneManager>().updateExample(currentLessonItem);
     }
 
     public void ShowFlashcardByButton()
     {
-        bool isCorrect = quizPanel.GetComponent<QuizManager>().getCorrectAnswer();
-        if (!isCorrect) return;
         currentAnimalIndex++;
         if (currentAnimalIndex >= listAnimals.Count)
         {
-            ShowFinishPanel();
+            quizPanel.GetComponent<QuizManager>().selectedTags.Add(subCategrgy);
+            quizPanel.GetComponent<QuizManager>().StartQuiz();
+            flashcardPanel.SetActive(false);
+            quizPanel.SetActive(true);
             return;
         }
 
-        StartCoroutine(showNextFlashCard());
-    }
-
-    IEnumerator showNextFlashCard()
-    {
-        yield return new WaitForSeconds(0.75f);
         ShowFlashcard();
     }
-
 
     public void ShowQuiz()
     {
         flashcardPanel.SetActive(false);
         quizPanel.SetActive(true);
-        quizPanel.GetComponent<QuizManager>().UpdateUI(currentWordData);
+        //quizPanel.GetComponent<QuizManager>().UpdateUI(currentLessonItem);
     }
 
-    private void setUpData()
+    private void LoadData()
     {
         subCategrgy = PlayerPrefs.GetString("SelectedSubCategory");
-        string mainCategory = PlayerPrefs.GetString("SelectedMainCategoryId");
-        Debug.Log("index" + GameSessionData.mapSubTopics[subCategrgy]);
-        Debug.Log("test" + GameSessionData.mapSubTopics.ContainsValue(10));
-        Debug.Log("test" + GameSessionData.mapSubTopics.ContainsValue(1));
-        FirebaseDatabaseManager.Instance.LoadWords(mainCategory, subCategrgy, OnWordsLoaded);
-    }
-
-    void OnWordsLoaded(List<WordData> words)
-    {
-        if (words == null)
-        {
-            Debug.LogError("Không tải được dữ liệu!");
-            return;
-        }
-
-        Debug.Log("✅ Đã load " + words.Count + " từ!");
-        foreach (var w in words)
-        {
-            Debug.Log($"{w.nameEn} - {w.nameVi}");
-        }
-
-        listAnimals.AddRange(words);
-        quizPanel.GetComponent<QuizManager>().initQuiz(listAnimals);
+        listAnimals = vocabDatabase.GetVocabsByTag(subCategrgy);
         container.SetActive(true);
         ShowFlashcard();
     }
@@ -122,18 +96,9 @@ public class GameController : MonoBehaviour
         await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_VOCA);
         int currentIndex = GameSessionData.mapSubTopics[subCategrgy];
         int nextCurrentIndex = currentIndex + 1;
-        if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
-        {
-            GameEvents.ShowNotifcation("Bạn đã hoàn thành bài học.\n Bạn có muốn làm bài tập khác không ?",
-                Color.black);
-            panelNext.SetActive(true);
-        }
-        else
-        {
-            GameEvents.ShowNotifcation("Bạn đã hoàn thành chủ đề học.\n Trở Về Trang Chủ chọn chủ đề khác",
-                Color.black);
-            panelEnd.SetActive(true);
-        }
+        GameEvents.ShowNotifcation("Bạn đã hoàn thành chủ đề học.\n Trở Về Trang Chủ chọn chủ đề khác",
+            Color.black);
+        panelEnd.SetActive(true);
     }
 
     void onClickNextButton()

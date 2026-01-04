@@ -1,0 +1,759 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac9a819316104d02befd66058bf4c3e0, type: 3}
+  m_Name: VocabularyDatabase
+  m_EditorClassIdentifier: 
+  vocabularyItems:
+  - id: li_00001
+    text:
+      en: Cow
+      vi: "Con b\xF2"
+    example:
+      en: The cow is eating grass.
+      vi: "Con b\xF2 \u0111ang \u0103n c\u1ECF."
+    tags:
+    - animals
+    - farm_animal
+    - noun
+    - a1
+  - id: li_00002
+    text:
+      en: Pig
+      vi: Con heo
+    example:
+      en: The pig is on the farm.
+      vi: "Con heo \u1EDF trang tr\u1EA1i."
+    tags:
+    - animals
+    - farm_animal
+    - noun
+    - a1
+  - id: li_00003
+    text:
+      en: Chicken
+      vi: "Con g\xE0"
+    example:
+      en: The chicken lays eggs.
+      vi: "Con g\xE0 \u0111\u1EBB tr\u1EE9ng."
+    tags:
+    - animals
+    - farm_animal
+    - noun
+    - a1
+  - id: li_00004
+    text:
+      en: Duck
+      vi: "Con v\u1ECBt"
+    example:
+      en: The duck is in the water.
+      vi: "Con v\u1ECBt \u1EDF d\u01B0\u1EDBi n\u01B0\u1EDBc."
+    tags:
+    - animals
+    - farm_animal
+    - noun
+    - a1
+  - id: li_00005
+    text:
+      en: Horse
+      vi: "Con ng\u1EF1a"
+    example:
+      en: The horse runs fast.
+      vi: "Con ng\u1EF1a ch\u1EA1y nhanh."
+    tags:
+    - animals
+    - farm_animal
+    - noun
+    - a1
+  - id: li_00006
+    text:
+      en: Goat
+      vi: "Con d\xEA"
+    example:
+      en: The goat eats grass.
+      vi: "Con d\xEA \u0103n c\u1ECF."
+    tags:
+    - animals
+    - noun
+    - a1
+  - id: li_00007
+    text:
+      en: Sheep
+      vi: "Con c\u1EEBu"
+    example:
+      en: The sheep is white.
+      vi: "Con c\u1EEBu m\xE0u tr\u1EAFng."
+    tags:
+    - animals
+    - farm_animal
+    - noun
+    - a1
+  - id: li_00008
+    text:
+      en: Dog
+      vi: "Con ch\xF3"
+    example:
+      en: The dog guards the farm.
+      vi: "Con ch\xF3 canh trang tr\u1EA1i."
+    tags:
+    - animals
+    - pet
+    - noun
+    - a1
+  - id: li_00009
+    text:
+      en: Lion
+      vi: "S\u01B0 t\u1EED"
+    example:
+      en: The lion is the king of the jungle.
+      vi: "S\u01B0 t\u1EED l\xE0 ch\xFAa t\u1EC3 r\u1EEBng xanh."
+    tags:
+    - animals
+    - wild_animal
+    - noun
+    - a1
+  - id: li_00010
+    text:
+      en: Elephant
+      vi: Con voi
+    example:
+      en: The elephant has a long trunk.
+      vi: "Con voi c\xF3 c\xE1i v\xF2i d\xE0i."
+    tags:
+    - animals
+    - wild_animal
+    - noun
+    - a1
+  - id: li_00011
+    text:
+      en: Monkey
+      vi: "Con kh\u1EC9"
+    example:
+      en: The monkey climbs the tree.
+      vi: "Con kh\u1EC9 leo tr\xE8o tr\xEAn c\xE2y."
+    tags:
+    - animals
+    - wild_animal
+    - noun
+    - a1
+  - id: li_00012
+    text:
+      en: Cat
+      vi: "Con m\xE8o"
+    example:
+      en: The cat is sleeping on the sofa.
+      vi: "Con m\xE8o \u0111ang ng\u1EE7 tr\xEAn gh\u1EBF s\xF4 pha."
+    tags:
+    - animals
+    - pet
+    - noun
+    - a1
+  - id: li_00013
+    text:
+      en: Fish
+      vi: "Con c\xE1"
+    example:
+      en: Fish live in the water.
+      vi: "C\xE1 s\u1ED1ng \u1EDF d\u01B0\u1EDBi n\u01B0\u1EDBc."
+    tags:
+    - animals
+    - sea_animal
+    - noun
+    - a1
+  - id: li_00014
+    text:
+      en: Dolphin
+      vi: "C\xE1 heo"
+    example:
+      en: Dolphins are very smart.
+      vi: "C\xE1 heo r\u1EA5t th\xF4ng minh."
+    tags:
+    - animals
+    - sea_animal
+    - noun
+    - a1
+  - id: li_00015
+    text:
+      en: Apple
+      vi: "Qu\u1EA3 t\xE1o"
+    example:
+      en: I eat an apple every day.
+      vi: "T\xF4i \u0103n m\u1ED9t qu\u1EA3 t\xE1o m\u1ED7i ng\xE0y."
+    tags:
+    - fruits
+    - tropical_fruits
+    - noun
+    - a1
+  - id: li_00016
+    text:
+      en: Banana
+      vi: "Qu\u1EA3 chu\u1ED1i"
+    example:
+      en: Monkeys love bananas.
+      vi: "L\u0169 kh\u1EC9 r\u1EA5t th\xEDch chu\u1ED1i."
+    tags:
+    - fruits
+    - tropical_fruits
+    - noun
+    - a1
+  - id: li_00017
+    text:
+      en: Orange
+      vi: "Qu\u1EA3 cam"
+    example:
+      en: Orange juice is sweet.
+      vi: "N\u01B0\u1EDBc cam \xE9p r\u1EA5t ng\u1ECDt."
+    tags:
+    - fruits
+    - citrus_fruits
+    - noun
+    - a1
+  - id: li_00018
+    text:
+      en: Strawberry
+      vi: "D\xE2u t\xE2y"
+    example:
+      en: The strawberry is red.
+      vi: "Qu\u1EA3 d\xE2u t\xE2y m\xE0u \u0111\u1ECF."
+    tags:
+    - fruits
+    - berry_fruits
+    - noun
+    - a1
+  - id: li_00019
+    text:
+      en: Car
+      vi: "Xe h\u01A1i"
+    example:
+      en: My dad drives a blue car.
+      vi: "B\u1ED1 t\xF4i l\xE1i m\u1ED9t chi\u1EBFc xe h\u01A1i m\xE0u xanh."
+    tags:
+    - vehicles
+    - land_vehicles
+    - noun
+    - a1
+  - id: li_00020
+    text:
+      en: Bicycle
+      vi: "Xe \u0111\u1EA1p"
+    example:
+      en: I ride my bicycle to school.
+      vi: "T\xF4i \u0111\u1EA1p xe \u0111\u1EBFn tr\u01B0\u1EDDng."
+    tags:
+    - vehicles
+    - land_vehicles
+    - noun
+    - a1
+  - id: li_00021
+    text:
+      en: Airplane
+      vi: "M\xE1y bay"
+    example:
+      en: The airplane flies in the sky.
+      vi: "M\xE1y bay bay tr\xEAn b\u1EA7u tr\u1EDDi."
+    tags:
+    - vehicles
+    - air_vehicles
+    - noun
+    - a1
+  - id: li_00022
+    text:
+      en: Boat
+      vi: "Thuy\u1EC1n"
+    example:
+      en: The boat sails on the sea.
+      vi: "Con thuy\u1EC1n \u0111i tr\xEAn bi\u1EC3n."
+    tags:
+    - vehicles
+    - water_vehicles
+    - noun
+    - a1
+  - id: li_00023
+    text:
+      en: Pencil
+      vi: "B\xFAt ch\xEC"
+    example:
+      en: I write with a pencil.
+      vi: "T\xF4i vi\u1EBFt b\u1EB1ng b\xFAt ch\xEC."
+    tags:
+    - school
+    - stationery
+    - noun
+    - a1
+  - id: li_00024
+    text:
+      en: Teacher
+      vi: "Gi\xE1o vi\xEAn"
+    example:
+      en: The teacher is in the classroom.
+      vi: "Gi\xE1o vi\xEAn \u0111ang \u1EDF trong l\u1EDBp h\u1ECDc."
+    tags:
+    - school
+    - people_at_school
+    - noun
+    - a1
+  - id: li_00025
+    text:
+      en: Rabbit
+      vi: "Con th\u1ECF"
+    example:
+      en: The rabbit likes carrots.
+      vi: "Con th\u1ECF th\xEDch \u0103n c\xE0 r\u1ED1t."
+    tags:
+    - animals
+    - pet
+    - noun
+    - a1
+  - id: li_00026
+    text:
+      en: Hamster
+      vi: "Chu\u1ED9t Hamster"
+    example:
+      en: The hamster runs on a wheel.
+      vi: "Chu\u1ED9t hamster ch\u1EA1y tr\xEAn b\xE1nh xe."
+    tags:
+    - animals
+    - pet
+    - noun
+    - a1
+  - id: li_00027
+    text:
+      en: Parrot
+      vi: "Con v\u1EB9t"
+    example:
+      en: The parrot can speak.
+      vi: "Con v\u1EB9t c\xF3 th\u1EC3 n\xF3i chuy\u1EC7n."
+    tags:
+    - animals
+    - pet
+    - noun
+    - a1
+  - id: li_00028
+    text:
+      en: Shark
+      vi: "C\xE1 m\u1EADp"
+    example:
+      en: Sharks have sharp teeth.
+      vi: "C\xE1 m\u1EADp c\xF3 h\xE0m r\u0103ng s\u1EAFc nh\u1ECDn."
+    tags:
+    - animals
+    - sea_animal
+    - noun
+    - a1
+  - id: li_00029
+    text:
+      en: Whale
+      vi: "C\xE1 voi"
+    example:
+      en: The whale is very big.
+      vi: "C\xE1 voi r\u1EA5t to l\u1EDBn."
+    tags:
+    - animals
+    - sea_animal
+    - noun
+    - a1
+  - id: li_00030
+    text:
+      en: Octopus
+      vi: "B\u1EA1ch tu\u1ED9c"
+    example:
+      en: An octopus has eight legs.
+      vi: "B\u1EA1ch tu\u1ED9c c\xF3 t\xE1m c\xE1i ch\xE2n."
+    tags:
+    - animals
+    - sea_animal
+    - noun
+    - a1
+  - id: li_00031
+    text:
+      en: Crab
+      vi: Con cua
+    example:
+      en: The crab walks sideways.
+      vi: "Con cua \u0111i ngang."
+    tags:
+    - animals
+    - sea_animal
+    - noun
+    - a1
+  - id: li_00032
+    text:
+      en: Tiger
+      vi: "Con h\u1ED5"
+    example:
+      en: The tiger has stripes.
+      vi: "Con h\u1ED5 c\xF3 v\u1EB1n."
+    tags:
+    - animals
+    - wild_animal
+    - noun
+    - a1
+  - id: li_00033
+    text:
+      en: Zebra
+      vi: "Ng\u1EF1a v\u1EB1n"
+    example:
+      en: Zebras are black and white.
+      vi: "Ng\u1EF1a v\u1EB1n c\xF3 m\xE0u \u0111en v\xE0 tr\u1EAFng."
+    tags:
+    - animals
+    - wild_animal
+    - noun
+    - a1
+  - id: li_00034
+    text:
+      en: Giraffe
+      vi: "H\u01B0\u01A1u cao c\u1ED5"
+    example:
+      en: The giraffe has a long neck.
+      vi: "H\u01B0\u01A1u cao c\u1ED5 c\xF3 c\xE1i c\u1ED5 d\xE0i."
+    tags:
+    - animals
+    - wild_animal
+    - noun
+    - a1
+  - id: li_00035
+    text:
+      en: Mango
+      vi: "Qu\u1EA3 xo\xE0i"
+    example:
+      en: Mango is sweet and yellow.
+      vi: "Xo\xE0i ng\u1ECDt v\xE0 c\xF3 m\xE0u v\xE0ng."
+    tags:
+    - fruits
+    - tropical_fruits
+    - noun
+    - a1
+  - id: li_00036
+    text:
+      en: Pineapple
+      vi: "Qu\u1EA3 d\u1EE9a"
+    example:
+      en: Pineapple has rough skin.
+      vi: "Qu\u1EA3 d\u1EE9a c\xF3 v\u1ECF s\u1EA7n s\xF9i."
+    tags:
+    - fruits
+    - tropical_fruits
+    - noun
+    - a1
+  - id: li_00037
+    text:
+      en: Watermelon
+      vi: "D\u01B0a h\u1EA5u"
+    example:
+      en: Watermelon is red inside.
+      vi: "D\u01B0a h\u1EA5u b\xEAn trong m\xE0u \u0111\u1ECF."
+    tags:
+    - fruits
+    - tropical_fruits
+    - noun
+    - a1
+  - id: li_00038
+    text:
+      en: Coconut
+      vi: "Qu\u1EA3 d\u1EEBa"
+    example:
+      en: Coconut water is tasty.
+      vi: "N\u01B0\u1EDBc d\u1EEBa r\u1EA5t ngon."
+    tags:
+    - fruits
+    - tropical_fruits
+    - noun
+    - a1
+  - id: li_00039
+    text:
+      en: Lemon
+      vi: "Qu\u1EA3 chanh v\xE0ng"
+    example:
+      en: Lemons are sour.
+      vi: "Chanh v\xE0ng r\u1EA5t chua."
+    tags:
+    - fruits
+    - citrus_fruits
+    - noun
+    - a1
+  - id: li_00040
+    text:
+      en: Lime
+      vi: "Qu\u1EA3 chanh xanh"
+    example:
+      en: I put lime in my tea.
+      vi: "T\xF4i v\u1EAFt chanh xanh v\xE0o tr\xE0."
+    tags:
+    - fruits
+    - citrus_fruits
+    - noun
+    - a1
+  - id: li_00041
+    text:
+      en: Grapefruit
+      vi: "Qu\u1EA3 b\u01B0\u1EDFi ch\xF9m"
+    example:
+      en: Grapefruit is a big fruit.
+      vi: "B\u01B0\u1EDFi ch\xF9m l\xE0 m\u1ED9t lo\u1EA1i qu\u1EA3 to."
+    tags:
+    - fruits
+    - citrus_fruits
+    - noun
+    - a1
+  - id: li_00042
+    text:
+      en: Blueberry
+      vi: "Vi\u1EC7t qu\u1EA5t"
+    example:
+      en: Blueberries are small and round.
+      vi: "Vi\u1EC7t qu\u1EA5t nh\u1ECF v\xE0 tr\xF2n."
+    tags:
+    - fruits
+    - berry_fruits
+    - noun
+    - a1
+  - id: li_00043
+    text:
+      en: Raspberry
+      vi: "M\xE2m x\xF4i"
+    example:
+      en: Raspberry jam is good.
+      vi: "M\u1EE9t m\xE2m x\xF4i r\u1EA5t ngon."
+    tags:
+    - fruits
+    - berry_fruits
+    - noun
+    - a1
+  - id: li_00044
+    text:
+      en: Grapes
+      vi: "Qu\u1EA3 nho"
+    example:
+      en: Grapes grow in bunches.
+      vi: "Nho m\u1ECDc th\xE0nh ch\xF9m."
+    tags:
+    - fruits
+    - berry_fruits
+    - noun
+    - a1
+  - id: li_00045
+    text:
+      en: Blackboard
+      vi: "C\xE1i b\u1EA3ng \u0111en"
+    example:
+      en: The teacher writes on the blackboard.
+      vi: "Gi\xE1o vi\xEAn vi\u1EBFt l\xEAn b\u1EA3ng \u0111en."
+    tags:
+    - school
+    - classroom_items
+    - noun
+    - a1
+  - id: li_00046
+    text:
+      en: Desk
+      vi: "C\xE1i b\xE0n h\u1ECDc"
+    example:
+      en: I sit at my desk.
+      vi: "T\xF4i ng\u1ED3i t\u1EA1i b\xE0n h\u1ECDc c\u1EE7a m\xECnh."
+    tags:
+    - school
+    - classroom_items
+    - noun
+    - a1
+  - id: li_00047
+    text:
+      en: Chair
+      vi: "C\xE1i gh\u1EBF"
+    example:
+      en: This chair is comfortable.
+      vi: "C\xE1i gh\u1EBF n\xE0y r\u1EA5t tho\u1EA3i m\xE1i."
+    tags:
+    - school
+    - classroom_items
+    - noun
+    - a1
+  - id: li_00048
+    text:
+      en: Clock
+      vi: "\u0110\u1ED3ng h\u1ED3 treo t\u01B0\u1EDDng"
+    example:
+      en: The clock is on the wall.
+      vi: "\u0110\u1ED3ng h\u1ED3 \u1EDF tr\xEAn t\u01B0\u1EDDng."
+    tags:
+    - school
+    - classroom_items
+    - noun
+    - a1
+  - id: li_00049
+    text:
+      en: Student
+      vi: "H\u1ECDc sinh"
+    example:
+      en: The student listens to the teacher.
+      vi: "H\u1ECDc sinh l\u1EAFng nghe gi\xE1o vi\xEAn."
+    tags:
+    - school
+    - people_at_school
+    - noun
+    - a1
+  - id: li_00050
+    text:
+      en: Principal
+      vi: "Hi\u1EC7u tr\u01B0\u1EDFng"
+    example:
+      en: The principal leads the school.
+      vi: "Hi\u1EC7u tr\u01B0\u1EDFng l\xE3nh \u0111\u1EA1o ng\xF4i tr\u01B0\u1EDDng."
+    tags:
+    - school
+    - people_at_school
+    - noun
+    - a1
+  - id: li_00051
+    text:
+      en: Pen
+      vi: "C\xE1i b\xFAt bi"
+    example:
+      en: Can I borrow your pen?
+      vi: "T\xF4i c\xF3 th\u1EC3 m\u01B0\u1EE3n b\xFAt bi c\u1EE7a b\u1EA1n kh\xF4ng?"
+    tags:
+    - school
+    - stationery
+    - noun
+    - a1
+  - id: li_00052
+    text:
+      en: Eraser
+      vi: "C\u1EE5c t\u1EA9y"
+    example:
+      en: I use an eraser to fix mistakes.
+      vi: "T\xF4i d\xF9ng t\u1EA9y \u0111\u1EC3 s\u1EEDa l\u1ED7i sai."
+    tags:
+    - school
+    - stationery
+    - noun
+    - a1
+  - id: li_00053
+    text:
+      en: Ruler
+      vi: "C\xE1i th\u01B0\u1EDBc k\u1EBB"
+    example:
+      en: Draw a line with a ruler.
+      vi: "K\u1EBB m\u1ED9t \u0111\u01B0\u1EDDng th\u1EB3ng b\u1EB1ng th\u01B0\u1EDBc
+        k\u1EBB."
+    tags:
+    - school
+    - stationery
+    - noun
+    - a1
+  - id: li_00054
+    text:
+      en: Backpack
+      vi: "C\u1EB7p s\xE1ch"
+    example:
+      en: My books are in my backpack.
+      vi: "S\xE1ch c\u1EE7a t\xF4i \u1EDF trong c\u1EB7p."
+    tags:
+    - school
+    - stationery
+    - noun
+    - a1
+  - id: li_00055
+    text:
+      en: Bus
+      vi: "Xe bu\xFDt"
+    example:
+      en: We go to school by bus.
+      vi: "Ch\xFAng t\xF4i \u0111i h\u1ECDc b\u1EB1ng xe bu\xFDt."
+    tags:
+    - vehicles
+    - land_vehicles
+    - noun
+    - a1
+  - id: li_00056
+    text:
+      en: Train
+      vi: "T\xE0u h\u1ECFa"
+    example:
+      en: The train travels on tracks.
+      vi: "T\xE0u h\u1ECFa ch\u1EA1y tr\xEAn \u0111\u01B0\u1EDDng ray."
+    tags:
+    - vehicles
+    - land_vehicles
+    - noun
+    - a1
+  - id: li_00057
+    text:
+      en: Truck
+      vi: "Xe t\u1EA3i"
+    example:
+      en: The truck carries heavy boxes.
+      vi: "Xe t\u1EA3i ch\u1EDF nh\u1EEFng th\xF9ng h\xE0ng n\u1EB7ng."
+    tags:
+    - vehicles
+    - land_vehicles
+    - noun
+    - a1
+  - id: li_00058
+    text:
+      en: Motorcycle
+      vi: "Xe m\xE1y"
+    example:
+      en: He rides a motorcycle.
+      vi: "Anh \u1EA5y l\xE1i xe m\xE1y."
+    tags:
+    - vehicles
+    - land_vehicles
+    - noun
+    - a1
+  - id: li_00059
+    text:
+      en: Helicopter
+      vi: "Tr\u1EF1c th\u0103ng"
+    example:
+      en: The helicopter can fly straight up.
+      vi: "Tr\u1EF1c th\u0103ng c\xF3 th\u1EC3 bay th\u1EB3ng l\xEAn."
+    tags:
+    - vehicles
+    - air_vehicles
+    - noun
+    - a1
+  - id: li_00060
+    text:
+      en: Rocket
+      vi: "T\xEAn l\u1EEDa"
+    example:
+      en: The rocket goes to space.
+      vi: "T\xEAn l\u1EEDa bay v\xE0o v\u0169 tr\u1EE5."
+    tags:
+    - vehicles
+    - air_vehicles
+    - noun
+    - a1
+  - id: li_00061
+    text:
+      en: Ship
+      vi: "T\xE0u th\u1EE7y l\u1EDBn"
+    example:
+      en: The ship crosses the ocean.
+      vi: "Con t\xE0u b\u0103ng qua \u0111\u1EA1i d\u01B0\u01A1ng."
+    tags:
+    - vehicles
+    - water_vehicles
+    - noun
+    - a1
+  - id: li_00062
+    text:
+      en: Submarine
+      vi: "T\xE0u ng\u1EA7m"
+    example:
+      en: The submarine goes underwater.
+      vi: "T\xE0u ng\u1EA7m \u0111i d\u01B0\u1EDBi n\u01B0\u1EDBc."
+    tags:
+    - vehicles
+    - water_vehicles
+    - noun
+    - a1

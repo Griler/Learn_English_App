@@ -1,185 +1,310 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
+public enum QuizType
+{
+    TextQuiz, // Quiz về text: hiện text VI → chọn text EN (hoặc ngược lại)
+    ExampleQuiz // Quiz về example: hiện example VI → chọn example EN (hoặc ngược lại)
+}
+
+public enum QuestionLanguage
+{
+    English,
+    Vietnamese
+}
 
 [System.Serializable]
-
-public class QuizManager : BaseCode
+public class QuizManager : MonoBehaviour
 {
-    [Header("UI")] public Image questionImage;
-    public TextMeshProUGUI questionText;
-    public Button[] answerButtons;
+    [Header("References")] public VocabularyDatabase vocabDatabase;
+
+    [Header("UI Elements")] public TextMeshProUGUI questionText;
+    public TextMeshProUGUI questionTypeText;
+    public Button[] answerButtons; // 4 buttons cho 4 đáp án
     public TextMeshProUGUI resultText;
-    public TextMeshProUGUI showText;
+    public Button nextQuestionButton;
+    public Button restartButton;
 
-    [Header("Audio")] public AudioSource audioSource;
-    public AudioClip correctSound;
-    public AudioClip wrongSound;
+    [Header("Quiz Settings")] public int totalQuestions = 10;
+    public int numberOfAnswerChoices = 4;
 
-    [Header("Feedback")] 
-    public Color clickColor;
-    public Color wrongColor;
-    public Color correctColor;
-    public Color defaultColor;
+    [Header("Tag Selection")] public List<string> selectedTags = new List<string>();
 
-    private List<WordData> allAnimals;
-    public List<WordData> vocabulary = new List<WordData>();
-    private int currentQuestion = 0;
-    private GameObject currentButtonClick;
-    private WordData currentVocabulary;
-    private string correctAnswers = "";
-    private int totalQuestions = 10;
-    private bool showEnglish = false;
-    private string chooseAnswer = "";
-    [SerializeField]private Button nextButton;
+    private List<VocabItem> quizVocabulary;
+    private List<QuizQuestion> questions;
+    private List<QuizQuestion> questionsCorrect;
+    private List<QuizQuestion> questionsWrong;
+    private int currentQuestionIndex = 0;
+    private int correctAnswers = 0;
+    private QuizQuestion currentQuestion;
 
-    public void initQuiz(List<WordData> allAnimals)
+    void Start()
     {
-        vocabulary.AddRange(allAnimals);
-    }
-
-    public void ShowQuestion(WordData previousWord = null)
-    {
-        showEnglish = Random.value > 0.5f;
-
-        if (previousWord == null)
+        nextQuestionButton.onClick.AddListener(LoadNextQuestion);
+        if (restartButton != null)
         {
-            // Không có từ trước → chọn random
-            currentVocabulary = vocabulary[Random.Range(0, vocabulary.Count)];
-        }
-        else
-        {
-            currentVocabulary = previousWord;
+            restartButton.onClick.AddListener(RestartQuiz);
+            restartButton.gameObject.SetActive(false);
         }
         
-        correctAnswers = !showEnglish ? currentVocabulary.nameEn : currentVocabulary.nameVi;
-        int targetCount = UnityEngine.Mathf.Min(4, vocabulary.Count);
-        
-        List<WordData> options = new List<WordData> { currentVocabulary };
-        while (options.Count < targetCount)
-        {
-            WordData randomPair = vocabulary[Random.Range(0, vocabulary.Count)];
-            if (!options.Contains(randomPair))
-                options.Add(randomPair);
-        }
-
-        Shuffle(options);
-        
-        questionImage.sprite = assetManager.getSpriteAnimal(currentVocabulary.nameEn.ToLower());
-        
-        if (showEnglish)
-        {
-            questionText.text = $"Từ này có nghĩa là gì: {currentVocabulary.nameEn}?";
-            showText.text = currentVocabulary.nameEn;
-        }
-        else
-        {
-            questionText.text = $"Từ tiếng Anh của \"{currentVocabulary.nameVi}\" là gì?";
-            showText.text = currentVocabulary.nameVi;
-        }
-
-        // gán text và event cho button
+        // Setup answer buttons
         for (int i = 0; i < answerButtons.Length; i++)
         {
-            var btn = answerButtons[i];
-            if (i < options.Count)
+            int index = i; // Capture cho closure
+            Button button = answerButtons[index];
+            answerButtons[i].onClick.AddListener(() => OnAnswerSelected(button, index));
+
+            // Add AnswerButton component nếu chưa có
+            if (answerButtons[i].GetComponent<AnswerButton>() == null)
             {
-                btn.gameObject.SetActive(true);
-                var pair = options[i]; 
-                string answerText = showEnglish ? pair.nameVi : pair.nameEn;
-                try
+                answerButtons[i].gameObject.AddComponent<AnswerButton>();
+            }
+        }
+    }
+
+    public void StartQuiz(List<string> tags)
+    {
+        selectedTags = tags;
+        InitializeQuiz();
+    }
+
+    public void StartQuiz()
+    {
+        if (selectedTags.Count == 0)
+        {
+            Debug.LogWarning("No tags selected!");
+            return;
+        }
+
+        InitializeQuiz();
+    }
+
+    void InitializeQuiz()
+    {
+        // Lấy vocabulary theo tags đã chọn
+        quizVocabulary = vocabDatabase.GetVocabsByTags(selectedTags);
+
+        if (quizVocabulary.Count < numberOfAnswerChoices)
+        {
+            Debug.LogError($"Not enough vocabulary! Need at least {numberOfAnswerChoices} items.");
+            return;
+        }
+
+        // Tạo danh sách câu hỏi
+        GenerateQuestions();
+
+        // Reset
+        currentQuestionIndex = 0;
+        correctAnswers = 0;
+
+        // Hiển thị câu hỏi đầu tiên
+        ShowCurrentQuestion();
+
+        if (restartButton != null)
+        {
+            restartButton.gameObject.SetActive(false);
+        }
+    }
+
+    void GenerateQuestions()
+    {
+        questions = new List<QuizQuestion>();
+
+        // Shuffle vocabulary
+        List<VocabItem> shuffled = quizVocabulary.OrderBy(x => Random.value).ToList();
+
+        for (int i = 0; i < Mathf.Min(totalQuestions, shuffled.Count); i++)
+        {
+            QuizQuestion question = new QuizQuestion();
+
+            // Chọn từ đúng
+            question.correctAnswer = shuffled[i];
+
+            // Random quiz type: TextQuiz hoặc ExampleQuiz
+            question.quizType = Random.value > 0.5f ? QuizType.TextQuiz : QuizType.ExampleQuiz;
+
+            // Random ngôn ngữ câu hỏi (EN hoặc VI)
+            // Câu trả lời sẽ tự động là ngôn ngữ ngược lại
+            question.questionLanguage = Random.value > 0.5f
+                ? QuestionLanguage.English
+                : QuestionLanguage.Vietnamese;
+
+            // Chọn các đáp án sai
+            question.wrongAnswers = new List<VocabItem>();
+            List<VocabItem> availableWrong = shuffled.Where(v => v.id != question.correctAnswer.id).ToList();
+
+            for (int j = 0; j < numberOfAnswerChoices - 1; j++)
+            {
+                if (availableWrong.Count > 0)
                 {
-                    btn.GetComponentInChildren<TextMeshProUGUI>().text = answerText;
-                    Debug.Log("btn: " + answerText);
+                    int randomIndex = Random.Range(0, availableWrong.Count);
+                    question.wrongAnswers.Add(availableWrong[randomIndex]);
+                    availableWrong.RemoveAt(randomIndex);
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                    throw;
-                }
-                btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() => initChooseAnswer(btn.gameObject));
+            }
+
+            questions.Add(question);
+        }
+    }
+
+    void ShowCurrentQuestion()
+    {
+        if (currentQuestionIndex >= questions.Count)
+        {
+            ShowFinalResult();
+            return;
+        }
+
+        currentQuestion = questions[currentQuestionIndex];
+
+        // Hiển thị câu hỏi
+        questionText.text = currentQuestion.GetQuestionText();
+
+        // Hiển thị loại câu hỏi
+        //questionTypeText.text = GetQuizTypeDescription(currentQuestion);
+
+        // Tạo danh sách tất cả đáp án và shuffle
+        List<VocabItem> allAnswers = new List<VocabItem>();
+        allAnswers.Add(currentQuestion.correctAnswer);
+        allAnswers.AddRange(currentQuestion.wrongAnswers);
+        allAnswers = allAnswers.OrderBy(x => Random.value).ToList();
+
+        // Hiển thị đáp án lên buttons
+        for (int i = 0; i < answerButtons.Length; i++)
+        {
+            if (i < allAnswers.Count)
+            {
+                answerButtons[i].gameObject.SetActive(true);
+                answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = currentQuestion.GetAnswerText(allAnswers[i]);
+                answerButtons[i].interactable = true;
+
+                // Lưu vocab item vào button để check sau
+                answerButtons[i].GetComponent<AnswerButton>().vocabItem = allAnswers[i];
+                answerButtons[i].GetComponent<Image>().color =  new Color32(86, 107, 132, 255);
             }
             else
             {
-                btn.gameObject.SetActive(false);
+                answerButtons[i].gameObject.SetActive(false);
             }
         }
+
+        resultText.text = "";
+        nextQuestionButton.interactable = false;
     }
 
-    void initChooseAnswer(GameObject chooseButton)
+    string GetQuizTypeDescription(QuizQuestion question)
     {
-        if (currentButtonClick != null)
+        string questionLang = question.questionLanguage == QuestionLanguage.English ? "EN" : "VI";
+        string answerLang = question.AnswerLanguage == QuestionLanguage.English ? "EN" : "VI";
+
+        if (question.quizType == QuizType.TextQuiz)
         {
-            currentButtonClick.GetComponent<Image>().color = defaultColor;
+            return $"TextMeshProUGUI ({questionLang}) → TextMeshProUGUI ({answerLang})";
         }
-       chooseAnswer = chooseButton.GetComponentInChildren<TextMeshProUGUI>().text;
-       currentButtonClick = chooseButton;
-       chooseButton.GetComponent<Image>().color = clickColor;
-       nextButton.interactable = true;
+        else // ExampleQuiz
+        {
+            return $"Example ({questionLang}) → Example ({answerLang})";
+        }
     }
 
-    public bool getCorrectAnswer()
+    void OnAnswerSelected(Button button,int buttonIndex)
     {
-        return chooseAnswer == correctAnswers;
+        AnswerButton answerBtn = answerButtons[buttonIndex].GetComponent<AnswerButton>();
+
+        if (answerBtn.vocabItem.id == currentQuestion.correctAnswer.id)
+        {
+            // Đúng
+            correctAnswers++;
+            ShowResult(true,button );
+        }
+        else
+        {
+            // Sai
+            ShowResult(false, button);
+        }
+
+        // Disable tất cả buttons
+        foreach (var btn in answerButtons)
+        {
+            btn.interactable = false;
+        }
     }
-    
-    public void HandleAnswer()
+
+    void ShowResult(bool isCorrect,Button selectButton)
     {
-        bool isCorrect = chooseAnswer == correctAnswers;
-        StartCoroutine(ShowFeedback(isCorrect, currentButtonClick));
-    }
-    IEnumerator ShowFeedback(bool isCorrect, GameObject chooseButton)
-    {
+
         if (isCorrect)
         {
-            chooseButton.GetComponent<Image>().color = correctColor;
-            resultText.GetComponent<TextMeshProUGUI>().text = "Correct";
-            resultText.GetComponent<TextMeshProUGUI>().color = Color.lawnGreen;
+            resultText.text = "Correct!";
+            resultText.color = Color.lightGreen;
+            selectButton.GetComponent<Image>().color = Color.lightGreen;
         }
-        else if (!isCorrect)
+        else
         {
-            chooseButton.GetComponent<Image>().color = wrongColor;
-            resultText.GetComponent<TextMeshProUGUI>().text = "Wrong";
-            resultText.GetComponent<TextMeshProUGUI>().color = Color.softRed;
-            yield return new WaitForSeconds(0.75f);
-            chooseButton.GetComponent<Image>().color = defaultColor;
-            resultText.text = "";
-            nextButton.interactable = false;
+            string correctAnswerText = currentQuestion.GetAnswerText(currentQuestion.correctAnswer);
+            resultText.text = $"Wrong!";
+            resultText.color = Color.orangeRed;
+            selectButton.GetComponent<Image>().color = Color.orangeRed;;
+        }
+
+        for (int buttonIndex = 0; buttonIndex < answerButtons.Length; buttonIndex++)
+        {
+            AnswerButton answerBtn = answerButtons[buttonIndex].GetComponent<AnswerButton>();
+            if(answerBtn.vocabItem.id == currentQuestion.correctAnswer.id)
+            {
+                answerBtn.GetComponent<Image>().color = Color.lawnGreen;
+            }
+        }
+        nextQuestionButton.interactable = true;
+    }
+
+    void LoadNextQuestion()
+    {
+        currentQuestionIndex++;
+        ShowCurrentQuestion();
+    }
+
+    void ShowFinalResult()
+    {
+        questionText.text = "Quiz Completed!";
+
+        float percentage = (float)correctAnswers / questions.Count * 100f;
+
+
+        string grade = "";
+        if (percentage >= 90) grade = "Excellent! 🌟";
+        else if (percentage >= 70) grade = "Good Job! 👍";
+        else if (percentage >= 50) grade = "Keep Practicing! 💪";
+        else grade = "Need More Practice 📚";
+
+        resultText.text = $"Final Score: {correctAnswers}/{questions.Count}\n{percentage:F1}%\n\n{grade}";
+        resultText.color = percentage >= 70 ? Color.green : (percentage >= 50 ? Color.yellow : Color.red);
+
+        nextQuestionButton.gameObject.SetActive(false);
+
+        if (restartButton != null)
+        {
+            restartButton.gameObject.SetActive(true);
+        }
+
+        foreach (var btn in answerButtons)
+        {
+            btn.gameObject.SetActive(false);
         }
     }
 
-
-    public void UpdateUI(WordData previousWord = null)
+    public void RestartQuiz()
     {
-        resetUi();
-        ShowQuestion(previousWord);
-    }
+        nextQuestionButton.gameObject.SetActive(true);
 
-    public void Shuffle<T>(List<T> array)
-    {
-        for (int i = 0; i < array.Count; i++)
+        if (restartButton != null)
         {
-            int randomIndex = Random.Range(i, array.Count); // UnityEngine.Random
-            (array[i], array[randomIndex]) = (array[randomIndex], array[i]);
-        }
-    }
-
-    void resetUi()
-    {
-        foreach (var answerButton in answerButtons)
-        {
-            answerButton.GetComponent<Image>().color = defaultColor;
-            answerButton.GetComponentInChildren<TextMeshProUGUI>().text = "";
+            restartButton.gameObject.SetActive(false);
         }
 
-        resultText.GetComponent<TextMeshProUGUI>().text = "";
-        resultText.GetComponent<TextMeshProUGUI>().color = defaultColor;
-        nextButton.interactable = false;
+        InitializeQuiz();
     }
 }
