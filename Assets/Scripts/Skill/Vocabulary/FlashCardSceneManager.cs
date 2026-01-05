@@ -19,5 +19,12 @@ public class FlashCardSceneManager : MonoBehaviour
         cardItemCmp = cardItem.GetComponent<CardItem>();
         cardItemCmp.setUpExample(currentWord);
     }
-    
+
+    public void setUpCard(VocabItem currentWord)
+    {
+        updateCard(currentWord);
+        updateExample(currentWord);
+        cardItemCmp = cardItem.GetComponent<CardItem>();
+        cardItemCmp.playVoice();    
+    }
 }

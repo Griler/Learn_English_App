@@ -16,13 +16,27 @@ public enum QuestionLanguage
     Vietnamese
 }
 
+public class QuizAnswer
+{
+    public QuizQuestion quizQuestion;
+    public bool isCorrect;
+    public string userChoice;
+
+    public QuizAnswer(QuizQuestion quizQuestion, bool isCorrect)
+    {
+        this.quizQuestion = quizQuestion;
+        this.isCorrect = isCorrect;
+    }
+}
+
 [System.Serializable]
-public class QuizManager : MonoBehaviour
+public class QuizManager : BaseCode
 {
     [Header("References")] public VocabularyDatabase vocabDatabase;
 
     [Header("UI Elements")] public TextMeshProUGUI questionText;
-    public TextMeshProUGUI questionTypeText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI resultTextDashBoard;
     public Button[] answerButtons; // 4 buttons cho 4 đáp án
     public TextMeshProUGUI resultText;
     public Button nextQuestionButton;
@@ -30,13 +44,18 @@ public class QuizManager : MonoBehaviour
 
     [Header("Quiz Settings")] public int totalQuestions = 10;
     public int numberOfAnswerChoices = 4;
+    public GameObject quizAwsItem;
+    public GameObject dashboardContainer;
+    public GameObject quizContanier;
+    public Transform layoutTransform;
+    public Button voiceButtoon;
+    [SerializeField] protected Slider progressBar;
 
     [Header("Tag Selection")] public List<string> selectedTags = new List<string>();
 
     private List<VocabItem> quizVocabulary;
-    private List<QuizQuestion> questions;
-    private List<QuizQuestion> questionsCorrect;
-    private List<QuizQuestion> questionsWrong;
+    public List<QuizQuestion> questions;
+    private List<QuizAnswer> quizAnswers = new List<QuizAnswer>();
     private int currentQuestionIndex = 0;
     private int correctAnswers = 0;
     private QuizQuestion currentQuestion;
@@ -63,6 +82,16 @@ public class QuizManager : MonoBehaviour
                 answerButtons[i].gameObject.AddComponent<AnswerButton>();
             }
         }
+
+        if (voiceButtoon)
+        {
+            voiceButtoon.onClick.AddListener(() =>
+            {
+                string textToVoice = currentQuestion.quizType == QuizType.TextQuiz ?
+                    currentQuestion.correctAnswer.text.en : currentQuestion.correctAnswer.example.en;
+                audioManager.playVoiceWord(textToVoice);
+            });
+        }
     }
 
     public void StartQuiz(List<string> tags)
@@ -73,6 +102,8 @@ public class QuizManager : MonoBehaviour
 
     public void StartQuiz()
     {
+        quizContanier.SetActive(true);
+        dashboardContainer.SetActive(false);
         if (selectedTags.Count == 0)
         {
             Debug.LogWarning("No tags selected!");
@@ -82,15 +113,17 @@ public class QuizManager : MonoBehaviour
         InitializeQuiz();
     }
 
-    void InitializeQuiz()
+    public void InitializeQuiz()
     {
+        progressBar.value = 0;
+        
         // Lấy vocabulary theo tags đã chọn
         quizVocabulary = vocabDatabase.GetVocabsByTags(selectedTags);
 
         if (quizVocabulary.Count < numberOfAnswerChoices)
         {
+            numberOfAnswerChoices = quizVocabulary.Count;
             Debug.LogError($"Not enough vocabulary! Need at least {numberOfAnswerChoices} items.");
-            return;
         }
 
         // Tạo danh sách câu hỏi
@@ -109,7 +142,7 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    void GenerateQuestions()
+    public void GenerateQuestions()
     {
         questions = new List<QuizQuestion>();
 
@@ -193,6 +226,11 @@ public class QuizManager : MonoBehaviour
 
         resultText.text = "";
         nextQuestionButton.interactable = false;
+        
+        string textToVoice = currentQuestion.quizType == QuizType.TextQuiz ?
+            currentQuestion.correctAnswer.text.en : currentQuestion.correctAnswer.example.en;
+        audioManager.playVoiceWord(textToVoice);
+
     }
 
     string GetQuizTypeDescription(QuizQuestion question)
@@ -213,17 +251,19 @@ public class QuizManager : MonoBehaviour
     void OnAnswerSelected(Button button,int buttonIndex)
     {
         AnswerButton answerBtn = answerButtons[buttonIndex].GetComponent<AnswerButton>();
-
         if (answerBtn.vocabItem.id == currentQuestion.correctAnswer.id)
         {
             // Đúng
             correctAnswers++;
             ShowResult(true,button );
+            QuizAnswer answer = new QuizAnswer(currentQuestion,true);
+            quizAnswers.Add(answer);
         }
         else
         {
-            // Sai
             ShowResult(false, button);
+            QuizAnswer answer = new QuizAnswer(currentQuestion,false);
+            quizAnswers.Add(answer);
         }
 
         // Disable tất cả buttons
@@ -238,14 +278,14 @@ public class QuizManager : MonoBehaviour
 
         if (isCorrect)
         {
-            resultText.text = "Correct!";
+            resultText.text = "Đúng!";
             resultText.color = Color.lightGreen;
             selectButton.GetComponent<Image>().color = Color.lightGreen;
         }
         else
         {
             string correctAnswerText = currentQuestion.GetAnswerText(currentQuestion.correctAnswer);
-            resultText.text = $"Wrong!";
+            resultText.text = "Sai!";
             resultText.color = Color.orangeRed;
             selectButton.GetComponent<Image>().color = Color.orangeRed;;
         }
@@ -263,25 +303,27 @@ public class QuizManager : MonoBehaviour
 
     void LoadNextQuestion()
     {
+        updateProgressBar();
         currentQuestionIndex++;
         ShowCurrentQuestion();
     }
 
     void ShowFinalResult()
     {
-        questionText.text = "Quiz Completed!";
 
         float percentage = (float)correctAnswers / questions.Count * 100f;
 
 
         string grade = "";
-        if (percentage >= 90) grade = "Excellent! 🌟";
-        else if (percentage >= 70) grade = "Good Job! 👍";
-        else if (percentage >= 50) grade = "Keep Practicing! 💪";
-        else grade = "Need More Practice 📚";
+        if (percentage >= 90) grade = "Xuất sắc!";
+        else if (percentage >= 70) grade = "tốt lắm";
+        else if (percentage >= 50) grade = "Cố gắng";
+        else grade = "Cần luyện tập thêm";
 
-        resultText.text = $"Final Score: {correctAnswers}/{questions.Count}\n{percentage:F1}%\n\n{grade}";
-        resultText.color = percentage >= 70 ? Color.green : (percentage >= 50 ? Color.yellow : Color.red);
+        scoreText.text = $"Tổng điểm: {correctAnswers}/{questions.Count}\n{percentage:F1}%";
+        resultTextDashBoard.text = grade;
+        resultTextDashBoard.color = Color.green;
+        scoreText.color = percentage >= 70 ? Color.green : (percentage >= 50 ? Color.yellow : Color.red);
 
         nextQuestionButton.gameObject.SetActive(false);
 
@@ -294,6 +336,8 @@ public class QuizManager : MonoBehaviour
         {
             btn.gameObject.SetActive(false);
         }
+
+        InitializeDashBoard();
     }
 
     public void RestartQuiz()
@@ -304,7 +348,36 @@ public class QuizManager : MonoBehaviour
         {
             restartButton.gameObject.SetActive(false);
         }
-
+        quizContanier.SetActive(true);
+        dashboardContainer.SetActive(false);
         InitializeQuiz();
+    }
+
+    void InitializeDashBoard()
+    {
+        quizContanier.SetActive(false);
+        dashboardContainer.SetActive(true);
+        for (int i = 0; i < quizAnswers.Count; i++)
+        {
+            GameObject item = Instantiate(quizAwsItem,layoutTransform);
+            item.SetActive(true);
+            int index = i + 1;
+            item.GetComponent<QuizAnswerItem>().SetQuizData(index, quizAnswers[i]);
+        }
+        saveUserProgress();
+    }
+    
+    async void saveUserProgress()
+    {
+        string mainTopic = PlayerPrefs.GetString("SelectedMainCategoryId");
+        string subTopc = PlayerPrefs.GetString("SelectedSubCategory");
+        FirebaseDatabaseManager.Instance.SaveUserProgress(mainTopic, subTopc, GameSessionData.CurrentSubTopics);
+        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_VOCA);
+    }
+    
+    public void updateProgressBar()
+    {
+        float incrementValue = (progressBar.maxValue / questions.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

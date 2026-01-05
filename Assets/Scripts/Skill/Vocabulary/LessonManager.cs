@@ -25,7 +25,9 @@ public class LessonManager : MonoBehaviour
     private string topic = "";
     private string subCategrgy = "";
     public VocabularyDatabase vocabDatabase;
+    [SerializeField] protected Slider progressBar;
 
+    private int countItem = 0;
     private void Awake()
     {
         container.SetActive(false);
@@ -34,7 +36,6 @@ public class LessonManager : MonoBehaviour
     private void Start()
     {
         backButton.onClick.AddListener(onClickBackButton);
-        nextButton.onClick.AddListener(onClickNextButton);
         currentAnimalIndex = 0;
         LoadData();
     }
@@ -48,8 +49,7 @@ public class LessonManager : MonoBehaviour
 
         // Lấy data theo index hiện tại chứ không lấy [0] nữa
         currentLessonItem = listAnimals[currentAnimalIndex];
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateCard(currentLessonItem);
-        flashcardPanel.GetComponent<FlashCardSceneManager>().updateExample(currentLessonItem);
+        flashcardPanel.GetComponent<FlashCardSceneManager>().setUpCard(currentLessonItem);
     }
 
     public void ShowFlashcardByButton()
@@ -63,7 +63,7 @@ public class LessonManager : MonoBehaviour
             quizPanel.SetActive(true);
             return;
         }
-
+        
         ShowFlashcard();
     }
 
@@ -86,34 +86,10 @@ public class LessonManager : MonoBehaviour
     {
         SceneManager.LoadSceneAsync("HomeScene");
     }
-
-    async void ShowFinishPanel()
+    
+    public void updateProgressBar()
     {
-        string userId = FirebaseDatabaseManager.Instance.currentUser.UserId;
-        //ApiController.Instance.SaveUserCategoryHistory(userId, catogeryId, ApiController.CategoryType.Vocabulary);
-        string mainTopic = PlayerPrefs.GetString("SelectedMainCategoryId");
-        FirebaseDatabaseManager.Instance.SaveUserProgress(mainTopic, subCategrgy, GameSessionData.CurrentSubTopics);
-        await FirebaseDatabaseManager.Instance.CompleteMissionById(GlobalData.MissionKeys.LEARN_VOCA);
-        int currentIndex = GameSessionData.mapSubTopics[subCategrgy];
-        int nextCurrentIndex = currentIndex + 1;
-        GameEvents.ShowNotifcation("Bạn đã hoàn thành chủ đề học.\n Trở Về Trang Chủ chọn chủ đề khác",
-            Color.black);
-        panelEnd.SetActive(true);
-    }
-
-    void onClickNextButton()
-    {
-        int currentIndex = GameSessionData.mapSubTopics[subCategrgy];
-        int nextCurrentIndex = currentIndex + 1;
-        if (GameSessionData.mapSubTopics.ContainsValue(nextCurrentIndex))
-        {
-            string nextSubtopic = GlobalData.GetKeyByValue(GameSessionData.mapSubTopics, nextCurrentIndex);
-            PlayerPrefs.SetString("SelectedSubCategory", nextSubtopic);
-            SceneManager.LoadScene(GlobalData.flashCardScene);
-        }   
-        else
-        {
-            SceneManager.LoadScene("HomeScene");
-        }
+        float incrementValue = (progressBar.maxValue / listAnimals.Count);
+        progressBar.value = progressBar.value + incrementValue;
     }
 }

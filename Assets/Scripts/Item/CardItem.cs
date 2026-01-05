@@ -48,6 +48,10 @@ public class CardItem : BaseCode
     // Coroutine xử lý chờ
     private IEnumerator PlayAndCallbackRoutine(AudioClip clip, Action onComplete)
     {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
         // 1. Chơi âm thanh
         audioSource.PlayOneShot(clip);
 
@@ -68,7 +72,10 @@ public class CardItem : BaseCode
                 {
                     audioSource = gameObject.AddComponent<AudioSource>();
                 }
-                StartCoroutine(PlayAndCallbackRoutine(clip,onComplete));
+                if (this.gameObject.activeInHierarchy)
+                {
+                    StartCoroutine(PlayAndCallbackRoutine(clip,onComplete));
+                }
             }),
             s => {
                 Debug.LogError(s);

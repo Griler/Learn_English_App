@@ -54,7 +54,7 @@ public class TopicSelectManager : MonoBehaviour
             }
     
             int currentIndex = i; // Vẫn cần biến local
-            topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(currentIndex));
+            topicChild.GetComponentInChildren<Button>().onClick.AddListener(() => OnTopicSelected(currentIndex, learnTopic.key));
         }
     }
 
@@ -85,8 +85,9 @@ public class TopicSelectManager : MonoBehaviour
         }
     }
 
-    void OnTopicSelected(int index)
+    void OnTopicSelected(int index, string mainTopic )
     {
+        PlayerPrefs.SetString("SelectedMainCategoryId", mainTopic);
         gameObject.SetActive(false);
         viewSubTopic.SetActive(true);
         DisplaySubTopic(index);
