@@ -70,6 +70,7 @@ public class TopicSelectManager : MonoBehaviour
         int indexSubTopic = 0;
         foreach (var subTopic in allLearnTopics[index].subs)
         {
+            GameSessionData.CurrentSubTopics.Add(subTopic.Key);
             GameObject lessonItem = Instantiate(subTopicPrefab, contentParentSub);
             GameSessionData.mapSubTopics[subTopic.Key] = indexSubTopic;
             lessonItem.GetComponent<LessonItem>().setData(topicName: subTopic.Value.vi);

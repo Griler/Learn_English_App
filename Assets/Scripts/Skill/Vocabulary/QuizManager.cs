@@ -55,7 +55,7 @@ public class QuizManager : BaseCode
 
     private List<VocabItem> quizVocabulary;
     public List<QuizQuestion> questions;
-    private List<QuizAnswer> quizAnswers = new List<QuizAnswer>();
+    private List<QuizAnswer> quizAnswers;
     private int currentQuestionIndex = 0;
     private int correctAnswers = 0;
     private QuizQuestion currentQuestion;
@@ -145,7 +145,7 @@ public class QuizManager : BaseCode
     public void GenerateQuestions()
     {
         questions = new List<QuizQuestion>();
-
+        quizAnswers = new List<QuizAnswer>();
         // Shuffle vocabulary
         List<VocabItem> shuffled = quizVocabulary.OrderBy(x => Random.value).ToList();
 
@@ -343,7 +343,11 @@ public class QuizManager : BaseCode
     public void RestartQuiz()
     {
         nextQuestionButton.gameObject.SetActive(true);
-
+        foreach (Transform c in layoutTransform)
+        {
+            c.gameObject.SetActive(false);
+            Destroy(c.gameObject);
+        }
         if (restartButton != null)
         {
             restartButton.gameObject.SetActive(false);

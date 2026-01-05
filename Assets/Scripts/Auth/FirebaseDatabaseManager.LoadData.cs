@@ -35,12 +35,18 @@ public partial class FirebaseDatabaseManager : MonoBehaviour
             bool isComplete = false;
 
             var userTopicData = child.Child(topicKey);
-
-            if (userTopicData.HasChild("isCompleted"))
+            
+            foreach (DataSnapshot topicsSnapshotChild in child.Children)
             {
-                bool.TryParse(userTopicData.Child("isCompleted").Value.ToString(), out isComplete);
+                if (topicsSnapshotChild.Key != "isCompleted")
+                {
+                    result.Add(topicsSnapshotChild.Key, (bool)topicsSnapshotChild.Value);
+                }
+                if (topicsSnapshotChild.Key == "isCompleted")
+                {
+                    result.Add(topicKey, (bool)topicsSnapshotChild.Value);
+                }
             }
-            result.Add(topicKey, isComplete);
         }
 
         return result;

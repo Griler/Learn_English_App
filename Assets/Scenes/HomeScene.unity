@@ -4996,7 +4996,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "T\u1EEB V\u1EF1ng"
+  m_text: "H\u1ECDc T\u1EADp"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
   m_sharedMaterial: {fileID: 8581698275949360407, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
@@ -42931,10 +42931,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4121334209e22cf4cb9970b4659e36c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contentParent: {fileID: 5908346916123124533}
-  subTopicButtonPrefab: {fileID: 6086705797488404038, guid: 6c4b14033afa2174d810176ffd619827, type: 3}
-  titleText: {fileID: 4928216454996705063}
-  statusText: {fileID: 1402276337578241857}
 --- !u!114 &7693376782540626843
 MonoBehaviour:
   m_ObjectHideFlags: 0
