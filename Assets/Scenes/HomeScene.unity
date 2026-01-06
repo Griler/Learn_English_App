@@ -27753,7 +27753,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Nghe
+  m_text: "\xD4n T\u1EADp"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9707e41eb8ec8724389473c9e3286866, type: 2}
   m_sharedMaterial: {fileID: 7913893121916415999, guid: 1386ff11d419dd84f86c7da9528f5e0b, type: 2}
