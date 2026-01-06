@@ -22,6 +22,15 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject); // giữ qua scene
     }
 
+    public void StopVoice()
+    {
+        AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+    }
+
     public void playVoiceWord(string word)
     {
        LoadWordAudio(word);

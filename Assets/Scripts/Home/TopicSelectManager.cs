@@ -26,7 +26,7 @@ public class TopicSelectManager : MonoBehaviour
     async void LoadAndMapVocabulary()
     {
         allLearnTopics = await FirebaseDatabaseManager.Instance.GetAllLearnTopicsAsync();
-        userProgress = await FirebaseDatabaseManager.Instance.GetUserProgress();
+        userProgress = await FirebaseDatabaseManager.Instance.GetUserProgress("vocab_topics");
         DisplayTopic(allLearnTopics, userProgress);
     }
 

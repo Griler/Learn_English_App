@@ -11,20 +11,13 @@ using UnityEditor;
 
 public partial class FirebaseDatabaseManager : MonoBehaviour
 {
-    public async Task<Dictionary<string, bool>> GetUserProgress()
+    public async Task<Dictionary<string, bool>> GetUserProgress(string path)
     {
         // 1. Kiểm tra User đã đăng nhập chưa để lấy UserID
         var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
         var topicsSnapshot = await dbReference
-            .Child($"users/{currentUser.UserId}/learning_progress/vocab_topics")
+            .Child($"users/{currentUser.UserId}/learning_progress/{path}")
             .GetValueAsync();
-
-        if (!topicsSnapshot.Exists)
-        {
-            Debug.LogWarning("No learn topics found");
-            ToastSystem.Instance.ShowToast("Lỗi tải chủ đề học vui lòng thử lại");
-            return null;
-        }
 
         Dictionary<string, bool> result = new Dictionary<string, bool>();
 

@@ -134,7 +134,13 @@ public class SettingView : MonoBehaviour
     {
         var user = FirebaseAuth.DefaultInstance.CurrentUser;
         if (user == null) return;
-        string correctedEmail = nameInputField.text.Trim(); 
+        string correctedEmail = nameInputField.text.Trim();
+
+        if (!IsValidEmail(correctedEmail))
+        {
+            ToastSystem.Instance.ShowToast("Email không phù hợp vui lòng thử lại");
+            return;
+        }
         
         if (correctedEmail == user.Email)
         {
@@ -171,4 +177,14 @@ public class SettingView : MonoBehaviour
         });
     }
     
+    public bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+            return false;
+
+        // Regex pattern cho email
+        string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        
+        return Regex.IsMatch(email, pattern);
+    }
 }
