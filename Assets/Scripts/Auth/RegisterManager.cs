@@ -279,8 +279,9 @@ public class RegisterManager : MonoBehaviour
             }
 
             FirebaseUser newUser = task.Result.User;
+            user.SendEmailVerificationAsync();
             user.ReloadAsync();
-            ToastSystem.Instance.ShowToast("Liên kết thành công!");
+            ToastSystem.Instance.ShowToast("Liên kết thành công! Vui lòng xác nhận mail");
             Debug.LogFormat("Thành công! User {0} đã link với {1}", newUser.UserId, newEmail);
         });
     }

@@ -172,8 +172,9 @@ public class SettingView : MonoBehaviour
                 return;
             }
             Debug.Log("Đã sửa lại email thành công: " + correctedEmail);
-            user.ReloadAsync();
             ToastSystem.Instance.ShowToast("Vui lòng kiểm tra mail và xác nhận để hoàn thành");
+            user.ReloadAsync();
+            Debug.Log("email mới: " + user.Email);
         });
     }
     

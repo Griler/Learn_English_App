@@ -46,10 +46,19 @@ public class LoginManager : MonoBehaviour
     void setUserAuth()
     {
         auth = FirebaseAuth.DefaultInstance;
-        if (auth.CurrentUser != null)
+        if (auth.CurrentUser == null) return;
+        if (auth.CurrentUser.IsAnonymous)
         {
-            //popupNotification.ShowNotification(" Đăng nhập thành công!");
             loadNextScene();
+            return;
+        }
+        if (auth.CurrentUser.IsEmailVerified)
+        {
+            loadNextScene();;
+        }
+        else
+        {
+            auth.SignOut();
         }
     }
 
@@ -234,7 +243,6 @@ public class LoginManager : MonoBehaviour
         else
         {
             Debug.Log("Đăng nhập khách và tạo dữ liệu thành công!");
-            ToastSystem.Instance.ShowToast("Đăng nhập khách và tạo dữ liệu thành công!");
             loadNextScene();
         }
     }
