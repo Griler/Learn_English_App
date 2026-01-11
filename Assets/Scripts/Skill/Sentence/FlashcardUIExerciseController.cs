@@ -20,7 +20,7 @@ public class FlashcardUIExerciseController : FlashcardUIController
         skipButton.onClick.AddListener((() =>
         {
             resultText.text = currentGrammarFlashcardExercise.answer;
-            resultText.color = Color.forestGreen;
+            resultText.color = Color.green;
             nextSkipButton.gameObject.SetActive(true);
         }));
         nextSkipButton.onClick.AddListener(() =>
@@ -29,6 +29,7 @@ public class FlashcardUIExerciseController : FlashcardUIController
             if (cardExerciseIndexCurrent < listCardExercise.Count)
             {
                 updateProgressBar();
+                resultText.text = "";
                 ShowCardExercise(listCardExercise[cardExerciseIndexCurrent]);
             }
             else
@@ -66,7 +67,6 @@ public class FlashcardUIExerciseController : FlashcardUIController
     
     void ShowCardExercise(GrammarFlashcardExercise card)
     {
-        StartCoroutine(setTypeInputField(TypeInputField.Default));
         verbInputField.text = "";
         currentGrammarFlashcardExercise = card;
         exampleQuestionText.text = card.question;

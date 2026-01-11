@@ -53,7 +53,12 @@ public class FlashcardUIExampleController : FlashcardUIController
     
     public void SentenceSplitter(string sentence, string conjugatedVerb)
     {
-        string fullSentence = sentence.Replace(conjugatedVerb,"________");
+        string[] replaceWord = conjugatedVerb.Split(" ");
+        string fullSentence = sentence;
+        foreach (string f in replaceWord)
+        { 
+            fullSentence = fullSentence.Replace(f,"_____");
+        }
         exampleQuestionText.text = fullSentence;
     }
 

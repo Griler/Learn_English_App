@@ -83,9 +83,9 @@ public class ShopLoader : MonoBehaviour
     void CheckAvatarShop()
     {
         Debug.Log("=== KIỂM TRA AVATAR SHOP ===");
-        foreach (GameObject child in contanierAvatar)
+        foreach (Transform child in contanierAvatar)
         {
-            Destroy(child);
+            Destroy(child.gameObject);
         }
         ToastNetwork.Instance.hideDisconnect();
         foreach (var item in shopAvatars)
@@ -94,13 +94,13 @@ public class ShopLoader : MonoBehaviour
             {
                 Debug.Log($"{item.Id} → Đã có");
                 GameObject shopItem = Instantiate(shopItemPrefab, contanierAvatar);
-                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, true, "avatar");
+                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, true, "avatar", CheckAvatarShop);
             }
             else
             {
                 Debug.Log($"{item.Id} → ko có");
                 GameObject shopItem = Instantiate(shopItemPrefab, contanierAvatar);
-                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, false, "avatar");
+                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, false, "avatar", CheckAvatarShop);
             }
         }
     }
@@ -152,22 +152,6 @@ public class ShopLoader : MonoBehaviour
     // ===============================
     void CheckBorderShop()
     {
-        Debug.Log("=== KIỂM TRA BORDER SHOP ===");
-
-        foreach (var item in shopBorders)
-        {
-            if (userBorders.ContainsKey(item.Id))
-            {
-                Debug.Log($"{item.Id} → Đã có");
-                GameObject shopItem = Instantiate(shopItemPrefab, contanierBorder);
-                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, true, "border");
-            }
-            else
-            {
-                Debug.Log($"{item.Id} → ko có");
-                GameObject shopItem = Instantiate(shopItemPrefab, contanierBorder);
-                shopItem.GetComponent<ShopItemUI>().SetupItem(item.Name, item.Price, item.Id, false, "border");
-            }
-        }
+       
     }
 }

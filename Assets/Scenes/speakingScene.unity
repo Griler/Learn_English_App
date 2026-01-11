@@ -2507,14 +2507,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2509804, g: 0.8784314, b: 0.8156863, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7af4a6eb429bfcb4188e7309805a59d7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f1ea3f83396f9c74a8d588f64440a569, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3441,6 +3441,10 @@ PrefabInstance:
     - target: {fileID: 5979565010383154137, guid: 2a89b903d4a6fb24e813f4a8e8947203, type: 3}
       propertyPath: m_Name
       value: ToastNotice
+      objectReference: {fileID: 0}
+    - target: {fileID: 5979565010383154137, guid: 2a89b903d4a6fb24e813f4a8e8947203, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4928,7 +4932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObject: {fileID: 1293507170}
-  UnitsToMove: -2
+  UnitsToMove: 0
 --- !u!114 &1913227518
 MonoBehaviour:
   m_ObjectHideFlags: 0

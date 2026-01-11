@@ -99,7 +99,7 @@ public class SettingView : MonoBehaviour
     public void CopyToClipboard()
     {
         // Đây là lệnh quan trọng nhất
-        GUIUtility.systemCopyBuffer = USER_ID;
+        GUIUtility.systemCopyBuffer = FirebaseDatabaseManager.Instance.userProfileSO.userInfo.username;
         ToastSystem.Instance.ShowToast("Đã copy vào clipboard!!!");
         // Log kiểm tra (hoặc hiển thị thông báo "Đã copy" cho người dùng)
         Debug.Log("Đã copy vào clipboard: ");

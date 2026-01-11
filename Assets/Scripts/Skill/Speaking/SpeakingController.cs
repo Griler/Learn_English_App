@@ -153,14 +153,15 @@ public class SpeakingController : MonoBehaviour
         // Update button states
         if (prevButton) prevButton.interactable = (currentQuestionIndex > 0);
         string topicKey = PlayerPrefs.GetString("CurrentSpeakingTopic");
-        title.text = topicKey;
-        nextButton.interactable = true;
+        string displayName = topicKey.Split('_')[0]; 
+        title.text = displayName;
     }
 
     public void OnClickNextBtn()
     {
         if (currentQuestionIndex == listSentences.Count-1)
         {
+            updateProgressBar();
             string topicKey = PlayerPrefs.GetString("CurrentSpeakingTopic");
             int currentIndex = GameSessionData.mapSubTopics[topicKey];
             int nextCurrentIndex = currentIndex + 1;
@@ -214,7 +215,11 @@ public class SpeakingController : MonoBehaviour
         isRecording = true;
 
         UpdateStatus("Recording...");
-        if (recordButton) recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Dừng";
+        if (recordButton)
+        {
+            recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Dừng";
+            recordButton.GetComponent<Image>().color = Color.orangeRed;
+        }
     }
 
     private void StopRecording()
@@ -223,7 +228,12 @@ public class SpeakingController : MonoBehaviour
 
         Microphone.End(micDeviceName);
         isRecording = false;
-        if (recordButton) recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Record";
+        if (recordButton)
+        {
+            recordButton.GetComponentInChildren<TextMeshProUGUI>().text = "Ghi âm";   
+            recordButton.GetComponent<Image>().color = new Color32(64,224,208,255);
+
+        }
 
         if (!IsAudioValid(recordedClip)) return;
         ListRecordedClip[currentQuestionIndex] = (recordedClip);
@@ -313,6 +323,7 @@ public class SpeakingController : MonoBehaviour
         }
         else
         {
+            score = 0;
             recordCountDown--;
         }
         if (scoreText)

@@ -92,13 +92,13 @@ public class FriendAddPanel : MonoBehaviour
                         // userSnapshot chính là cái node: users/UID_CUA_USER
                         string foundName = "Unknown";
             
-                        if (userSnapshot.Child("userInfo").Child("name").Exists)
+                        if (userSnapshot.Child("userInfo").Child("username").Exists)
                         {
-                            foundName = userSnapshot.Child("userInfo").Child("name").Value.ToString();
+                            foundName = userSnapshot.Child("userInfo").Child("username").Value.ToString();
                         }
-                        else if (userSnapshot.Child("name").Exists)
+                        else if (userSnapshot.Child("username").Exists)
                         {
-                            foundName = userSnapshot.Child("name").Value.ToString();
+                            foundName = userSnapshot.Child("username").Value.ToString();
                         }
                         Debug.Log("Tìm thấy: " + foundName);
                         AddUserToTempList(userSnapshot.Key); 

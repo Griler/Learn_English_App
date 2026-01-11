@@ -242,6 +242,7 @@ public class LoginManager : MonoBehaviour
         }
         else
         {
+            auth = FirebaseAuth.DefaultInstance;
             Debug.Log("Đăng nhập khách và tạo dữ liệu thành công!");
             loadNextScene();
         }

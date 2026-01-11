@@ -16,6 +16,7 @@ public class ShopItemUI : BaseCode
     public Button useButton;       // nút xài
 
     public GameObject lockOverlay; // tấm phủ mờ nếu chưa mua
+    public Action cb; // tấm phủ mờ nếu chưa mua
 
     [Header("Item Data")]
     public string itemId;
@@ -31,9 +32,10 @@ public class ShopItemUI : BaseCode
         useButton.onClick.AddListener(OnUseClicked);;
     }
 
-    public void SetupItem(string itemName, string itemPrice, string id, bool isOwned, string typeItem)
+    public void SetupItem(string itemName, string itemPrice, string id, bool isOwned, string typeItem, Action loadItem)
     {
         typeItemInfo = typeItem;
+        cb =  loadItem;
         if (typeItem == "avatar")
         {
             iconImage.sprite = assetManager.getSpriteAvatar(id);
@@ -124,8 +126,13 @@ public class ShopItemUI : BaseCode
         // Lưu item đang xài
         db.Child("users").Child(userId)
            .Child("userInfo").Child(typeItemInfo)
-            .SetValueAsync(itemId);
-
+            .SetValueAsync(itemId).ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    cb?.Invoke();
+                }
+            } );
         Debug.Log("Đang dùng avatar: " + itemId);
     }
 }
